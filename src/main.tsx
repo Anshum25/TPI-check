@@ -18,7 +18,7 @@ if (preloader) {
       const cleanup = () => preloader.remove();
       preloader.addEventListener("transitionend", cleanup, { once: true });
       // safety removal in case transition event doesn't fire
-      setTimeout(cleanup, 800);
+      setTimeout(cleanup, 8000);
     });
   }, 20000);
 }
