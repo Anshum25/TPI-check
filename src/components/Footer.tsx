@@ -1,7 +1,9 @@
 import { Link } from "react-router-dom";
 import { Facebook, Twitter, Instagram, Linkedin, Mail, Phone, MapPin } from "lucide-react";
+import { useContent } from "@/lib/content";
 
 const Footer = () => {
+  const { content } = useContent();
   return (
     <footer className="bg-secondary/30 border-t mt-20">
       <div className="container mx-auto px-4 py-12">
@@ -31,7 +33,6 @@ const Footer = () => {
               </a>
             </div>
           </div>
-
           <div>
             <h3 className="font-bold mb-4">Quick Links</h3>
             <ul className="space-y-2 text-sm">
@@ -72,7 +73,7 @@ const Footer = () => {
         </div>
 
         <div className="border-t mt-8 pt-8 text-center text-sm text-muted-foreground">
-          <p>&copy; {new Date().getFullYear()} Excellence Institute. All rights reserved.</p>
+          <p>{content.footer.copyright}</p>
         </div>
       </div>
     </footer>

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, type FormEvent, type ChangeEvent } from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
@@ -20,7 +20,7 @@ const Contact = () => {
     message: "",
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
     toast({
       title: "Message Sent!",
@@ -29,7 +29,7 @@ const Contact = () => {
     setFormData({ name: "", email: "", phone: "", course: "", message: "" });
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 

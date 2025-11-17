@@ -3,35 +3,12 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import heroClassroom from "@/assets/hero-classroom.jpg";
-import speakingConfidence from "@/assets/speaking-confidence.jpg";
-import studentSuccess from "@/assets/student-success.jpg";
+import { useContent } from "@/lib/content";
 
 const Gallery = () => {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
-
-  const images = {
-    all: [
-      { src: heroClassroom, title: "Group Discussion Session", category: "classroom" },
-      { src: speakingConfidence, title: "Public Speaking Practice", category: "events" },
-      { src: studentSuccess, title: "Successful Students Batch", category: "students" },
-      { src: heroClassroom, title: "Interactive Learning", category: "classroom" },
-      { src: speakingConfidence, title: "Presentation Skills", category: "events" },
-      { src: studentSuccess, title: "Achievement Ceremony", category: "events" },
-    ],
-    classroom: [
-      { src: heroClassroom, title: "Group Discussion Session", category: "classroom" },
-      { src: heroClassroom, title: "Interactive Learning", category: "classroom" },
-    ],
-    events: [
-      { src: speakingConfidence, title: "Public Speaking Practice", category: "events" },
-      { src: speakingConfidence, title: "Presentation Skills", category: "events" },
-      { src: studentSuccess, title: "Achievement Ceremony", category: "events" },
-    ],
-    students: [
-      { src: studentSuccess, title: "Successful Students Batch", category: "students" },
-    ],
-  };
+  const { content } = useContent();
+  const { gallery } = content;
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -39,10 +16,8 @@ const Gallery = () => {
       <main className="flex-1">
         <section className="gradient-hero py-20 text-primary-foreground">
           <div className="container mx-auto px-4 text-center">
-            <h1 className="text-4xl md:text-5xl font-bold mb-4">Gallery</h1>
-            <p className="text-xl max-w-3xl mx-auto text-primary-foreground/90">
-              Glimpses of our vibrant learning environment and student activities
-            </p>
+            <h1 className="text-4xl md:text-5xl font-bold mb-4">{gallery.hero.title}</h1>
+            <p className="text-xl max-w-3xl mx-auto text-primary-foreground/90">{gallery.hero.subtitle}</p>
           </div>
         </section>
 
@@ -56,12 +31,12 @@ const Gallery = () => {
                 <TabsTrigger value="students">Students</TabsTrigger>
               </TabsList>
 
-              {Object.entries(images).map(([category, categoryImages]) => (
+              {Object.entries(gallery.categories).map(([category, categoryImages]) => (
                 <TabsContent key={category} value={category}>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {categoryImages.map((image, index) => (
                       <Card
-                        key={index}
+                        key={`${category}-${index}`}
                         className="overflow-hidden cursor-pointer shadow-soft hover:shadow-medium transition-all duration-300"
                         onClick={() => setSelectedImage(image.src)}
                       >
@@ -96,11 +71,7 @@ const Gallery = () => {
               >
                 ×
               </button>
-              <img
-                src={selectedImage}
-                alt="Full size"
-                className="max-w-full max-h-[90vh] object-contain"
-              />
+              <img src={selectedImage} alt="Full size" className="max-w-full max-h-[90vh] object-contain" />
             </div>
           </div>
         )}

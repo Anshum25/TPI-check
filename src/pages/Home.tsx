@@ -5,54 +5,17 @@ import Hero from "@/components/Hero";
 import TestimonialCard from "@/components/TestimonialCard";
 import { Button } from "@/components/ui/button";
 import { Target, Users, Award, BookOpen } from "lucide-react";
+import { useContent } from "@/lib/content";
 
 const Home = () => {
-  const features = [
-    {
-      icon: <Target className="h-6 w-6" />,
-      title: "Expert Training",
-      description: "Learn from experienced professionals with proven teaching methods",
-    },
-    {
-      icon: <Users className="h-6 w-6" />,
-      title: "10,000+ Students",
-      description: "Join our successful alumni network since 1999",
-    },
-    {
-      icon: <Award className="h-6 w-6" />,
-      title: "Certified Programs",
-      description: "Receive recognized certificates upon course completion",
-    },
-    {
-      icon: <BookOpen className="h-6 w-6" />,
-      title: "Practical Approach",
-      description: "Real-world scenarios and interactive learning methods",
-    },
-  ];
+  const { content } = useContent();
+  const { home } = content;
 
-  const directorsDeskVideoUrl = "https://www.youtube.com/embed/sLMm9trcZYc";
-
-  
-
-  const testimonials = [
-    {
-      name: "Priya Sharma",
-      role: "Software Engineer",
-      content: "This institute transformed my communication skills completely. I'm now confident in presentations and team meetings.",
-      rating: 5,
-    },
-    {
-      name: "Rahul Patel",
-      role: "Business Owner",
-      content: "The personality development course helped me become a better leader. Highly recommend to everyone!",
-      rating: 5,
-    },
-    {
-      name: "Anjali Desai",
-      role: "HR Manager",
-      content: "Excellent teaching methods and supportive instructors. Worth every penny invested in my growth.",
-      rating: 5,
-    },
+  const featureIcons = [
+    <Target key="icon-0" className="h-6 w-6" />,
+    <Users key="icon-1" className="h-6 w-6" />,
+    <Award key="icon-2" className="h-6 w-6" />,
+    <BookOpen key="icon-3" className="h-6 w-6" />,
   ];
 
   return (
@@ -71,13 +34,13 @@ const Home = () => {
               </p>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-              {features.map((feature, index) => (
+              {home.features.map((feature, index) => (
                 <div
                   key={index}
                   className="text-center p-6 rounded-lg bg-card shadow-soft hover:shadow-medium transition-all duration-300"
                 >
                   <div className="inline-flex h-14 w-14 items-center justify-center rounded-full gradient-hero text-primary-foreground mb-4">
-                    {feature.icon}
+                    {featureIcons[index] ?? <Target className="h-6 w-6" />}
                   </div>
                   <h3 className="text-xl font-bold mb-2">{feature.title}</h3>
                   <p className="text-muted-foreground">{feature.description}</p>
@@ -91,16 +54,15 @@ const Home = () => {
         <section className="py-20">
           <div className="container mx-auto px-4">
             <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 text-foreground">
-              Learn English the way never experienced before
+              {home.heroTitle}
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-10 items-start">
               <div>
                 <h3 className="text-2xl md:text-3xl font-bold text-foreground leading-tight mb-3 ">
-                  Learn English the way never
-                  <br className="hidden md:block" /> experienced before
+                  {home.heroTitle}
                 </h3>
                 <p className="text-base md:text-lg text-muted-foreground">
-                  Your Performance is Our Responsibility!!
+                  {home.heroSubtitle}
                 </p>
               </div>
               <div>
@@ -108,7 +70,7 @@ const Home = () => {
                 <div className="rounded-2xl overflow-hidden bg-card shadow-soft">
                   <div className="aspect-video w-full">
                     <iframe
-                      src={directorsDeskVideoUrl}
+                      src={home.directorVideoUrl}
                       title="Director's desk video"
                       className="w-full h-full"
                       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
@@ -153,7 +115,7 @@ const Home = () => {
               </p>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {testimonials.map((testimonial, index) => (
+              {home.testimonials.map((testimonial, index) => (
                 <TestimonialCard key={index} {...testimonial} />
               ))}
             </div>
@@ -170,10 +132,10 @@ const Home = () => {
           <div className="container mx-auto px-4">
             <div className="gradient-hero rounded-2xl p-12 text-center shadow-medium">
               <h2 className="text-3xl md:text-4xl font-bold text-primary-foreground mb-4">
-                Ready to Transform Your Future?
+                {home.ctaTitle}
               </h2>
               <p className="text-lg text-primary-foreground/90 mb-8 max-w-2xl mx-auto">
-                Join thousands of successful students and start your journey towards excellence today
+                {home.ctaText}
               </p>
               <div className="flex flex-wrap justify-center gap-4">
                 <Link to="/contact">
