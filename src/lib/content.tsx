@@ -21,6 +21,17 @@ export type SiteContent = {
   home: {
     heroTitle: string;
     heroSubtitle: string;
+    heroCarousel: {
+      slides: {
+        imageUrl: string;
+        title: string;
+        subtitle: string;
+        primaryButtonText: string;
+        primaryButtonLink: string;
+        secondaryButtonText: string;
+        secondaryButtonLink: string;
+      }[];
+    };
     features: Feature[];
     directorVideoUrl: string;
     testimonials: Testimonial[];
@@ -32,6 +43,21 @@ export type SiteContent = {
     nav: { label: string; to: string }[];
   };
   footer: {
+    instituteName: string;
+    tagline: string;
+    socialMedia: {
+      facebook: string;
+      twitter: string;
+      instagram: string;
+      linkedin: string;
+    };
+    quickLinks: { label: string; to: string }[];
+    courses: string[];
+    contact: {
+      address: string;
+      phone: string;
+      email: string;
+    };
     copyright: string;
   };
   about: {
@@ -137,6 +163,37 @@ export const DEFAULT_CONTENT: SiteContent = {
   home: {
     heroTitle: "Learn English the way never experienced before",
     heroSubtitle: "Your Performance is Our Responsibility!!",
+    heroCarousel: {
+      slides: [
+        {
+          imageUrl: "/src/assets/hero-classroom.jpg",
+          title: "Transform Your Communication Skills",
+          subtitle: "Master English Speaking & Personality Development",
+          primaryButtonText: "Enroll Now",
+          primaryButtonLink: "/admissions",
+          secondaryButtonText: "Learn More",
+          secondaryButtonLink: "/about",
+        },
+        {
+          imageUrl: "/src/assets/speaking-confidence.jpg",
+          title: "Build Confidence & Leadership",
+          subtitle: "Expert Training for Personal & Professional Growth",
+          primaryButtonText: "Enroll Now",
+          primaryButtonLink: "/admissions",
+          secondaryButtonText: "Learn More",
+          secondaryButtonLink: "/courses",
+        },
+        {
+          imageUrl: "/src/assets/student-success.jpg",
+          title: "Join 10,000+ Successful Students",
+          subtitle: "Quality Education Since 1999",
+          primaryButtonText: "Enroll Now",
+          primaryButtonLink: "/admissions",
+          secondaryButtonText: "Learn More",
+          secondaryButtonLink: "/success-stories",
+        },
+      ],
+    },
     features: [
       { title: "Expert Training", description: "Learn from experienced professionals with proven teaching methods" },
       { title: "10,000+ Students", description: "Join our successful alumni network since 1999" },
@@ -182,6 +239,31 @@ export const DEFAULT_CONTENT: SiteContent = {
     ],
   },
   footer: {
+    instituteName: "Excellence Institute",
+    tagline: "Transforming lives through quality education and personality development since 1999.",
+    socialMedia: {
+      facebook: "#",
+      twitter: "#",
+      instagram: "#",
+      linkedin: "#",
+    },
+    quickLinks: [
+      { label: "Home", to: "/" },
+      { label: "About Us", to: "/about" },
+      { label: "Courses", to: "/courses" },
+      { label: "Gallery", to: "/gallery" },
+    ],
+    courses: [
+      "Spoken English",
+      "Personality Development",
+      "Business Communication",
+      "Interview Preparation",
+    ],
+    contact: {
+      address: "123 Education Street, Learning City, 380001",
+      phone: "+91 98765 43210",
+      email: "info@excellence.edu",
+    },
     copyright: "© 2025 TPI. All rights reserved.",
   },
   about: {
@@ -855,11 +937,49 @@ type ContentContextValue = {
 
 const ContentContext = createContext<ContentContextValue | undefined>(undefined);
 
+// Migration function to ensure backward compatibility
+const migrateContent = (stored: any): SiteContent => {
+  const migrated = { ...DEFAULT_CONTENT, ...stored };
+  
+  // Migrate footer if it exists but is missing new fields
+  if (stored.footer && typeof stored.footer === 'object') {
+    migrated.footer = {
+      ...DEFAULT_CONTENT.footer,
+      ...stored.footer,
+      // Ensure nested objects are properly merged
+      socialMedia: {
+        ...DEFAULT_CONTENT.footer.socialMedia,
+        ...(stored.footer.socialMedia || {}),
+      },
+      quickLinks: stored.footer.quickLinks || DEFAULT_CONTENT.footer.quickLinks,
+      courses: stored.footer.courses || DEFAULT_CONTENT.footer.courses,
+      contact: {
+        ...DEFAULT_CONTENT.footer.contact,
+        ...(stored.footer.contact || {}),
+      },
+    };
+  }
+  
+  // Migrate home carousel if it exists but is missing new fields
+  if (stored.home && typeof stored.home === 'object') {
+    migrated.home = {
+      ...DEFAULT_CONTENT.home,
+      ...stored.home,
+      heroCarousel: stored.home.heroCarousel || DEFAULT_CONTENT.home.heroCarousel,
+    };
+  }
+  
+  return migrated as SiteContent;
+};
+
 export const ContentProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [content, setContentState] = useState<SiteContent>(() => {
     try {
       const raw = localStorage.getItem("site_content");
-      if (raw) return JSON.parse(raw) as SiteContent;
+      if (raw) {
+        const parsed = JSON.parse(raw) as SiteContent;
+        return migrateContent(parsed);
+      }
     } catch (e) {
       console.error("Failed to parse stored content", e);
     }
@@ -889,7 +1009,7 @@ export const ContentProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const importJSON = (json: string) => {
     try {
       const parsed = JSON.parse(json) as SiteContent;
-      setContentState(parsed);
+      setContentState(migrateContent(parsed));
     } catch (e) {
       throw new Error("Invalid JSON");
     }
