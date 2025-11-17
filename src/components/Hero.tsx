@@ -1,37 +1,34 @@
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useContent } from "@/lib/content";
 import heroClassroom from "@/assets/hero-classroom.jpg";
 import speakingConfidence from "@/assets/speaking-confidence.jpg";
 import studentSuccess from "@/assets/student-success.jpg";
 
+// Image mapping for default images
+const imageMap: Record<string, string> = {
+  "/src/assets/hero-classroom.jpg": heroClassroom,
+  "/src/assets/speaking-confidence.jpg": speakingConfidence,
+  "/src/assets/student-success.jpg": studentSuccess,
+};
+
 const Hero = () => {
+  const { content } = useContent();
   const [currentSlide, setCurrentSlide] = useState(0);
 
-  const slides = [
-    {
-      image: heroClassroom,
-      title: "Transform Your Communication Skills",
-      subtitle: "Master English Speaking & Personality Development",
-    },
-    {
-      image: speakingConfidence,
-      title: "Build Confidence & Leadership",
-      subtitle: "Expert Training for Personal & Professional Growth",
-    },
-    {
-      image: studentSuccess,
-      title: "Join 10,000+ Successful Students",
-      subtitle: "Quality Education Since 1999",
-    },
-  ];
+  const slides = content.home.heroCarousel.slides.map((slide) => ({
+    ...slide,
+    image: imageMap[slide.imageUrl] || slide.imageUrl,
+  }));
 
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % slides.length);
     }, 5000);
     return () => clearInterval(timer);
-  }, []);
+  }, [slides.length]);
 
   const nextSlide = () => setCurrentSlide((prev) => (prev + 1) % slides.length);
   const prevSlide = () => setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length);
@@ -62,12 +59,16 @@ const Hero = () => {
                     {slide.subtitle}
                   </p>
                   <div className="flex flex-wrap gap-4">
-                    <Button size="lg" className="gradient-accent">
-                      Enroll Now
-                    </Button>
-                    <Button size="lg" variant="outline" className="bg-white/10 backdrop-blur-sm border-white text-white hover:bg-white hover:text-primary">
-                      Learn More
-                    </Button>
+                    <Link to={slide.primaryButtonLink}>
+                      <Button size="lg" className="gradient-accent">
+                        {slide.primaryButtonText}
+                      </Button>
+                    </Link>
+                    <Link to={slide.secondaryButtonLink}>
+                      <Button size="lg" variant="outline" className="bg-white/10 backdrop-blur-sm border-white text-white hover:bg-white hover:text-primary">
+                        {slide.secondaryButtonText}
+                      </Button>
+                    </Link>
                   </div>
                 </div>
               </div>

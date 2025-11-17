@@ -1,8 +1,15 @@
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import type { ReactNode } from "react";
 import type { LucideIcon } from "lucide-react";
 import { useContent, DEFAULT_CONTENT } from "@/lib/content";
 import type { SiteContent } from "@/lib/content";
+import heroClassroom from "@/assets/hero-classroom.jpg";
+import speakingConfidence from "@/assets/speaking-confidence.jpg";
+import studentSuccess from "@/assets/student-success.jpg";
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
+import Hero from "@/components/Hero";
+import TestimonialCard from "@/components/TestimonialCard";
 import {
   Card,
   CardContent,
@@ -47,9 +54,12 @@ import {
   HelpCircle,
   Phone,
   Users,
+  Target,
+  Award,
   OctagonAlert,
   PenLine,
   ExternalLink,
+  X,
 } from "lucide-react";
 
 type AdminSection = {
@@ -230,127 +240,176 @@ const adminSections: AdminSection[] = [
   },
 ];
 
+// Image mapping for default images (for preview in admin)
+const imageMap: Record<string, string> = {
+  "/src/assets/hero-classroom.jpg": heroClassroom,
+  "/src/assets/speaking-confidence.jpg": speakingConfidence,
+  "/src/assets/student-success.jpg": studentSuccess,
+};
+
 const Admin = () => {
-    const { content, setContent, resetContent, exportJSON, importJSON } = useContent();
-    const [jsonValue, setJsonValue] = useState("");
-    const [importError, setImportError] = useState<string | null>(null);
+  const { content, setContent, resetContent, exportJSON, importJSON } = useContent();
+  const [jsonValue, setJsonValue] = useState("");
+  const [importError, setImportError] = useState<string | null>(null);
   const [activeSection, setActiveSection] = useState<AdminSection["id"]>("home");
+  const [activeSubSection, setActiveSubSection] = useState<string | null>(null);
   const contentRef = useRef<HTMLDivElement>(null);
+  const previewRef = useRef<HTMLDivElement>(null);
+  const heroCarouselRef = useRef<HTMLDivElement>(null);
+  const heroVideoRef = useRef<HTMLDivElement>(null);
+  const featuresRef = useRef<HTMLDivElement>(null);
+  const testimonialsRef = useRef<HTMLDivElement>(null);
+  const ctaRef = useRef<HTMLDivElement>(null);
   const courseDetailIconOptions = ["clock", "calendar", "map", "award", "users"] as const;
 
   const selectedSection = adminSections.find((section) => section.id === activeSection) ?? adminSections[0];
 
-    const handleFeatureChange = (index: number, field: "title" | "description", value: string) => {
-        setContent((prev) => ({
-            ...prev,
-            home: {
-                ...prev.home,
+  // Scroll preview to active subsection
+  useEffect(() => {
+    if (!activeSubSection || !previewRef.current) return;
+    
+    const sectionMap: Record<string, React.RefObject<HTMLDivElement>> = {
+      'hero-carousel': heroCarouselRef,
+      'hero-video': heroVideoRef,
+      'features': featuresRef,
+      'testimonials': testimonialsRef,
+      'cta': ctaRef,
+    };
+
+    const targetRef = sectionMap[activeSubSection];
+    if (targetRef?.current && previewRef.current) {
+      const previewContainer = previewRef.current;
+      const targetElement = targetRef.current;
+      
+      // Scroll to the section with smooth behavior
+      setTimeout(() => {
+        // Find the offset relative to the preview container
+        let offsetTop = 0;
+        let element: HTMLElement | null = targetElement;
+        while (element && element !== previewContainer) {
+          offsetTop += element.offsetTop;
+          element = element.offsetParent as HTMLElement | null;
+        }
+        
+        previewContainer.scrollTo({
+          top: offsetTop - 20, // Add some padding from top
+          behavior: 'smooth',
+        });
+      }, 150);
+    }
+  }, [activeSubSection]);
+
+  const handleFeatureChange = (index: number, field: "title" | "description", value: string) => {
+    setContent((prev) => ({
+      ...prev,
+      home: {
+        ...prev.home,
         features: prev.home.features.map((feature, i) => (i === index ? { ...feature, [field]: value } : feature)),
-            },
-        }));
-    };
+      },
+    }));
+  };
 
-    const addFeature = () => {
-        setContent((prev) => ({
-            ...prev,
-            home: {
-                ...prev.home,
-                features: [...prev.home.features, { title: "", description: "" }],
-            },
-        }));
-    };
+  const addFeature = () => {
+    setContent((prev) => ({
+      ...prev,
+      home: {
+        ...prev.home,
+        features: [...prev.home.features, { title: "", description: "" }],
+      },
+    }));
+  };
 
-    const removeFeature = (index: number) => {
-        setContent((prev) => ({
-            ...prev,
-            home: {
-                ...prev.home,
-                features: prev.home.features.filter((_, i) => i !== index),
-            },
-        }));
-    };
+  const removeFeature = (index: number) => {
+    setContent((prev) => ({
+      ...prev,
+      home: {
+        ...prev.home,
+        features: prev.home.features.filter((_, i) => i !== index),
+      },
+    }));
+  };
 
   const handleTestimonialChange = (index: number, field: "name" | "role" | "content" | "rating", value: string) => {
-        setContent((prev) => ({
-            ...prev,
-            home: {
-                ...prev.home,
-                testimonials: prev.home.testimonials.map((testimonial, i) =>
-                    i === index
-                        ? {
-                            ...testimonial,
-                            [field]: field === "rating" ? Number(value) || undefined : value,
-                        }
-                        : testimonial,
-                ),
-            },
-        }));
-    };
+    setContent((prev) => ({
+      ...prev,
+      home: {
+        ...prev.home,
+        testimonials: prev.home.testimonials.map((testimonial, i) =>
+          i === index
+            ? {
+              ...testimonial,
+              [field]: field === "rating" ? Number(value) || undefined : value,
+            }
+            : testimonial,
+        ),
+      },
+    }));
+  };
 
-    const addTestimonial = () => {
-        setContent((prev) => ({
-            ...prev,
-            home: {
-                ...prev.home,
+  const addTestimonial = () => {
+    setContent((prev) => ({
+      ...prev,
+      home: {
+        ...prev.home,
         testimonials: [...prev.home.testimonials, { name: "", role: "", content: "", rating: 5 }],
-            },
-        }));
-    };
+      },
+    }));
+  };
 
-    const removeTestimonial = (index: number) => {
-        setContent((prev) => ({
-            ...prev,
-            home: {
-                ...prev.home,
-                testimonials: prev.home.testimonials.filter((_, i) => i !== index),
-            },
-        }));
-    };
+  const removeTestimonial = (index: number) => {
+    setContent((prev) => ({
+      ...prev,
+      home: {
+        ...prev.home,
+        testimonials: prev.home.testimonials.filter((_, i) => i !== index),
+      },
+    }));
+  };
 
   const handleNavChange = (index: number, field: "label" | "to", value: string) => {
-        setContent((prev) => ({
-            ...prev,
-            header: {
-                ...prev.header,
+    setContent((prev) => ({
+      ...prev,
+      header: {
+        ...prev.header,
         nav: prev.header.nav.map((item, i) => (i === index ? { ...item, [field]: value } : item)),
-            },
-        }));
-    };
+      },
+    }));
+  };
 
-    const addNavItem = () => {
-        setContent((prev) => ({
-            ...prev,
-            header: {
-                ...prev.header,
-                nav: [...prev.header.nav, { label: "New Link", to: "/" }],
-            },
-        }));
-    };
+  const addNavItem = () => {
+    setContent((prev) => ({
+      ...prev,
+      header: {
+        ...prev.header,
+        nav: [...prev.header.nav, { label: "New Link", to: "/" }],
+      },
+    }));
+  };
 
-    const removeNavItem = (index: number) => {
-        setContent((prev) => ({
-            ...prev,
-            header: {
-                ...prev.header,
-                nav: prev.header.nav.filter((_, i) => i !== index),
-            },
-        }));
-    };
+  const removeNavItem = (index: number) => {
+    setContent((prev) => ({
+      ...prev,
+      header: {
+        ...prev.header,
+        nav: prev.header.nav.filter((_, i) => i !== index),
+      },
+    }));
+  };
 
-    const handleExport = () => {
-        setJsonValue(exportJSON());
-        setImportError(null);
-    };
+  const handleExport = () => {
+    setJsonValue(exportJSON());
+    setImportError(null);
+  };
 
-    const handleImport = () => {
-        try {
-            importJSON(jsonValue);
-            setImportError(null);
-        } catch (e) {
-            const message = e instanceof Error ? e.message : "Invalid JSON";
-            setImportError(message);
-        }
-    };
+  const handleImport = () => {
+    try {
+      importJSON(jsonValue);
+      setImportError(null);
+    } catch (e) {
+      const message = e instanceof Error ? e.message : "Invalid JSON";
+      setImportError(message);
+    }
+  };
 
   const handleEditAction = () => {
     if (!selectedSection) return;
@@ -386,319 +445,950 @@ const Admin = () => {
         )}
       </CardContent>
       <CardFooter className="flex flex-wrap gap-3">
-                        <Button
-                            variant="outline"
-                            className="flex items-center gap-2"
+        <Button
+          variant="outline"
+          className="flex items-center gap-2"
           asChild
         >
           <a href={section.route} target="_blank" rel="noopener noreferrer">
             <ExternalLink className="h-4 w-4" />
             Open live page
           </a>
-                        </Button>
+        </Button>
       </CardFooter>
     </Card>
   );
 
   const renderHomeEditor = () => (
     <>
-                        <Card className="shadow-soft">
-                            <CardHeader>
-                                <CardTitle>Home Hero &amp; Video</CardTitle>
-                                <CardDescription>
-            Main heading and subheading used in the Home "Learn English" section and director&apos;s desk video.
-                                </CardDescription>
-                            </CardHeader>
-                            <CardContent className="space-y-4">
-                                <div className="space-y-2">
-                                    <Label htmlFor="heroTitle">Hero Title</Label>
-                                    <Input
-                                        id="heroTitle"
-                                        value={content.home.heroTitle}
-                                        onChange={(e) =>
-                                            setContent((prev) => ({
-                                                ...prev,
-                                                home: { ...prev.home, heroTitle: e.target.value },
-                                            }))
-                                        }
-                                    />
-                                </div>
-                                <div className="space-y-2">
-                                    <Label htmlFor="heroSubtitle">Hero Subtitle</Label>
-                                    <Input
-                                        id="heroSubtitle"
-                                        value={content.home.heroSubtitle}
-                                        onChange={(e) =>
-                                            setContent((prev) => ({
-                                                ...prev,
-                                                home: { ...prev.home, heroSubtitle: e.target.value },
-                                            }))
-                                        }
-                                    />
-                                </div>
-                                <div className="space-y-2">
-                                    <Label htmlFor="directorVideoUrl">Director&apos;s Desk Video URL</Label>
-                                    <Input
-                                        id="directorVideoUrl"
-                                        value={content.home.directorVideoUrl}
-                                        onChange={(e) =>
-                                            setContent((prev) => ({
-                                                ...prev,
-                                                home: { ...prev.home, directorVideoUrl: e.target.value },
-                                            }))
-                                        }
-                                        placeholder="https://www.youtube.com/embed/..."
-                                    />
-                                </div>
-                            </CardContent>
-                        </Card>
 
-                        <Card className="shadow-soft">
-                            <CardHeader>
-                                <CardTitle>Features</CardTitle>
-          <CardDescription>Cards shown in the "Why Choose Us?" section on the home page.</CardDescription>
-                            </CardHeader>
-                            <CardContent className="space-y-4">
-                                <div className="space-y-4">
-                                    {content.home.features.map((feature, index) => (
+      <Card 
+        className="shadow-soft"
+        onMouseEnter={() => setActiveSubSection('hero-carousel')}
+        onFocus={() => setActiveSubSection('hero-carousel')}
+      >
+        <CardHeader>
+          <CardTitle>Hero Carousel</CardTitle>
+          <CardDescription>Slides displayed in the hero carousel at the top of the home page.</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="space-y-4">
+            {content.home.heroCarousel.slides.map((slide, index) => (
               <div key={index} className="space-y-3 rounded-lg border p-4">
-                                            <div className="flex items-center justify-between gap-2">
+                <div className="flex items-center justify-between gap-2">
+                  <Label className="text-xs uppercase tracking-wide text-muted-foreground">Slide {index + 1}</Label>
+                  <Button type="button" size="icon" variant="ghost" onClick={() => {
+                    setContent((prev) => ({
+                      ...prev,
+                      home: {
+                        ...prev.home,
+                        heroCarousel: {
+                          ...prev.home.heroCarousel,
+                          slides: prev.home.heroCarousel.slides.filter((_, i) => i !== index),
+                        },
+                      },
+                    }));
+                  }}>
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
+                <div className="space-y-2">
+                  <Label>Image</Label>
+                  {slide.imageUrl && (
+                    <div className="relative mb-2">
+                      <img
+                        src={slide.imageUrl.startsWith('data:') || slide.imageUrl.startsWith('http') ? slide.imageUrl : imageMap[slide.imageUrl] || slide.imageUrl}
+                        alt="Preview"
+                        className="w-full h-32 object-cover rounded-md border"
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).style.display = 'none';
+                        }}
+                      />
+                      {slide.imageUrl.startsWith('data:') && (
+                        <Button
+                          type="button"
+                          size="icon"
+                          variant="destructive"
+                          className="absolute top-2 right-2 h-6 w-6"
+                          onClick={() => {
+                            setContent((prev) => ({
+                              ...prev,
+                              home: {
+                                ...prev.home,
+                                heroCarousel: {
+                                  ...prev.home.heroCarousel,
+                                  slides: prev.home.heroCarousel.slides.map((s, i) =>
+                                    i === index ? { ...s, imageUrl: "" } : s,
+                                  ),
+                                },
+                              },
+                            }));
+                          }}
+                        >
+                          <X className="h-3 w-3" />
+                        </Button>
+                      )}
+                    </div>
+                  )}
+                  <div className="flex gap-2">
+                    <Input
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      id={`carousel-image-upload-${index}`}
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          const reader = new FileReader();
+                          reader.onloadend = () => {
+                            const base64String = reader.result as string;
+                            setContent((prev) => ({
+                              ...prev,
+                              home: {
+                                ...prev.home,
+                                heroCarousel: {
+                                  ...prev.home.heroCarousel,
+                                  slides: prev.home.heroCarousel.slides.map((s, i) =>
+                                    i === index ? { ...s, imageUrl: base64String } : s,
+                                  ),
+                                },
+                              },
+                            }));
+                          };
+                          reader.readAsDataURL(file);
+                        }
+                        // Reset input
+                        e.target.value = '';
+                      }}
+                    />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      className="flex items-center gap-2"
+                      onClick={() => {
+                        document.getElementById(`carousel-image-upload-${index}`)?.click();
+                      }}
+                    >
+                      <Upload className="h-4 w-4" />
+                      Upload Image
+                    </Button>
+                  </div>
+                  <div className="text-xs text-muted-foreground mt-1">
+                    Or enter image URL:
+                  </div>
+                  <Input
+                    value={slide.imageUrl.startsWith('data:') ? '' : slide.imageUrl}
+                    onChange={(e) => {
+                      setContent((prev) => ({
+                        ...prev,
+                        home: {
+                          ...prev.home,
+                          heroCarousel: {
+                            ...prev.home.heroCarousel,
+                            slides: prev.home.heroCarousel.slides.map((s, i) =>
+                              i === index ? { ...s, imageUrl: e.target.value } : s,
+                            ),
+                          },
+                        },
+                      }));
+                    }}
+                    placeholder="/src/assets/image.jpg or https://..."
+                    disabled={slide.imageUrl.startsWith('data:')}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>Title</Label>
+                  <Input
+                    value={slide.title}
+                    onChange={(e) => {
+                      setContent((prev) => ({
+                        ...prev,
+                        home: {
+                          ...prev.home,
+                          heroCarousel: {
+                            ...prev.home.heroCarousel,
+                            slides: prev.home.heroCarousel.slides.map((s, i) =>
+                              i === index ? { ...s, title: e.target.value } : s,
+                            ),
+                          },
+                        },
+                      }));
+                    }}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>Subtitle</Label>
+                  <Textarea
+                    value={slide.subtitle}
+                    onChange={(e) => {
+                      setContent((prev) => ({
+                        ...prev,
+                        home: {
+                          ...prev.home,
+                          heroCarousel: {
+                            ...prev.home.heroCarousel,
+                            slides: prev.home.heroCarousel.slides.map((s, i) =>
+                              i === index ? { ...s, subtitle: e.target.value } : s,
+                            ),
+                          },
+                        },
+                      }));
+                    }}
+                    rows={2}
+                  />
+                </div>
+                <div className="grid gap-3 md:grid-cols-2">
+                  <div className="space-y-2">
+                    <Label>Primary Button Text</Label>
+                    <Input
+                      value={slide.primaryButtonText}
+                      onChange={(e) => {
+                        setContent((prev) => ({
+                          ...prev,
+                          home: {
+                            ...prev.home,
+                            heroCarousel: {
+                              ...prev.home.heroCarousel,
+                              slides: prev.home.heroCarousel.slides.map((s, i) =>
+                                i === index ? { ...s, primaryButtonText: e.target.value } : s,
+                              ),
+                            },
+                          },
+                        }));
+                      }}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Primary Button Link</Label>
+                    <Input
+                      value={slide.primaryButtonLink}
+                      onChange={(e) => {
+                        setContent((prev) => ({
+                          ...prev,
+                          home: {
+                            ...prev.home,
+                            heroCarousel: {
+                              ...prev.home.heroCarousel,
+                              slides: prev.home.heroCarousel.slides.map((s, i) =>
+                                i === index ? { ...s, primaryButtonLink: e.target.value } : s,
+                              ),
+                            },
+                          },
+                        }));
+                      }}
+                      placeholder="/admissions"
+                    />
+                  </div>
+                </div>
+                <div className="grid gap-3 md:grid-cols-2">
+                  <div className="space-y-2">
+                    <Label>Secondary Button Text</Label>
+                    <Input
+                      value={slide.secondaryButtonText}
+                      onChange={(e) => {
+                        setContent((prev) => ({
+                          ...prev,
+                          home: {
+                            ...prev.home,
+                            heroCarousel: {
+                              ...prev.home.heroCarousel,
+                              slides: prev.home.heroCarousel.slides.map((s, i) =>
+                                i === index ? { ...s, secondaryButtonText: e.target.value } : s,
+                              ),
+                            },
+                          },
+                        }));
+                      }}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Secondary Button Link</Label>
+                    <Input
+                      value={slide.secondaryButtonLink}
+                      onChange={(e) => {
+                        setContent((prev) => ({
+                          ...prev,
+                          home: {
+                            ...prev.home,
+                            heroCarousel: {
+                              ...prev.home.heroCarousel,
+                              slides: prev.home.heroCarousel.slides.map((s, i) =>
+                                i === index ? { ...s, secondaryButtonLink: e.target.value } : s,
+                              ),
+                            },
+                          },
+                        }));
+                      }}
+                      placeholder="/about"
+                    />
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+          <Button type="button" variant="outline" className="flex items-center gap-2" onClick={() => {
+            setContent((prev) => ({
+              ...prev,
+              home: {
+                ...prev.home,
+                heroCarousel: {
+                  ...prev.home.heroCarousel,
+                  slides: [
+                    ...prev.home.heroCarousel.slides,
+                    {
+                      imageUrl: "",
+                      title: "",
+                      subtitle: "",
+                      primaryButtonText: "Enroll Now",
+                      primaryButtonLink: "/admissions",
+                      secondaryButtonText: "Learn More",
+                      secondaryButtonLink: "/about",
+                    },
+                  ],
+                },
+              },
+            }));
+          }}>
+            <Plus className="h-4 w-4" />
+            Add Slide
+          </Button>
+        </CardContent>
+      </Card>
+      <Card 
+        className="shadow-soft"
+        onMouseEnter={() => setActiveSubSection('hero-video')}
+        onFocus={() => setActiveSubSection('hero-video')}
+      >
+        <CardHeader>
+          <CardTitle>Home Hero &amp; Video</CardTitle>
+          <CardDescription>
+            Main heading and subheading used in the Home "Learn English" section and director&apos;s desk video.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="heroTitle">Hero Title</Label>
+            <Input
+              id="heroTitle"
+              value={content.home.heroTitle}
+              onChange={(e) =>
+                setContent((prev) => ({
+                  ...prev,
+                  home: { ...prev.home, heroTitle: e.target.value },
+                }))
+              }
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="heroSubtitle">Hero Subtitle</Label>
+            <Input
+              id="heroSubtitle"
+              value={content.home.heroSubtitle}
+              onChange={(e) =>
+                setContent((prev) => ({
+                  ...prev,
+                  home: { ...prev.home, heroSubtitle: e.target.value },
+                }))
+              }
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="directorVideoUrl">Director&apos;s Desk Video URL</Label>
+            <Input
+              id="directorVideoUrl"
+              value={content.home.directorVideoUrl}
+              onChange={(e) =>
+                setContent((prev) => ({
+                  ...prev,
+                  home: { ...prev.home, directorVideoUrl: e.target.value },
+                }))
+              }
+              placeholder="https://www.youtube.com/embed/..."
+            />
+          </div>
+        </CardContent>
+      </Card>
+
+
+
+      <Card 
+        className="shadow-soft"
+        onMouseEnter={() => setActiveSubSection('features')}
+        onFocus={() => setActiveSubSection('features')}
+      >
+        <CardHeader>
+          <CardTitle>Features</CardTitle>
+          <CardDescription>Cards shown in the "Why Choose Us?" section on the home page.</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="space-y-4">
+            {content.home.features.map((feature, index) => (
+              <div key={index} className="space-y-3 rounded-lg border p-4">
+                <div className="flex items-center justify-between gap-2">
                   <Label className="text-xs uppercase tracking-wide text-muted-foreground">Feature {index + 1}</Label>
                   <Button type="button" size="icon" variant="ghost" onClick={() => removeFeature(index)}>
-                                                    <Trash2 className="h-4 w-4" />
-                                                </Button>
-                                            </div>
-                                            <div className="space-y-2">
-                                                <Label>Title</Label>
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
+                <div className="space-y-2">
+                  <Label>Title</Label>
                   <Input value={feature.title} onChange={(e) => handleFeatureChange(index, "title", e.target.value)} />
-                                            </div>
-                                            <div className="space-y-2">
-                                                <Label>Description</Label>
-                                                <Textarea
-                                                    value={feature.description}
+                </div>
+                <div className="space-y-2">
+                  <Label>Description</Label>
+                  <Textarea
+                    value={feature.description}
                     onChange={(e) => handleFeatureChange(index, "description", e.target.value)}
-                                                    rows={3}
-                                                />
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
+                    rows={3}
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
           <Button type="button" variant="outline" className="flex items-center gap-2" onClick={addFeature}>
-                                    <Plus className="h-4 w-4" />
-                                    Add Feature
-                                </Button>
-                            </CardContent>
-                        </Card>
+            <Plus className="h-4 w-4" />
+            Add Feature
+          </Button>
+        </CardContent>
+      </Card>
 
-                        <Card className="shadow-soft">
-                            <CardHeader>
-                                <CardTitle>Testimonials</CardTitle>
+      <Card 
+        className="shadow-soft"
+        onMouseEnter={() => setActiveSubSection('testimonials')}
+        onFocus={() => setActiveSubSection('testimonials')}
+      >
+        <CardHeader>
+          <CardTitle>Testimonials</CardTitle>
           <CardDescription>Items shown in the home page "Student Success Stories" section.</CardDescription>
-                            </CardHeader>
-                            <CardContent className="space-y-4">
-                                <div className="space-y-4">
-                                    {content.home.testimonials.map((testimonial, index) => (
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="space-y-4">
+            {content.home.testimonials.map((testimonial, index) => (
               <div key={index} className="space-y-3 rounded-lg border p-4">
-                                            <div className="flex items-center justify-between gap-2">
+                <div className="flex items-center justify-between gap-2">
                   <Label className="text-xs uppercase tracking-wide text-muted-foreground">Testimonial {index + 1}</Label>
                   <Button type="button" size="icon" variant="ghost" onClick={() => removeTestimonial(index)}>
-                                                    <Trash2 className="h-4 w-4" />
-                                                </Button>
-                                            </div>
-                                            <div className="grid gap-3 md:grid-cols-2">
-                                                <div className="space-y-2">
-                                                    <Label>Name</Label>
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
+                <div className="grid gap-3 md:grid-cols-2">
+                  <div className="space-y-2">
+                    <Label>Name</Label>
                     <Input value={testimonial.name} onChange={(e) => handleTestimonialChange(index, "name", e.target.value)} />
-                                                </div>
-                                                <div className="space-y-2">
-                                                    <Label>Role</Label>
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Role</Label>
                     <Input value={testimonial.role} onChange={(e) => handleTestimonialChange(index, "role", e.target.value)} />
-                                                </div>
-                                            </div>
-                                            <div className="space-y-2">
-                                                <Label>Content</Label>
-                                                <Textarea
-                                                    value={testimonial.content}
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Label>Content</Label>
+                  <Textarea
+                    value={testimonial.content}
                     onChange={(e) => handleTestimonialChange(index, "content", e.target.value)}
-                                                    rows={3}
-                                                />
-                                            </div>
-                                            <div className="space-y-2">
-                                                <Label>Rating (1-5)</Label>
-                                                <Input
-                                                    type="number"
-                                                    min={1}
-                                                    max={5}
-                                                    value={testimonial.rating ?? ""}
+                    rows={3}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>Rating (1-5)</Label>
+                  <Input
+                    type="number"
+                    min={1}
+                    max={5}
+                    value={testimonial.rating ?? ""}
                     onChange={(e) => handleTestimonialChange(index, "rating", e.target.value)}
-                                                />
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
           <Button type="button" variant="outline" className="flex items-center gap-2" onClick={addTestimonial}>
-                                    <Plus className="h-4 w-4" />
-                                    Add Testimonial
-                                </Button>
-                            </CardContent>
-                        </Card>
+            <Plus className="h-4 w-4" />
+            Add Testimonial
+          </Button>
+        </CardContent>
+      </Card>
 
-                        <Card className="shadow-soft">
-                            <CardHeader>
-                                <CardTitle>Call to Action</CardTitle>
+      <Card 
+        className="shadow-soft"
+        onMouseEnter={() => setActiveSubSection('cta')}
+        onFocus={() => setActiveSubSection('cta')}
+      >
+        <CardHeader>
+          <CardTitle>Call to Action</CardTitle>
           <CardDescription>Text shown in the "Ready to Transform Your Future?" section at the bottom of the home page.</CardDescription>
-                            </CardHeader>
-                            <CardContent className="space-y-4">
-                                <div className="space-y-2">
-                                    <Label htmlFor="ctaTitle">CTA Title</Label>
-                                    <Input
-                                        id="ctaTitle"
-                                        value={content.home.ctaTitle}
-                                        onChange={(e) =>
-                                            setContent((prev) => ({
-                                                ...prev,
-                                                home: { ...prev.home, ctaTitle: e.target.value },
-                                            }))
-                                        }
-                                    />
-                                </div>
-                                <div className="space-y-2">
-                                    <Label htmlFor="ctaText">CTA Text</Label>
-                                    <Textarea
-                                        id="ctaText"
-                                        value={content.home.ctaText}
-                                        onChange={(e) =>
-                                            setContent((prev) => ({
-                                                ...prev,
-                                                home: { ...prev.home, ctaText: e.target.value },
-                                            }))
-                                        }
-                                        rows={3}
-                                    />
-                                </div>
-                            </CardContent>
-                        </Card>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="ctaTitle">CTA Title</Label>
+            <Input
+              id="ctaTitle"
+              value={content.home.ctaTitle}
+              onChange={(e) =>
+                setContent((prev) => ({
+                  ...prev,
+                  home: { ...prev.home, ctaTitle: e.target.value },
+                }))
+              }
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="ctaText">CTA Text</Label>
+            <Textarea
+              id="ctaText"
+              value={content.home.ctaText}
+              onChange={(e) =>
+                setContent((prev) => ({
+                  ...prev,
+                  home: { ...prev.home, ctaText: e.target.value },
+                }))
+              }
+              rows={3}
+            />
+          </div>
+        </CardContent>
+      </Card>
     </>
   );
 
   const renderHeaderEditor = () => (
     <>
-                        <Card className="shadow-soft">
-                            <CardHeader>
-                                <CardTitle>Header</CardTitle>
+      <Card className="shadow-soft">
+        <CardHeader>
+          <CardTitle>Header</CardTitle>
           <CardDescription>Control the site title shown next to the logo.</CardDescription>
-                            </CardHeader>
-                            <CardContent className="space-y-4">
-                                <div className="space-y-2">
-                                    <Label htmlFor="siteTitle">Site Title</Label>
-                                    <Input
-                                        id="siteTitle"
-                                        value={content.header.siteTitle}
-                                        onChange={(e) =>
-                                            setContent((prev) => ({
-                                                ...prev,
-                                                header: { ...prev.header, siteTitle: e.target.value },
-                                            }))
-                                        }
-                                    />
-                                </div>
-                            </CardContent>
-                        </Card>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="siteTitle">Site Title</Label>
+            <Input
+              id="siteTitle"
+              value={content.header.siteTitle}
+              onChange={(e) =>
+                setContent((prev) => ({
+                  ...prev,
+                  header: { ...prev.header, siteTitle: e.target.value },
+                }))
+              }
+            />
+          </div>
+        </CardContent>
+      </Card>
 
-                        <Card className="shadow-soft">
-                            <CardHeader>
-                                <CardTitle>Navigation Links</CardTitle>
+      <Card className="shadow-soft">
+        <CardHeader>
+          <CardTitle>Navigation Links</CardTitle>
           <CardDescription>Links shown in the main navigation bar.</CardDescription>
-                            </CardHeader>
-                            <CardContent className="space-y-4">
-                                <div className="space-y-4">
-                                    {content.header.nav.map((item, index) => (
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="space-y-4">
+            {content.header.nav.map((item, index) => (
               <div key={index} className="space-y-3 rounded-lg border p-4">
-                                            <div className="flex items-center justify-between gap-2">
+                <div className="flex items-center justify-between gap-2">
                   <Label className="text-xs uppercase tracking-wide text-muted-foreground">Link {index + 1}</Label>
                   <Button type="button" size="icon" variant="ghost" onClick={() => removeNavItem(index)}>
-                                                    <Trash2 className="h-4 w-4" />
-                                                </Button>
-                                            </div>
-                                            <div className="grid gap-3 md:grid-cols-2">
-                                                <div className="space-y-2">
-                                                    <Label>Label</Label>
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
+                <div className="grid gap-3 md:grid-cols-2">
+                  <div className="space-y-2">
+                    <Label>Label</Label>
                     <Input value={item.label} onChange={(e) => handleNavChange(index, "label", e.target.value)} />
-                                                </div>
-                                                <div className="space-y-2">
-                                                    <Label>Path</Label>
-                                                    <Input
-                                                        value={item.to}
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Path</Label>
+                    <Input
+                      value={item.to}
                       onChange={(e) => handleNavChange(index, "to", e.target.value)}
-                                                        placeholder="/about"
-                                                    />
-                                                </div>
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
+                      placeholder="/about"
+                    />
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
           <Button type="button" variant="outline" className="flex items-center gap-2" onClick={addNavItem}>
-                                    <Plus className="h-4 w-4" />
-                                    Add Nav Item
-                                </Button>
-                            </CardContent>
-                        </Card>
+            <Plus className="h-4 w-4" />
+            Add Nav Item
+          </Button>
+        </CardContent>
+      </Card>
     </>
   );
 
   const renderFooterEditor = () => (
     <>
-                        <Card className="shadow-soft">
-                            <CardHeader>
-                                <CardTitle>Footer</CardTitle>
-          <CardDescription>Main footer copyright text.</CardDescription>
-                            </CardHeader>
-                            <CardContent className="space-y-4">
-                                <div className="space-y-2">
-                                    <Label htmlFor="footerCopy">Copyright</Label>
-                                    <Input
-                                        id="footerCopy"
-                                        value={content.footer.copyright}
-                                        onChange={(e) =>
-                                            setContent((prev) => ({
-                                                ...prev,
-                                                footer: { ...prev.footer, copyright: e.target.value },
-                                            }))
-                                        }
-                                    />
-                                </div>
-                            </CardContent>
-                        </Card>
+      <Card className="shadow-soft">
+        <CardHeader>
+          <CardTitle>Footer - Institute Info</CardTitle>
+          <CardDescription>Main footer institute name and tagline.</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="footerInstituteName">Institute Name</Label>
+            <Input
+              id="footerInstituteName"
+              value={content.footer.instituteName}
+              onChange={(e) =>
+                setContent((prev) => ({
+                  ...prev,
+                  footer: { ...prev.footer, instituteName: e.target.value },
+                }))
+              }
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="footerTagline">Tagline</Label>
+            <Textarea
+              id="footerTagline"
+              value={content.footer.tagline}
+              onChange={(e) =>
+                setContent((prev) => ({
+                  ...prev,
+                  footer: { ...prev.footer, tagline: e.target.value },
+                }))
+              }
+              rows={2}
+            />
+          </div>
+        </CardContent>
+      </Card>
 
-                        <Card className="shadow-soft">
-                            <CardHeader>
-                                <CardTitle>Advanced JSON</CardTitle>
+      <Card className="shadow-soft">
+        <CardHeader>
+          <CardTitle>Social Media Links</CardTitle>
+          <CardDescription>Social media profile URLs for the footer.</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="footerFacebook">Facebook URL</Label>
+            <Input
+              id="footerFacebook"
+              value={content.footer.socialMedia.facebook}
+              onChange={(e) =>
+                setContent((prev) => ({
+                  ...prev,
+                  footer: {
+                    ...prev.footer,
+                    socialMedia: { ...prev.footer.socialMedia, facebook: e.target.value },
+                  },
+                }))
+              }
+              placeholder="https://facebook.com/..."
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="footerTwitter">Twitter URL</Label>
+            <Input
+              id="footerTwitter"
+              value={content.footer.socialMedia.twitter}
+              onChange={(e) =>
+                setContent((prev) => ({
+                  ...prev,
+                  footer: {
+                    ...prev.footer,
+                    socialMedia: { ...prev.footer.socialMedia, twitter: e.target.value },
+                  },
+                }))
+              }
+              placeholder="https://twitter.com/..."
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="footerInstagram">Instagram URL</Label>
+            <Input
+              id="footerInstagram"
+              value={content.footer.socialMedia.instagram}
+              onChange={(e) =>
+                setContent((prev) => ({
+                  ...prev,
+                  footer: {
+                    ...prev.footer,
+                    socialMedia: { ...prev.footer.socialMedia, instagram: e.target.value },
+                  },
+                }))
+              }
+              placeholder="https://instagram.com/..."
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="footerLinkedin">LinkedIn URL</Label>
+            <Input
+              id="footerLinkedin"
+              value={content.footer.socialMedia.linkedin}
+              onChange={(e) =>
+                setContent((prev) => ({
+                  ...prev,
+                  footer: {
+                    ...prev.footer,
+                    socialMedia: { ...prev.footer.socialMedia, linkedin: e.target.value },
+                  },
+                }))
+              }
+              placeholder="https://linkedin.com/..."
+            />
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card className="shadow-soft">
+        <CardHeader>
+          <CardTitle>Quick Links</CardTitle>
+          <CardDescription>Navigation links shown in the footer.</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="space-y-4">
+            {content.footer.quickLinks.map((link, index) => (
+              <div key={index} className="space-y-3 rounded-lg border p-4">
+                <div className="flex items-center justify-between gap-2">
+                  <Label className="text-xs uppercase tracking-wide text-muted-foreground">Link {index + 1}</Label>
+                  <Button
+                    type="button"
+                    size="icon"
+                    variant="ghost"
+                    onClick={() => {
+                      setContent((prev) => ({
+                        ...prev,
+                        footer: {
+                          ...prev.footer,
+                          quickLinks: prev.footer.quickLinks.filter((_, i) => i !== index),
+                        },
+                      }));
+                    }}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
+                <div className="grid gap-3 md:grid-cols-2">
+                  <div className="space-y-2">
+                    <Label>Label</Label>
+                    <Input
+                      value={link.label}
+                      onChange={(e) => {
+                        setContent((prev) => ({
+                          ...prev,
+                          footer: {
+                            ...prev.footer,
+                            quickLinks: prev.footer.quickLinks.map((l, i) =>
+                              i === index ? { ...l, label: e.target.value } : l,
+                            ),
+                          },
+                        }));
+                      }}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>URL Path</Label>
+                    <Input
+                      value={link.to}
+                      onChange={(e) => {
+                        setContent((prev) => ({
+                          ...prev,
+                          footer: {
+                            ...prev.footer,
+                            quickLinks: prev.footer.quickLinks.map((l, i) =>
+                              i === index ? { ...l, to: e.target.value } : l,
+                            ),
+                          },
+                        }));
+                      }}
+                      placeholder="/about"
+                    />
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+          <Button
+            type="button"
+            variant="outline"
+            className="flex items-center gap-2"
+            onClick={() => {
+              setContent((prev) => ({
+                ...prev,
+                footer: {
+                  ...prev.footer,
+                  quickLinks: [...prev.footer.quickLinks, { label: "", to: "" }],
+                },
+              }));
+            }}
+          >
+            <Plus className="h-4 w-4" />
+            Add Quick Link
+          </Button>
+        </CardContent>
+      </Card>
+
+      <Card className="shadow-soft">
+        <CardHeader>
+          <CardTitle>Courses List</CardTitle>
+          <CardDescription>Course names displayed in the footer.</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="space-y-4">
+            {content.footer.courses.map((course, index) => (
+              <div key={index} className="flex items-center gap-2">
+                <Input
+                  value={course}
+                  onChange={(e) => {
+                    setContent((prev) => ({
+                      ...prev,
+                      footer: {
+                        ...prev.footer,
+                        courses: prev.footer.courses.map((c, i) => (i === index ? e.target.value : c)),
+                      },
+                    }));
+                  }}
+                />
+                <Button
+                  type="button"
+                  size="icon"
+                  variant="ghost"
+                  onClick={() => {
+                    setContent((prev) => ({
+                      ...prev,
+                      footer: {
+                        ...prev.footer,
+                        courses: prev.footer.courses.filter((_, i) => i !== index),
+                      },
+                    }));
+                  }}
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </div>
+            ))}
+          </div>
+          <Button
+            type="button"
+            variant="outline"
+            className="flex items-center gap-2"
+            onClick={() => {
+              setContent((prev) => ({
+                ...prev,
+                footer: {
+                  ...prev.footer,
+                  courses: [...prev.footer.courses, ""],
+                },
+              }));
+            }}
+          >
+            <Plus className="h-4 w-4" />
+            Add Course
+          </Button>
+        </CardContent>
+      </Card>
+
+      <Card className="shadow-soft">
+        <CardHeader>
+          <CardTitle>Contact Information</CardTitle>
+          <CardDescription>Contact details displayed in the footer.</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="footerAddress">Address</Label>
+            <Textarea
+              id="footerAddress"
+              value={content.footer.contact.address}
+              onChange={(e) =>
+                setContent((prev) => ({
+                  ...prev,
+                  footer: {
+                    ...prev.footer,
+                    contact: { ...prev.footer.contact, address: e.target.value },
+                  },
+                }))
+              }
+              rows={2}
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="footerPhone">Phone</Label>
+            <Input
+              id="footerPhone"
+              value={content.footer.contact.phone}
+              onChange={(e) =>
+                setContent((prev) => ({
+                  ...prev,
+                  footer: {
+                    ...prev.footer,
+                    contact: { ...prev.footer.contact, phone: e.target.value },
+                  },
+                }))
+              }
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="footerEmail">Email</Label>
+            <Input
+              id="footerEmail"
+              type="email"
+              value={content.footer.contact.email}
+              onChange={(e) =>
+                setContent((prev) => ({
+                  ...prev,
+                  footer: {
+                    ...prev.footer,
+                    contact: { ...prev.footer.contact, email: e.target.value },
+                  },
+                }))
+              }
+            />
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card className="shadow-soft">
+        <CardHeader>
+          <CardTitle>Copyright</CardTitle>
+          <CardDescription>Copyright text displayed at the bottom of the footer.</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="footerCopy">Copyright Text</Label>
+            <Input
+              id="footerCopy"
+              value={content.footer.copyright}
+              onChange={(e) =>
+                setContent((prev) => ({
+                  ...prev,
+                  footer: { ...prev.footer, copyright: e.target.value },
+                }))
+              }
+            />
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card className="shadow-soft">
+        <CardHeader>
+          <CardTitle>Advanced JSON</CardTitle>
           <CardDescription>Export or import the entire site content JSON. Useful for backups or migrating content.</CardDescription>
-                            </CardHeader>
-                            <CardContent className="space-y-4">
-                                <div className="space-y-2">
-                                    <Label htmlFor="jsonContent">Site Content JSON</Label>
-                                    <Textarea
-                                        id="jsonContent"
-                                        value={jsonValue}
-                                        onChange={(e) => setJsonValue(e.target.value)}
-                                        rows={10}
-                                        placeholder="Click Export JSON to view the current configuration..."
-                                    />
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="jsonContent">Site Content JSON</Label>
+            <Textarea
+              id="jsonContent"
+              value={jsonValue}
+              onChange={(e) => setJsonValue(e.target.value)}
+              rows={10}
+              placeholder="Click Export JSON to view the current configuration..."
+            />
             {importError && <p className="mt-1 text-sm text-destructive">{importError}</p>}
-                                </div>
-                                <div className="flex flex-wrap gap-3">
+          </div>
+          <div className="flex flex-wrap gap-3">
             <Button type="button" variant="outline" className="flex items-center gap-2" onClick={handleExport}>
-                                        <Download className="h-4 w-4" />
-                                        Export JSON
-                                    </Button>
+              <Download className="h-4 w-4" />
+              Export JSON
+            </Button>
             <Button type="button" className="flex items-center gap-2" onClick={handleImport}>
-                                        <Upload className="h-4 w-4" />
-                                        Import JSON
-                                    </Button>
-                                </div>
-                            </CardContent>
-                        </Card>
+              <Upload className="h-4 w-4" />
+              Import JSON
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
     </>
   );
 
@@ -1446,121 +2136,121 @@ const Admin = () => {
 
     return (
       <>
-      <Card className="shadow-soft">
-        <CardHeader>
-          <CardTitle>Success Stories Hero</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <Input placeholder="Title" value={successStories.hero.title} onChange={(e) => handleSuccessHeroChange("title", e.target.value)} />
-          <Textarea rows={2} placeholder="Subtitle" value={successStories.hero.subtitle} onChange={(e) => handleSuccessHeroChange("subtitle", e.target.value)} />
-        </CardContent>
-      </Card>
+        <Card className="shadow-soft">
+          <CardHeader>
+            <CardTitle>Success Stories Hero</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <Input placeholder="Title" value={successStories.hero.title} onChange={(e) => handleSuccessHeroChange("title", e.target.value)} />
+            <Textarea rows={2} placeholder="Subtitle" value={successStories.hero.subtitle} onChange={(e) => handleSuccessHeroChange("subtitle", e.target.value)} />
+          </CardContent>
+        </Card>
 
-      <Card className="shadow-soft">
-        <CardHeader>
-          <CardTitle>Stats</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {successStories.stats.map((stat, index) => (
-            <div key={index} className="rounded border p-4 space-y-2">
-              <div className="flex items-center justify-between">
-                <Label>Stat {index + 1}</Label>
-                <Button variant="ghost" size="icon" onClick={() => handleRemoveSuccessStat(index)}>
-                  <Trash2 className="h-4 w-4" />
-                </Button>
-              </div>
-              <Input placeholder="Value" value={stat.value} onChange={(e) => handleSuccessStatChange(index, "value", e.target.value)} />
-              <Input placeholder="Label" value={stat.label} onChange={(e) => handleSuccessStatChange(index, "label", e.target.value)} />
-            </div>
-          ))}
-          <Button variant="outline" className="flex items-center gap-2" onClick={handleAddSuccessStat}>
-            <Plus className="h-4 w-4" />
-            Add Stat
-          </Button>
-        </CardContent>
-      </Card>
-
-      <Card className="shadow-soft">
-        <CardHeader>
-          <CardTitle>Testimonials</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {successStories.stories.map((story, index) => (
-            <div key={index} className="border rounded-lg p-4 space-y-2">
-              <div className="flex items-center justify-between">
-                <Label>Story {index + 1}</Label>
-                <Button variant="ghost" size="icon" onClick={() => handleRemoveSuccessStory(index)}>
-                  <Trash2 className="h-4 w-4" />
-                </Button>
-              </div>
-              <Input placeholder="Name" value={story.name} onChange={(e) => handleSuccessStoryChange(index, "name", e.target.value)} />
-              <Input placeholder="Role" value={story.role} onChange={(e) => handleSuccessStoryChange(index, "role", e.target.value)} />
-              <Textarea rows={3} placeholder="Content" value={story.content} onChange={(e) => handleSuccessStoryChange(index, "content", e.target.value)} />
-              <Input type="number" min={1} max={5} placeholder="Rating" value={story.rating} onChange={(e) => handleSuccessStoryChange(index, "rating", Number(e.target.value))} />
-              <Input placeholder="Achievement" value={story.achievement ?? ""} onChange={(e) => handleSuccessStoryChange(index, "achievement", e.target.value)} />
-            </div>
-          ))}
-          <Button variant="outline" className="flex items-center gap-2" onClick={handleAddSuccessStory}>
-            <Plus className="h-4 w-4" />
-            Add Story
-          </Button>
-        </CardContent>
-      </Card>
-
-      {renderSimpleStringList(
-        "Achievements",
-        "Bullets shown in the notable achievements list.",
-        successStories.achievements,
-        (next) =>
-          setContent((prev) => ({
-            ...prev,
-            successStories: { ...prev.successStories, achievements: next },
-          })),
-      )}
-
-      <Card className="shadow-soft">
-        <CardHeader>
-          <CardTitle>Video Section</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-3">
-          <Textarea rows={2} placeholder="Description" value={successStories.video.description} onChange={(e) => handleSuccessVideoChange("description", e.target.value)} />
-          <div className="grid gap-4 md:grid-cols-2">
-            <Input placeholder="Link Text" value={successStories.video.linkText} onChange={(e) => handleSuccessVideoChange("linkText", e.target.value)} />
-            <Input placeholder="Link URL" value={successStories.video.linkUrl} onChange={(e) => handleSuccessVideoChange("linkUrl", e.target.value)} />
-          </div>
-          <Textarea rows={2} placeholder="Note" value={successStories.video.note} onChange={(e) => handleSuccessVideoChange("note", e.target.value)} />
-        </CardContent>
-      </Card>
-
-      <Card className="shadow-soft">
-        <CardHeader>
-          <CardTitle>Call to Action</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-3">
-          <Input placeholder="Title" value={successStories.cta.title} onChange={(e) => handleSuccessCtaChange("title", e.target.value)} />
-          <Textarea rows={2} placeholder="Description" value={successStories.cta.description} onChange={(e) => handleSuccessCtaChange("description", e.target.value)} />
-          <div className="grid gap-4 md:grid-cols-2">
-            <Input placeholder="Phone Label" value={successStories.cta.phoneLabel} onChange={(e) => handleSuccessCtaChange("phoneLabel", e.target.value)} />
-            <Input placeholder="Phone Number" value={successStories.cta.phoneNumber} onChange={(e) => handleSuccessCtaChange("phoneNumber", e.target.value)} />
-          </div>
-          <div className="space-y-2">
-            <Label>Review Links</Label>
-            {successStories.cta.reviewLinks.map((link, index) => (
-              <div key={index} className="grid gap-3 md:grid-cols-[1fr,2fr,auto] items-center">
-                <Input placeholder="Label" value={link.label} onChange={(e) => handleSuccessReviewLinkChange(index, "label", e.target.value)} />
-                <Input placeholder="URL" value={link.url} onChange={(e) => handleSuccessReviewLinkChange(index, "url", e.target.value)} />
-                <Button variant="ghost" size="icon" onClick={() => handleRemoveSuccessReviewLink(index)}>
-                  <Trash2 className="h-4 w-4" />
-                </Button>
+        <Card className="shadow-soft">
+          <CardHeader>
+            <CardTitle>Stats</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {successStories.stats.map((stat, index) => (
+              <div key={index} className="rounded border p-4 space-y-2">
+                <div className="flex items-center justify-between">
+                  <Label>Stat {index + 1}</Label>
+                  <Button variant="ghost" size="icon" onClick={() => handleRemoveSuccessStat(index)}>
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
+                <Input placeholder="Value" value={stat.value} onChange={(e) => handleSuccessStatChange(index, "value", e.target.value)} />
+                <Input placeholder="Label" value={stat.label} onChange={(e) => handleSuccessStatChange(index, "label", e.target.value)} />
               </div>
             ))}
-            <Button variant="outline" className="flex items-center gap-2" onClick={handleAddSuccessReviewLink}>
+            <Button variant="outline" className="flex items-center gap-2" onClick={handleAddSuccessStat}>
               <Plus className="h-4 w-4" />
-              Add Link
+              Add Stat
             </Button>
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+
+        <Card className="shadow-soft">
+          <CardHeader>
+            <CardTitle>Testimonials</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {successStories.stories.map((story, index) => (
+              <div key={index} className="border rounded-lg p-4 space-y-2">
+                <div className="flex items-center justify-between">
+                  <Label>Story {index + 1}</Label>
+                  <Button variant="ghost" size="icon" onClick={() => handleRemoveSuccessStory(index)}>
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
+                <Input placeholder="Name" value={story.name} onChange={(e) => handleSuccessStoryChange(index, "name", e.target.value)} />
+                <Input placeholder="Role" value={story.role} onChange={(e) => handleSuccessStoryChange(index, "role", e.target.value)} />
+                <Textarea rows={3} placeholder="Content" value={story.content} onChange={(e) => handleSuccessStoryChange(index, "content", e.target.value)} />
+                <Input type="number" min={1} max={5} placeholder="Rating" value={story.rating} onChange={(e) => handleSuccessStoryChange(index, "rating", Number(e.target.value))} />
+                <Input placeholder="Achievement" value={story.achievement ?? ""} onChange={(e) => handleSuccessStoryChange(index, "achievement", e.target.value)} />
+              </div>
+            ))}
+            <Button variant="outline" className="flex items-center gap-2" onClick={handleAddSuccessStory}>
+              <Plus className="h-4 w-4" />
+              Add Story
+            </Button>
+          </CardContent>
+        </Card>
+
+        {renderSimpleStringList(
+          "Achievements",
+          "Bullets shown in the notable achievements list.",
+          successStories.achievements,
+          (next) =>
+            setContent((prev) => ({
+              ...prev,
+              successStories: { ...prev.successStories, achievements: next },
+            })),
+        )}
+
+        <Card className="shadow-soft">
+          <CardHeader>
+            <CardTitle>Video Section</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <Textarea rows={2} placeholder="Description" value={successStories.video.description} onChange={(e) => handleSuccessVideoChange("description", e.target.value)} />
+            <div className="grid gap-4 md:grid-cols-2">
+              <Input placeholder="Link Text" value={successStories.video.linkText} onChange={(e) => handleSuccessVideoChange("linkText", e.target.value)} />
+              <Input placeholder="Link URL" value={successStories.video.linkUrl} onChange={(e) => handleSuccessVideoChange("linkUrl", e.target.value)} />
+            </div>
+            <Textarea rows={2} placeholder="Note" value={successStories.video.note} onChange={(e) => handleSuccessVideoChange("note", e.target.value)} />
+          </CardContent>
+        </Card>
+
+        <Card className="shadow-soft">
+          <CardHeader>
+            <CardTitle>Call to Action</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <Input placeholder="Title" value={successStories.cta.title} onChange={(e) => handleSuccessCtaChange("title", e.target.value)} />
+            <Textarea rows={2} placeholder="Description" value={successStories.cta.description} onChange={(e) => handleSuccessCtaChange("description", e.target.value)} />
+            <div className="grid gap-4 md:grid-cols-2">
+              <Input placeholder="Phone Label" value={successStories.cta.phoneLabel} onChange={(e) => handleSuccessCtaChange("phoneLabel", e.target.value)} />
+              <Input placeholder="Phone Number" value={successStories.cta.phoneNumber} onChange={(e) => handleSuccessCtaChange("phoneNumber", e.target.value)} />
+            </div>
+            <div className="space-y-2">
+              <Label>Review Links</Label>
+              {successStories.cta.reviewLinks.map((link, index) => (
+                <div key={index} className="grid gap-3 md:grid-cols-[1fr,2fr,auto] items-center">
+                  <Input placeholder="Label" value={link.label} onChange={(e) => handleSuccessReviewLinkChange(index, "label", e.target.value)} />
+                  <Input placeholder="URL" value={link.url} onChange={(e) => handleSuccessReviewLinkChange(index, "url", e.target.value)} />
+                  <Button variant="ghost" size="icon" onClick={() => handleRemoveSuccessReviewLink(index)}>
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
+              ))}
+              <Button variant="outline" className="flex items-center gap-2" onClick={handleAddSuccessReviewLink}>
+                <Plus className="h-4 w-4" />
+                Add Link
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
       </>
     );
   };
@@ -2045,11 +2735,11 @@ const Admin = () => {
         categories: prev.faq.categories.map((category, i) =>
           i === categoryIndex
             ? {
-                ...category,
-                questions: category.questions.map((question, qi) =>
-                  qi === questionIndex ? { ...question, [field]: value } : question,
-                ),
-              }
+              ...category,
+              questions: category.questions.map((question, qi) =>
+                qi === questionIndex ? { ...question, [field]: value } : question,
+              ),
+            }
             : category,
         ),
       },
@@ -2496,6 +3186,220 @@ const Admin = () => {
     }));
   };
 
+  const renderPreview = () => {
+    try {
+      if (!content) {
+        return (
+          <div className="h-full flex items-center justify-center">
+            <p className="text-muted-foreground">Loading content...</p>
+          </div>
+        );
+      }
+
+      const { home } = content;
+      const featureIcons = [
+        <Target key="icon-0" className="h-6 w-6" />,
+        <Users key="icon-1" className="h-6 w-6" />,
+        <Award key="icon-2" className="h-6 w-6" />,
+        <BookOpen key="icon-3" className="h-6 w-6" />,
+      ];
+
+      switch (selectedSection.id) {
+        case "home":
+          // Preview-safe Hero component (using <a> instead of Link)
+          const heroSlides = home.heroCarousel.slides.map((slide) => ({
+            ...slide,
+            image: slide.imageUrl.startsWith('data:') || slide.imageUrl.startsWith('http') 
+              ? slide.imageUrl 
+              : (imageMap[slide.imageUrl] || slide.imageUrl),
+          }));
+          
+          return (
+            <div ref={previewRef} className="h-full w-full bg-background overflow-auto">
+              <div className="w-full">
+                {/* Hero Carousel Preview */}
+                <div ref={heroCarouselRef} className="relative h-[400px] overflow-hidden">
+                  {heroSlides.map((slide, index) => (
+                    <div
+                      key={index}
+                      className={`absolute inset-0 transition-opacity duration-700 ${
+                        index === 0 ? "opacity-100" : "opacity-0"
+                      }`}
+                    >
+                      <div className="relative h-full">
+                        <img
+                          src={slide.image}
+                          alt={slide.title}
+                          className="w-full h-full object-cover"
+                          onError={(e) => {
+                            (e.target as HTMLImageElement).style.display = 'none';
+                          }}
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-r from-black/70 to-black/30" />
+                        <div className="absolute inset-0 flex items-center">
+                          <div className="container mx-auto px-4">
+                            <div className="max-w-2xl">
+                              <h1 className="text-3xl md:text-5xl font-bold text-white mb-3">
+                                {slide.title}
+                              </h1>
+                              <p className="text-lg md:text-xl text-white/90 mb-6">
+                                {slide.subtitle}
+                              </p>
+                              <div className="flex flex-wrap gap-3">
+                                <Button size="lg" className="gradient-accent" asChild>
+                                  <a href={slide.primaryButtonLink}>
+                                    {slide.primaryButtonText}
+                                  </a>
+                                </Button>
+                                <Button size="lg" variant="outline" className="bg-white/10 backdrop-blur-sm border-white text-white hover:bg-white hover:text-primary" asChild>
+                                  <a href={slide.secondaryButtonLink}>
+                                    {slide.secondaryButtonText}
+                                  </a>
+                                </Button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Features Section */}
+                <section ref={featuresRef} className="py-12 bg-secondary/30">
+                  <div className="container mx-auto px-4">
+                    <div className="text-center mb-8">
+                      <h2 className="text-2xl md:text-3xl font-bold mb-3">Why Choose Us?</h2>
+                      <p className="text-base text-muted-foreground max-w-2xl mx-auto">
+                        We provide quality education with a focus on practical skills and real-world application
+                      </p>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                      {home.features.map((feature, index) => (
+                        <div
+                          key={index}
+                          className="text-center p-4 rounded-lg bg-card shadow-soft hover:shadow-medium transition-all duration-300"
+                        >
+                          <div className="inline-flex h-12 w-12 items-center justify-center rounded-full gradient-hero text-primary-foreground mb-3">
+                            {featureIcons[index] ?? <Target className="h-5 w-5" />}
+                          </div>
+                          <h3 className="text-lg font-bold mb-2">{feature.title}</h3>
+                          <p className="text-sm text-muted-foreground">{feature.description}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </section>
+
+                {/* Learn English + Director's Desk */}
+                <section ref={heroVideoRef} className="py-12">
+                  <div className="container mx-auto px-4">
+                    <h2 className="text-2xl md:text-3xl font-bold text-center mb-8 text-foreground">
+                      {home.heroTitle}
+                    </h2>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+                      <div>
+                        <h3 className="text-xl md:text-2xl font-bold text-foreground leading-tight mb-2">
+                          {home.heroTitle}
+                        </h3>
+                        <p className="text-sm md:text-base text-muted-foreground">
+                          {home.heroSubtitle}
+                        </p>
+                      </div>
+                      <div>
+                        <div className="text-right text-xs md:text-sm font-medium text-muted-foreground mb-2">Director's desk</div>
+                        <div className="rounded-2xl overflow-hidden bg-card shadow-soft">
+                          <div className="aspect-video w-full">
+                            <iframe
+                              src={home.directorVideoUrl}
+                              title="Director's desk video"
+                              className="w-full h-full"
+                              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                              allowFullScreen
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </section>
+
+                {/* Testimonials Section */}
+                <section ref={testimonialsRef} className="py-12 bg-secondary/30">
+                  <div className="container mx-auto px-4">
+                    <div className="text-center mb-8">
+                      <h2 className="text-2xl md:text-3xl font-bold mb-3">Student Success Stories</h2>
+                      <p className="text-base text-muted-foreground max-w-2xl mx-auto">
+                        Hear from our students who transformed their careers and lives
+                      </p>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                      {home.testimonials.map((testimonial, index) => (
+                        <TestimonialCard 
+                          key={index} 
+                          name={testimonial.name}
+                          role={testimonial.role}
+                          content={testimonial.content}
+                          rating={testimonial.rating ?? 5} 
+                        />
+                      ))}
+                    </div>
+                  </div>
+                </section>
+
+                {/* CTA Section */}
+                <section ref={ctaRef} className="py-12">
+                  <div className="container mx-auto px-4">
+                    <div className="gradient-hero rounded-2xl p-8 text-center shadow-medium">
+                      <h2 className="text-2xl md:text-3xl font-bold text-primary-foreground mb-3">
+                        {home.ctaTitle}
+                      </h2>
+                      <p className="text-base text-primary-foreground/90 mb-6 max-w-2xl mx-auto">
+                        {home.ctaText}
+                      </p>
+                      <div className="flex flex-wrap justify-center gap-3">
+                        <Button size="lg" variant="secondary" asChild>
+                          <a href="/contact">Get Started Now</a>
+                        </Button>
+                        <Button size="lg" variant="outline" className="bg-white/10 border-white text-white hover:bg-white hover:text-primary" asChild>
+                          <a href="/about">Learn About Us</a>
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                </section>
+              </div>
+            </div>
+          );
+        case "header":
+          return (
+            <div className="h-full w-full bg-background">
+              <Header />
+            </div>
+          );
+        case "footer":
+          return (
+            <div className="h-full w-full bg-background flex items-end">
+              <Footer />
+            </div>
+          );
+        default:
+          return (
+            <div className="h-full flex items-center justify-center">
+              <p className="text-muted-foreground">Preview not available for this section</p>
+            </div>
+          );
+      }
+    } catch (error) {
+      console.error("Preview error:", error);
+      return (
+        <div className="h-full flex items-center justify-center">
+          <p className="text-destructive">Preview error. Check console.</p>
+        </div>
+      );
+    }
+  };
+
   const renderSectionContent = () => {
     switch (selectedSection.id) {
       case "home":
@@ -2554,7 +3458,7 @@ const Admin = () => {
                       isActive={section.id === selectedSection.id}
                       onClick={() => setActiveSection(section.id)}
                       className="flex items-center gap-2"
-                                        type="button"
+                      type="button"
                     >
                       <section.icon className="h-4 w-4" />
                       <span>{section.label}</span>
@@ -2572,7 +3476,7 @@ const Admin = () => {
                     <SidebarMenuButton
                       isActive={section.id === selectedSection.id}
                       onClick={() => setActiveSection(section.id)}
-                                        className="flex items-center gap-2"
+                      className="flex items-center gap-2"
                       type="button"
                     >
                       <section.icon className="h-4 w-4" />
@@ -2588,57 +3492,71 @@ const Admin = () => {
           </SidebarFooter>
         </Sidebar>
         <SidebarInset className="flex-1">
-          <div className="flex min-h-screen flex-col">
-            <header className="flex flex-wrap items-center justify-between gap-4 border-b px-6 py-4">
-              <div className="flex flex-1 flex-wrap items-center gap-4">
-                <SidebarTrigger className="md:hidden" />
-                <div>
-                  <p className="text-sm font-semibold text-muted-foreground">Admin Panel</p>
-                  <h1 className="text-2xl font-bold tracking-tight">Site Content Manager</h1>
-                  <p className="text-sm text-muted-foreground">Manage content blocks and preview every static page.</p>
+          <div className="flex min-h-screen">
+            {/* Editor Panel - Left Side */}
+            <div className="flex-1 flex flex-col border-r overflow-hidden">
+              <header className="flex flex-wrap items-center justify-between gap-4 border-b px-6 py-4 flex-shrink-0">
+                <div className="flex flex-1 flex-wrap items-center gap-4">
+                  <SidebarTrigger className="md:hidden" />
+                  <div>
+                    <p className="text-sm font-semibold text-muted-foreground">Admin Panel</p>
+                    <h1 className="text-2xl font-bold tracking-tight">Site Content Manager</h1>
+                    <p className="text-sm text-muted-foreground">Manage content blocks and preview every static page.</p>
+                  </div>
                 </div>
-              </div>
-              <div className="flex flex-wrap gap-2">
-                <Button variant="outline" className="flex items-center gap-2" type="button" onClick={handleExport}>
-                                        <Download className="h-4 w-4" />
-                                        Export JSON
-                                    </Button>
-                                    <Button
-                  variant="outline"
+                <div className="flex flex-wrap gap-2">
+                  <Button variant="outline" className="flex items-center gap-2" type="button" onClick={handleExport}>
+                    <Download className="h-4 w-4" />
+                    Export JSON
+                  </Button>
+                  <Button
+                    variant="outline"
+                    className="flex items-center gap-2"
+                    type="button"
+                    onClick={() => resetContent()}
+                  >
+                    <RefreshCw className="h-4 w-4" />
+                    Reset to Defaults
+                  </Button>
+                </div>
+              </header>
+
+              <section className="flex flex-wrap items-center justify-between gap-4 border-b px-6 py-4 flex-shrink-0">
+                <div>
+                  <p className="text-sm font-semibold text-muted-foreground">{selectedSection.label}</p>
+                  <p className="text-sm text-muted-foreground">{selectedSection.description}</p>
+                </div>
+                <Button
                   className="flex items-center gap-2"
-                                        type="button"
-                  onClick={() => resetContent()}
+                  variant={selectedSection.type === "static" ? "outline" : "default"}
+                  type="button"
+                  onClick={handleEditAction}
                 >
-                  <RefreshCw className="h-4 w-4" />
-                  Reset to Defaults
+                  {selectedSection.type === "static" ? <ExternalLink className="h-4 w-4" /> : <PenLine className="h-4 w-4" />}
+                  {selectedSection.type === "static" ? "Open Page" : "Edit Content"}
                 </Button>
-              </div>
-            </header>
+              </section>
 
-            <section className="flex flex-wrap items-center justify-between gap-4 border-b px-6 py-4">
-              <div>
-                <p className="text-sm font-semibold text-muted-foreground">{selectedSection.label}</p>
-                <p className="text-sm text-muted-foreground">{selectedSection.description}</p>
+              <div ref={contentRef} className="flex-1 space-y-6 overflow-y-auto px-6 py-6">
+                {renderSectionContent()}
               </div>
-              <Button
-                                        className="flex items-center gap-2"
-                variant={selectedSection.type === "static" ? "outline" : "default"}
-                type="button"
-                onClick={handleEditAction}
-                                    >
-                {selectedSection.type === "static" ? <ExternalLink className="h-4 w-4" /> : <PenLine className="h-4 w-4" />}
-                {selectedSection.type === "static" ? "Open Page" : "Edit Content"}
-                                    </Button>
-            </section>
-
-            <div ref={contentRef} className="flex-1 space-y-6 overflow-y-auto px-6 py-6">
-              {renderSectionContent()}
-                                </div>
             </div>
+
+            {/* Preview Panel - Right Side */}
+            <div className="w-1/2 border-l bg-background overflow-hidden flex flex-col">
+              <div className="border-b px-4 py-2 flex-shrink-0">
+                <p className="text-sm font-semibold">Live Preview</p>
+                <p className="text-xs text-muted-foreground">See your changes in real-time</p>
+              </div>
+              <div className="flex-1 overflow-hidden relative">
+                {renderPreview()}
+              </div>
+            </div>
+          </div>
         </SidebarInset>
-        </div>
+      </div>
     </SidebarProvider>
-    );
+  );
 };
 
 export default Admin;
