@@ -1,7 +1,8 @@
 import { useState, useEffect, useRef } from "react";
-import type { ReactNode } from "react";
+import type { ReactNode, ChangeEvent } from "react";
 import type { LucideIcon } from "lucide-react";
 import { useContent, DEFAULT_CONTENT } from "@/lib/content";
+import { useToast } from "@/hooks/use-toast";
 import type { SiteContent } from "@/lib/content";
 import heroClassroom from "@/assets/hero-classroom.jpg";
 import speakingConfidence from "@/assets/speaking-confidence.jpg";
@@ -44,7 +45,6 @@ import {
   PanelsTopLeft,
   LayoutTemplate,
   BookOpen,
-  GraduationCap,
   ClipboardCheck,
   Star,
   Image as ImageIcon,
@@ -110,17 +110,17 @@ const adminSections: AdminSection[] = [
     ],
   },
   {
-    id: "courses",
-    label: "Courses",
-    description: "Program catalog and learning outcomes.",
-    icon: GraduationCap,
+    id: "faculty",
+    label: "Faculty",
+    description: "Founder bios and teaching methodology.",
+    icon: Users,
     type: "static",
-    route: "/courses",
-    filePath: "src/pages/Courses.tsx",
+    route: "/faculty",
+    filePath: "src/pages/Faculty.tsx",
     summary: [
-      "Hero outlines the promise behind each program.",
-      "Course cards showcase six flagship offerings with duration, level, and student counts.",
-      "Benefits grid plus topic breakdown for Spoken English, Personality Development, and Business Communication.",
+      "Hero spotlights founder-led approach (no franchises, no branches).",
+      "Detailed cards for Ashish, Pragna, and Aditya with badges and achievements.",
+      "Teaching methodology grid plus promise block describing support expectations.",
     ],
   },
   {
@@ -208,20 +208,6 @@ const adminSections: AdminSection[] = [
     ],
   },
   {
-    id: "faculty",
-    label: "Faculty",
-    description: "Founder bios and teaching methodology.",
-    icon: Users,
-    type: "static",
-    route: "/faculty",
-    filePath: "src/pages/Faculty.tsx",
-    summary: [
-      "Hero spotlights founder-led approach (no franchises, no branches).",
-      "Detailed cards for Ashish, Pragna, and Aditya with badges and achievements.",
-      "Teaching methodology grid plus promise block describing support expectations.",
-    ],
-  },
-  {
     id: "not-found",
     label: "404 Page",
     description: "Fallback screen for unknown routes.",
@@ -243,8 +229,15 @@ const imageMap: Record<string, string> = {
   "/src/assets/student-success.jpg": studentSuccess,
 };
 
+const resolveGalleryImageSrc = (src: string) => {
+  if (!src) return "";
+  if (src.startsWith("data:") || src.startsWith("http")) return src;
+  return imageMap[src] || src;
+};
+
 const Admin = () => {
     const { content, setContent, resetContent, exportJSON, importJSON } = useContent();
+    const { toast } = useToast();
     const [jsonValue, setJsonValue] = useState("");
     const [importError, setImportError] = useState<string | null>(null);
   const [activeSection, setActiveSection] = useState<AdminSection["id"]>("home");
@@ -262,10 +255,20 @@ const Admin = () => {
       }
     `;
     document.head.appendChild(style);
+
+    // Lock window scroll for admin page
+    const prevHtmlOverflow = document.documentElement.style.overflow;
+    const prevBodyOverflow = document.body.style.overflow;
+    document.documentElement.style.overflow = 'hidden';
+    document.body.style.overflow = 'hidden';
+
     return () => {
       if (document.head.contains(style)) {
         document.head.removeChild(style);
       }
+      // Restore window scroll
+      document.documentElement.style.overflow = prevHtmlOverflow;
+      document.body.style.overflow = prevBodyOverflow;
     };
   }, []);
 
@@ -383,14 +386,67 @@ const Admin = () => {
 
   const handleEditAction = () => {
     if (!selectedSection) return;
-
-    if (selectedSection.type === "static") {
-      if (typeof window !== "undefined") {
-        window.open(selectedSection.route, "_blank", "noopener,noreferrer");
+    if (typeof window !== "undefined") {
+      if (selectedSection.id === "footer") {
+        window.open(`/${"?scroll=footer"}`, "_blank", "noopener,noreferrer");
+        return;
       }
-      return;
+      if (selectedSection.id === "header") {
+        window.open(`/`, "_blank", "noopener,noreferrer");
+        return;
+      }
+      window.open(selectedSection.route, "_blank", "noopener,noreferrer");
     }
-    // Scroll handled by SiteContentManager component
+  };
+
+  const getSectionKey = (id: string): keyof SiteContent | "header" | "footer" | "home" | "successStories" | "notFound" => {
+    switch (id) {
+      case "home":
+        return "home";
+      case "header":
+        return "header";
+      case "footer":
+        return "footer";
+      case "about":
+        return "about";
+      case "courses":
+        return "courses";
+      case "admissions":
+        return "admissions";
+      case "success":
+        return "successStories";
+      case "gallery":
+        return "gallery";
+      case "reviews":
+        return "reviews";
+      case "faq":
+        return "faq";
+      case "contact":
+        return "contact";
+      case "faculty":
+        return "faculty";
+      case "not-found":
+        return "notFound";
+      default:
+        return "home";
+    }
+  };
+
+  const handleSaveChanges = () => {
+    try {
+      const key = getSectionKey(selectedSection.id);
+      const storedRaw = localStorage.getItem("site_content");
+      let stored: Partial<SiteContent> = {};
+      if (storedRaw) {
+        try { stored = JSON.parse(storedRaw); } catch {}
+      }
+      const slice = (content as any)[key];
+      const next = { ...stored, [key]: slice } as SiteContent;
+      localStorage.setItem("site_content", JSON.stringify(next));
+      toast({ title: "Changes saved", description: `${selectedSection.label} content updated.` });
+    } catch (e) {
+      toast({ title: "Save failed", description: "Could not persist changes.", variant: "destructive" as any });
+    }
   };
   const renderStaticOverview = (section: AdminSection) => (
     <Card className="shadow-soft">
@@ -415,16 +471,22 @@ const Admin = () => {
         )}
       </CardContent>
       <CardFooter className="flex flex-wrap gap-3">
-                        <Button
-                            variant="outline"
-                            className="flex items-center gap-2"
+        <Button
+          className="gradient-accent"
+          onClick={handleSaveChanges}
+        >
+          Save Changes
+        </Button>
+        <Button
+            variant="outline"
+            className="flex items-center gap-2"
           asChild
         >
           <a href={section.route} target="_blank" rel="noopener noreferrer">
             <ExternalLink className="h-4 w-4" />
             Open live page
           </a>
-                        </Button>
+        </Button>
       </CardFooter>
     </Card>
   );
@@ -2303,7 +2365,11 @@ const Admin = () => {
         </CardContent>
       </Card>
 
-      <Card className="shadow-soft">
+      <Card 
+        className="shadow-soft"
+        onMouseEnter={() => setActiveSubSection('success-cta')}
+        onFocus={() => setActiveSubSection('success-cta')}
+      >
         <CardHeader>
           <CardTitle>Call to Action</CardTitle>
         </CardHeader>
@@ -2519,9 +2585,42 @@ const Admin = () => {
                       <Trash2 className="h-4 w-4" />
                     </Button>
                   </div>
-                  <Input placeholder="Image URL" value={item.src} onChange={(e) => handleGalleryImageChange(key, index, "src", e.target.value)} />
-                  <Input placeholder="Title" value={item.title} onChange={(e) => handleGalleryImageChange(key, index, "title", e.target.value)} />
-                  <Input placeholder="Category Label" value={item.category} onChange={(e) => handleGalleryImageChange(key, index, "category", e.target.value)} />
+                  <div className="space-y-3">
+                    <Label>Preview</Label>
+                    <div className="aspect-video rounded-lg border bg-muted/20 flex items-center justify-center overflow-hidden">
+                      {resolveGalleryImageSrc(item.src) ? (
+                        <img
+                          src={resolveGalleryImageSrc(item.src)}
+                          alt={item.title || `Gallery image ${index + 1}`}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <p className="text-sm text-muted-foreground">No image selected</p>
+                      )}
+                    </div>
+                    <div className="flex flex-wrap gap-3">
+                      <label className="inline-flex items-center gap-2 rounded-md border px-3 py-2 text-sm font-semibold cursor-pointer hover:bg-accent/10">
+                        <Upload className="h-4 w-4" />
+                        Upload Image
+                        <input
+                          type="file"
+                          accept="image/*"
+                          className="hidden"
+                          onChange={(e) => handleGalleryImageUpload(key, index, e)}
+                        />
+                      </label>
+                      {resolveGalleryImageSrc(item.src) && (
+                        <Button type="button" variant="ghost" onClick={() => handleClearGalleryImage(key, index)}>
+                          Remove Image
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+                  <Input
+                    placeholder="Title"
+                    value={item.title}
+                    onChange={(e) => handleGalleryImageChange(key, index, "title", e.target.value)}
+                  />
                 </div>
               ))}
               <Button variant="outline" className="flex items-center gap-2" onClick={() => handleAddGalleryImage(key)}>
@@ -2556,6 +2655,53 @@ const Admin = () => {
           ...prev.gallery.categories,
           [category]: prev.gallery.categories[category].map((item, i) =>
             i === index ? { ...item, [field]: value } : item,
+          ),
+        },
+      },
+    }));
+  };
+
+  const handleGalleryImageUpload = (
+    category: keyof typeof content.gallery.categories,
+    index: number,
+    event: ChangeEvent<HTMLInputElement>,
+  ) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      const result = reader.result as string;
+      setContent((prev) => ({
+        ...prev,
+        gallery: {
+          ...prev.gallery,
+          categories: {
+            ...prev.gallery.categories,
+            [category]: prev.gallery.categories[category].map((item, i) =>
+              i === index ? { ...item, src: result } : item,
+            ),
+          },
+        },
+      }));
+    };
+
+    reader.readAsDataURL(file);
+    event.target.value = "";
+  };
+
+  const handleClearGalleryImage = (
+    category: keyof typeof content.gallery.categories,
+    index: number,
+  ) => {
+    setContent((prev) => ({
+      ...prev,
+      gallery: {
+        ...prev.gallery,
+        categories: {
+          ...prev.gallery.categories,
+          [category]: prev.gallery.categories[category].map((item, i) =>
+            i === index ? { ...item, src: "" } : item,
           ),
         },
       },
@@ -2962,7 +3108,6 @@ const Admin = () => {
                 </Button>
               </div>
               <Input placeholder="Type (address, phone, email, hours)" value={card.type} onChange={(e) => handleContactCardChange(index, "type", e.target.value)} />
-              <Input placeholder="Title" value={card.title} onChange={(e) => handleContactCardChange(index, "title", e.target.value)} />
               <div className="space-y-2">
                 <Label>Lines</Label>
                 {card.lines.map((line, lineIndex) => (
@@ -3038,7 +3183,15 @@ const Admin = () => {
       ...prev,
       contact: {
         ...prev.contact,
-        cards: prev.contact.cards.map((card, i) => (i === index ? { ...card, [field]: value } : card)),
+        cards: prev.contact.cards.map((card, i) => {
+          if (i !== index) return card;
+          const updated = { ...card, [field]: value } as typeof card;
+          if (field === "type") {
+            const cap = value ? value.charAt(0).toUpperCase() + value.slice(1) : "";
+            updated.title = cap;
+          }
+          return updated;
+        }),
       },
     }));
   };
@@ -3046,7 +3199,7 @@ const Admin = () => {
   const handleAddContactCard = () => {
     setContent((prev) => ({
       ...prev,
-      contact: { ...prev.contact, cards: [...prev.contact.cards, { type: "address", title: "", lines: [""] }] },
+      contact: { ...prev.contact, cards: [...prev.contact.cards, { type: "address", title: "Address", lines: [""] }] },
     }));
   };
 
@@ -3432,7 +3585,16 @@ const Admin = () => {
           </SidebarFooter>
         </Sidebar>
         <SidebarInset className="flex-1 overflow-hidden min-w-0">
-          <div className="flex h-screen w-full max-w-full overflow-x-hidden">
+          <div className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 px-4 py-2 flex items-center justify-between">
+            <div className="text-sm text-muted-foreground">Editing: <span className="font-medium text-foreground">{selectedSection.label}</span></div>
+            <div className="flex gap-2">
+              <Button className="gradient-accent" onClick={handleSaveChanges}>Save Changes</Button>
+              <Button variant="outline" onClick={handleEditAction} className="hidden md:inline-flex">
+                <ExternalLink className="h-4 w-4 mr-2" /> Open live page
+              </Button>
+            </div>
+          </div>
+          <div className="flex h-[calc(100vh-44px)] w-full max-w-full overflow-x-hidden">
             <SiteContentManager
               selectedSection={selectedSection}
               onEditAction={handleEditAction}

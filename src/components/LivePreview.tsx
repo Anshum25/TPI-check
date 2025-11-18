@@ -5,13 +5,15 @@ import Footer from "@/components/Footer";
 import TestimonialCard from "@/components/TestimonialCard";
 import CourseCard from "@/components/CourseCard";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Target, Users, Award, BookOpen, Phone, Menu, Facebook, Twitter, Instagram, Linkedin, Mail, MapPin, Clock, Calendar, CheckCircle, TrendingUp, Heart, Star, Image as ImageIcon, HelpCircle } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Target, Users, Award, BookOpen, Phone, Menu, Facebook, Twitter, Instagram, Linkedin, Mail, MapPin, Clock, Calendar, CheckCircle, TrendingUp, Heart, Star, Image as ImageIcon, HelpCircle, Briefcase } from "lucide-react";
 import heroClassroom from "@/assets/hero-classroom.jpg";
 import speakingConfidence from "@/assets/speaking-confidence.jpg";
 import studentSuccess from "@/assets/student-success.jpg";
@@ -64,6 +66,7 @@ const LivePreview = ({ selectedSectionId, activeSubSection }: LivePreviewProps) 
   const successStoriesRef = useRef<HTMLDivElement>(null);
   const successAchievementsRef = useRef<HTMLDivElement>(null);
   const successVideoRef = useRef<HTMLDivElement>(null);
+  const successCtaRef = useRef<HTMLDivElement>(null);
   
   // Gallery page refs
   const galleryHeroRef = useRef<HTMLDivElement>(null);
@@ -132,6 +135,7 @@ const LivePreview = ({ selectedSectionId, activeSubSection }: LivePreviewProps) 
       'success-stories': successStoriesRef,
       'success-achievements': successAchievementsRef,
       'success-video': successVideoRef,
+      'success-cta': successCtaRef,
       // Gallery page
       'gallery-hero': galleryHeroRef,
       'gallery-grid': galleryGridRef,
@@ -178,6 +182,12 @@ const LivePreview = ({ selectedSectionId, activeSubSection }: LivePreviewProps) 
       }, 150);
     }
   }, [activeSubSection, selectedSectionId]);
+
+  const resolveImageSrc = (src?: string) => {
+    if (!src) return "";
+    if (src.startsWith("data:") || src.startsWith("http")) return src;
+    return imageMap[src] || src;
+  };
 
   const renderPreview = () => {
     try {
@@ -841,6 +851,26 @@ const LivePreview = ({ selectedSectionId, activeSubSection }: LivePreviewProps) 
                     <p className="text-xs sm:text-sm text-muted-foreground mt-4">{successStories.video.note}</p>
                   </div>
                 </section>
+
+                <section ref={successCtaRef} className="py-12 sm:py-20 bg-secondary/30">
+                  <div className="container mx-auto px-2 sm:px-4">
+                    <div className="max-w-4xl mx-auto text-center space-y-4">
+                      <h2 className="text-xl sm:text-2xl md:text-3xl font-bold">{successStories.cta.title}</h2>
+                      <p className="text-sm sm:text-base text-muted-foreground">{successStories.cta.description}</p>
+                      <a href={`tel:${successStories.cta.phoneNumber}`} className="text-lg sm:text-xl font-semibold text-primary hover:underline block">
+                        {successStories.cta.phoneLabel}
+                      </a>
+                      <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
+                        {successStories.cta.reviewLinks.map((link, index) => (
+                          <div key={index} className="p-4 bg-card rounded-lg shadow-soft hover:shadow-medium transition-all">
+                            <Star className="h-6 w-6 text-accent mx-auto mb-2" />
+                            <p className="text-sm font-semibold">{link.label}</p>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </section>
               </div>
             </div>
           );
@@ -859,18 +889,52 @@ const LivePreview = ({ selectedSectionId, activeSubSection }: LivePreviewProps) 
 
                 <section ref={galleryGridRef} className="py-12 sm:py-20">
                   <div className="container mx-auto px-2 sm:px-4">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-                      {gallery.categories.all.slice(0, 9).map((item, index) => (
-                        <div key={index} className="relative aspect-video rounded-lg overflow-hidden bg-secondary/30">
-                          <div className="absolute inset-0 flex items-center justify-center">
-                            <ImageIcon className="h-12 w-12 text-muted-foreground" />
+                    <Tabs defaultValue="all" className="w-full">
+                      <TabsList className="grid w-full max-w-md mx-auto grid-cols-4 mb-8 sm:mb-12">
+                        <TabsTrigger value="all">All</TabsTrigger>
+                        <TabsTrigger value="classroom">Classroom</TabsTrigger>
+                        <TabsTrigger value="events">Events</TabsTrigger>
+                        <TabsTrigger value="students">Students</TabsTrigger>
+                      </TabsList>
+                      {Object.entries(gallery.categories).map(([category, images]) => (
+                        <TabsContent key={category} value={category}>
+                          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+                            {images.length ? (
+                              images.map((image, index) => {
+                                const imgSrc = resolveImageSrc(image.src);
+                                return (
+                                  <Card key={`${category}-${index}`} className="overflow-hidden shadow-soft hover:shadow-medium transition-all duration-300">
+                                    <div className="relative h-56 sm:h-64 overflow-hidden">
+                                      {imgSrc ? (
+                                        <img
+                                          src={imgSrc}
+                                          alt={image.title}
+                                          className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+                                          onError={(e) => {
+                                            (e.target as HTMLImageElement).style.display = "none";
+                                          }}
+                                        />
+                                      ) : (
+                                        <div className="w-full h-full bg-secondary/30 flex items-center justify-center">
+                                          <ImageIcon className="h-12 w-12 text-muted-foreground" />
+                                        </div>
+                                      )}
+                                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end">
+                                        <p className="text-white font-semibold p-4 text-sm sm:text-base">{image.title}</p>
+                                      </div>
+                                    </div>
+                                  </Card>
+                                );
+                              })
+                            ) : (
+                              <div className="col-span-full py-12 text-center text-muted-foreground">
+                                No images added yet.
+                              </div>
+                            )}
                           </div>
-                          <div className="absolute bottom-0 left-0 right-0 bg-black/50 text-white p-2 text-xs sm:text-sm">
-                            {item.title}
-                          </div>
-                        </div>
+                        </TabsContent>
                       ))}
-                    </div>
+                    </Tabs>
                   </div>
                 </section>
               </div>
@@ -882,43 +946,57 @@ const LivePreview = ({ selectedSectionId, activeSubSection }: LivePreviewProps) 
           return (
             <div ref={previewRef} className="h-full w-full bg-background overflow-y-auto overflow-x-hidden">
               <div className="w-full max-w-full min-w-0">
-                <section ref={reviewsHeroRef} className="gradient-hero py-12 sm:py-20 text-primary-foreground">
-                  <div className="container mx-auto px-2 sm:px-4 text-center">
-                    <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-3 sm:mb-4">{reviews.hero.title}</h1>
-                    <p className="text-sm sm:text-base md:text-lg lg:text-xl max-w-3xl mx-auto text-primary-foreground/90 mb-4 sm:mb-6">
+                {/* Hero section */}
+                <section ref={reviewsHeroRef} className="gradient-hero py-20 text-primary-foreground">
+                  <div className="container mx-auto px-4 text-center">
+                    <h1 className="text-4xl md:text-5xl font-bold mb-4">{reviews.hero.title}</h1>
+                    <p className="text-xl max-w-3xl mx-auto text-primary-foreground/90">
                       {reviews.hero.subtitle}
                     </p>
-                    <div className="flex items-center justify-center gap-2">
-                      <Star className="h-6 w-6 sm:h-8 sm:w-8 fill-yellow-400 text-yellow-400" />
-                      <span className="text-2xl sm:text-3xl font-bold">{reviews.ratingSummary.score}</span>
-                      <span className="text-sm sm:text-base">({reviews.ratingSummary.count} {reviews.ratingSummary.label})</span>
-                    </div>
                   </div>
                 </section>
 
-                <section ref={reviewsTestimonialsRef} className="py-12 sm:py-20">
-                  <div className="container mx-auto px-2 sm:px-4">
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-                      {reviews.testimonials.map((testimonial, index) => (
-                        <TestimonialCard
-                          key={index}
-                          name={testimonial.name}
-                          role={testimonial.role}
-                          content={testimonial.content}
-                          rating={testimonial.rating ?? 5}
-                        />
-                      ))}
+                {/* Rating summary bar */}
+                <section className="py-20">
+                  <div className="container mx-auto px-4">
+                    <div className="text-center mb-12">
+                      <div className="inline-flex items-center space-x-2 bg-accent/10 px-6 py-3 rounded-full">
+                        <span className="text-3xl font-bold text-accent">{reviews.ratingSummary.score}</span>
+                        <span className="text-muted-foreground">{reviews.ratingSummary.label}</span>
+                        <span className="text-muted-foreground">•</span>
+                        <span className="text-muted-foreground">{reviews.ratingSummary.count}</span>
+                      </div>
                     </div>
+
+                    <section ref={reviewsTestimonialsRef}>
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                        {reviews.testimonials.map((testimonial, index) => (
+                          <TestimonialCard
+                            key={index}
+                            name={testimonial.name}
+                            role={testimonial.role}
+                            content={testimonial.content}
+                            rating={testimonial.rating ?? 5}
+                          />
+                        ))}
+                      </div>
+                    </section>
                   </div>
                 </section>
 
-                <section ref={reviewsCtaRef} className="py-12 sm:py-20 bg-secondary/30">
-                  <div className="container mx-auto px-2 sm:px-4 text-center">
-                    <h2 className="text-xl sm:text-2xl md:text-3xl font-bold mb-4 sm:mb-6">{reviews.cta.title}</h2>
-                    <p className="text-sm sm:text-base text-muted-foreground mb-4 sm:mb-6">{reviews.cta.description}</p>
-                    <Button size="lg" asChild>
-                      <a href={`mailto:${reviews.cta.mailTo}`}>{reviews.cta.buttonText}</a>
-                    </Button>
+                {/* CTA section */}
+                <section ref={reviewsCtaRef} className="py-20 bg-secondary/30">
+                  <div className="container mx-auto px-4 text-center">
+                    <h2 className="text-3xl font-bold mb-8">{reviews.cta.title}</h2>
+                    <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
+                      {reviews.cta.description}
+                    </p>
+                    <a
+                      href={`mailto:${reviews.cta.mailTo}`}
+                      className="inline-flex items-center justify-center px-8 py-3 rounded-lg gradient-accent text-accent-foreground font-semibold hover:opacity-90 transition-opacity"
+                    >
+                      {reviews.cta.buttonText}
+                    </a>
                   </div>
                 </section>
               </div>
@@ -930,27 +1008,27 @@ const LivePreview = ({ selectedSectionId, activeSubSection }: LivePreviewProps) 
           return (
             <div ref={previewRef} className="h-full w-full bg-background overflow-y-auto overflow-x-hidden">
               <div className="w-full max-w-full min-w-0">
-                <section ref={faqHeroRef} className="gradient-hero py-12 sm:py-20 text-primary-foreground">
-                  <div className="container mx-auto px-2 sm:px-4 text-center">
-                    <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-3 sm:mb-4">{faq.hero.title}</h1>
-                    <p className="text-sm sm:text-base md:text-lg lg:text-xl max-w-3xl mx-auto text-primary-foreground/90">{faq.hero.subtitle}</p>
+                <section ref={faqHeroRef} className="gradient-hero py-20 text-primary-foreground">
+                  <div className="container mx-auto px-4 text-center">
+                    <h1 className="text-4xl md:text-5xl font-bold mb-4">{faq.hero.title}</h1>
+                    <p className="text-xl max-w-3xl mx-auto text-primary-foreground/90">{faq.hero.subtitle}</p>
                   </div>
                 </section>
 
-                <section ref={faqCategoriesRef} className="py-12 sm:py-20">
-                  <div className="container mx-auto px-2 sm:px-4">
-                    <div className="max-w-4xl mx-auto space-y-4 sm:space-y-6">
+                <section ref={faqCategoriesRef} className="py-20">
+                  <div className="container mx-auto px-4">
+                    <div className="max-w-4xl mx-auto space-y-8">
                       {faq.categories.map((category, categoryIndex) => (
                         <Card key={categoryIndex} className="shadow-soft">
-                          <CardHeader>
-                            <CardTitle className="text-base sm:text-lg">{category.category}</CardTitle>
-                          </CardHeader>
-                          <CardContent>
+                          <CardContent className="pt-6">
+                            <h2 className="text-2xl font-bold mb-4 text-primary">{category.category}</h2>
                             <Accordion type="single" collapsible className="w-full">
                               {category.questions.map((question, questionIndex) => (
                                 <AccordionItem key={questionIndex} value={`item-${categoryIndex}-${questionIndex}`}>
-                                  <AccordionTrigger className="text-sm sm:text-base">{question.q}</AccordionTrigger>
-                                  <AccordionContent className="text-xs sm:text-sm text-muted-foreground">
+                                  <AccordionTrigger className="text-left">
+                                    {question.q}
+                                  </AccordionTrigger>
+                                  <AccordionContent className="text-muted-foreground">
                                     {question.a}
                                   </AccordionContent>
                                 </AccordionItem>
@@ -963,19 +1041,21 @@ const LivePreview = ({ selectedSectionId, activeSubSection }: LivePreviewProps) 
                   </div>
                 </section>
 
-                <section ref={faqSupportRef} className="py-12 sm:py-20 bg-secondary/30">
-                  <div className="container mx-auto px-2 sm:px-4">
-                    <Card className="max-w-2xl mx-auto shadow-soft">
-                      <CardHeader>
-                        <CardTitle className="text-base sm:text-lg">{faq.support.title}</CardTitle>
-                        <CardDescription className="text-xs sm:text-sm">{faq.support.description}</CardDescription>
-                      </CardHeader>
-                      <CardContent>
-                        <div className="flex items-center space-x-2">
-                          <Phone className="h-4 w-4 sm:h-5 sm:w-5" />
-                          <a href={`tel:${faq.support.phoneNumber}`} className="text-sm sm:text-base font-semibold">{faq.support.phoneNumber}</a>
+                <section ref={faqSupportRef} className="py-20 bg-secondary/30">
+                  <div className="container mx-auto px-4">
+                    <Card className="max-w-2xl mx-auto shadow-medium">
+                      <CardContent className="pt-6 text-center space-y-4">
+                        <h2 className="text-2xl font-bold">{faq.support.title}</h2>
+                        <p className="text-muted-foreground">{faq.support.description}</p>
+                        <div className="flex flex-col items-center space-y-2 text-lg">
+                          <div className="flex items-center space-x-2">
+                            <Phone className="h-5 w-5 text-accent" />
+                            <a href={`tel:${faq.support.phoneNumber}`} className="font-bold text-primary hover:underline">
+                              {faq.support.phoneNumber}
+                            </a>
+                          </div>
+                          <p className="text-sm text-muted-foreground">{faq.support.note}</p>
                         </div>
-                        <p className="text-xs sm:text-sm text-muted-foreground mt-4">{faq.support.note}</p>
                       </CardContent>
                     </Card>
                   </div>
@@ -984,146 +1064,187 @@ const LivePreview = ({ selectedSectionId, activeSubSection }: LivePreviewProps) 
             </div>
           );
         case "contact":
-          // Preview-safe Contact page
+          // Live-editable Contact page using content.contact
           const { contact } = content;
           return (
             <div ref={previewRef} className="h-full w-full bg-background overflow-y-auto overflow-x-hidden">
               <div className="w-full max-w-full min-w-0">
-                <section ref={contactHeroRef} className="gradient-hero py-12 sm:py-20 text-primary-foreground">
-                  <div className="container mx-auto px-2 sm:px-4 text-center">
-                    <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-3 sm:mb-4">{contact.hero.title}</h1>
-                    <p className="text-sm sm:text-base md:text-lg lg:text-xl max-w-3xl mx-auto text-primary-foreground/90">{contact.hero.subtitle}</p>
+                <section ref={contactHeroRef} className="gradient-hero py-20 text-primary-foreground">
+                  <div className="container mx-auto px-4 text-center">
+                    <h1 className="text-4xl md:text-5xl font-bold mb-4">{contact.hero.title || "Contact Us"}</h1>
+                    <p className="text-xl max-w-3xl mx-auto text-primary-foreground/90">{contact.hero.subtitle || "Get in touch with us to start your learning journey"}</p>
                   </div>
                 </section>
 
-                <section ref={contactFormRef} className="py-12 sm:py-20">
-                  <div className="container mx-auto px-2 sm:px-4">
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-12 max-w-6xl mx-auto">
-                      <Card className="shadow-soft">
-                        <CardHeader>
-                          <CardTitle className="text-base sm:text-lg">Send us a Message</CardTitle>
-                        </CardHeader>
-                        <CardContent className="space-y-4">
-                          <div className="space-y-2">
-                            <Label htmlFor="name">Name</Label>
-                            <Input id="name" placeholder="Your name" />
-                          </div>
-                          <div className="space-y-2">
-                            <Label htmlFor="email">Email</Label>
-                            <Input id="email" type="email" placeholder="your@email.com" />
-                          </div>
-                          <div className="space-y-2">
-                            <Label htmlFor="phone">Phone</Label>
-                            <Input id="phone" type="tel" placeholder="+91 98765 43210" />
-                          </div>
-                          <div className="space-y-2">
-                            <Label htmlFor="course">Course Interest</Label>
-                            <Select>
-                              <SelectTrigger>
-                                <SelectValue placeholder="Select a course" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                {contact.courseOptions.map((option) => (
-                                  <SelectItem key={option.value} value={option.value}>
-                                    {option.label}
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                          </div>
-                          <div className="space-y-2">
-                            <Label htmlFor="message">Message</Label>
-                            <Textarea id="message" rows={4} placeholder="Your message..." />
-                          </div>
-                          <Button className="w-full">Send Message</Button>
-                        </CardContent>
-                      </Card>
-
-                      <div className="space-y-4 sm:space-y-6">
-                        {contact.cards.map((card, index) => (
-                          <Card key={index} className="shadow-soft">
-                            <CardHeader>
-                              <CardTitle className="text-base sm:text-lg">{card.title}</CardTitle>
-                            </CardHeader>
-                            <CardContent>
+                <section ref={contactFormRef} className="py-20">
+                  <div className="container mx-auto px-4">
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                      <div>
+                        <h2 className="text-3xl font-bold mb-8">Send Us a Message</h2>
+                        <Card className="shadow-medium">
+                          <CardHeader>
+                            <CardTitle>Enquiry Form</CardTitle>
+                            <CardDescription>
+                              Fill out the form and we'll respond within 24 hours
+                            </CardDescription>
+                          </CardHeader>
+                          <CardContent>
+                            <form className="space-y-6">
                               <div className="space-y-2">
-                                {card.lines.map((line, lineIndex) => (
-                                  <p key={lineIndex} className="text-xs sm:text-sm text-muted-foreground">{line}</p>
-                                ))}
+                                <Label htmlFor="name">Full Name *</Label>
+                                <Input id="name" name="name" placeholder="Enter your name" />
                               </div>
-                            </CardContent>
-                          </Card>
-                        ))}
+
+                              <div className="space-y-2">
+                                <Label htmlFor="email">Email Address *</Label>
+                                <Input id="email" name="email" type="email" placeholder="your.email@example.com" />
+                              </div>
+
+                              <div className="space-y-2">
+                                <Label htmlFor="phone">Phone Number *</Label>
+                                <Input id="phone" name="phone" type="tel" placeholder="+91 98765 43210" />
+                              </div>
+
+                              <div className="space-y-2">
+                                <Label htmlFor="course">Interested Course</Label>
+                                <Select>
+                                  <SelectTrigger>
+                                    <SelectValue placeholder="Select a course" />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    {contact.courseOptions.map((opt) => (
+                                      <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+                                    ))}
+                                  </SelectContent>
+                                </Select>
+                              </div>
+
+                              <div className="space-y-2">
+                                <Label htmlFor="message">Message</Label>
+                                <Textarea id="message" name="message" rows={4} placeholder="Tell us about your requirements..." />
+                              </div>
+
+                              <Button type="button" className="w-full gradient-accent">
+                                Submit Enquiry
+                              </Button>
+                            </form>
+                          </CardContent>
+                        </Card>
+                      </div>
+
+                      <div>
+                        <h2 className="text-3xl font-bold mb-8">Contact Information</h2>
+                        <div className="space-y-6">
+                          {contact.cards.map((c, i) => {
+                            const Icon = c.type === "address" ? MapPin : c.type === "phone" ? Phone : c.type === "email" ? Mail : Clock;
+                            return (
+                              <Card key={i} className="shadow-soft">
+                                <CardContent className="pt-6">
+                                  <div className="flex items-start space-x-4">
+                                    <div className="h-12 w-12 rounded-full gradient-hero flex items-center justify-center flex-shrink-0">
+                                      <Icon className="h-6 w-6 text-primary-foreground" />
+                                    </div>
+                                    <div>
+                                      <h3 className="font-bold mb-2">{c.title}</h3>
+                                      <p className="text-muted-foreground">
+                                        {c.lines.map((line, li) => (
+                                          <span key={li}>
+                                            {line}
+                                            {li < c.lines.length - 1 ? <><br /></> : null}
+                                          </span>
+                                        ))}
+                                      </p>
+                                    </div>
+                                  </div>
+                                </CardContent>
+                              </Card>
+                            );
+                          })}
+                        </div>
                       </div>
                     </div>
                   </div>
                 </section>
 
-                <section ref={contactMapRef} className="py-12 sm:py-20 bg-secondary/30">
-                  <div className="container mx-auto px-2 sm:px-4 text-center">
-                    <p className="text-xs sm:text-sm text-muted-foreground">{contact.mapNote}</p>
+                <section ref={contactMapRef} className="py-20 bg-secondary/30">
+                  <div className="container mx-auto px-4">
+                    <h2 className="text-3xl font-bold mb-8 text-center">Find Us</h2>
+                    <div className="max-w-4xl mx-auto">
+                      <div className="aspect-video bg-muted rounded-lg flex items-center justify-center">
+                        <p className="text-muted-foreground">{contact.mapNote || "Map would be embedded here"}</p>
+                      </div>
+                    </div>
                   </div>
                 </section>
               </div>
             </div>
           );
         case "faculty":
-          // Preview-safe Faculty page
+          // Mirror the actual Faculty page layout using content.faculty
           const { faculty } = content;
           return (
             <div ref={previewRef} className="h-full w-full bg-background overflow-y-auto overflow-x-hidden">
               <div className="w-full max-w-full min-w-0">
-                <section ref={facultyHeroRef} className="gradient-hero py-12 sm:py-20 text-primary-foreground">
-                  <div className="container mx-auto px-2 sm:px-4 text-center">
-                    <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-3 sm:mb-4">{faculty.hero.title}</h1>
-                    <p className="text-sm sm:text-base md:text-lg lg:text-xl max-w-3xl mx-auto text-primary-foreground/90">{faculty.hero.subtitle}</p>
+                <section ref={facultyHeroRef} className="gradient-hero py-20 text-primary-foreground">
+                  <div className="container mx-auto px-4 text-center">
+                    <h1 className="text-4xl md:text-5xl font-bold mb-4">{faculty.hero.title}</h1>
+                    <p className="text-xl max-w-3xl mx-auto text-primary-foreground/90">{faculty.hero.subtitle}</p>
                   </div>
                 </section>
 
-                <section ref={facultyMembersRef} className="py-12 sm:py-20">
-                  <div className="container mx-auto px-2 sm:px-4">
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 max-w-6xl mx-auto">
+                <section ref={facultyMembersRef} className="py-20">
+                  <div className="container mx-auto px-4">
+                    <div className="space-y-12">
                       {faculty.members.map((member, index) => (
-                        <Card key={index} className="shadow-soft">
-                          <CardHeader>
-                            <div className="flex items-center space-x-4 mb-4">
-                              <div className="h-16 w-16 rounded-full gradient-hero flex items-center justify-center text-primary-foreground text-xl font-bold">
-                                {member.imageInitials}
-                              </div>
-                              <div>
-                                <CardTitle className="text-base sm:text-lg">{member.name}</CardTitle>
-                                <CardDescription className="text-xs sm:text-sm">{member.role}</CardDescription>
-                              </div>
-                            </div>
-                          </CardHeader>
-                          <CardContent className="space-y-3">
-                            <div>
-                              <p className="text-xs sm:text-sm font-semibold mb-1">Education</p>
-                              <p className="text-xs sm:text-sm text-muted-foreground">{member.education}</p>
-                            </div>
-                            <div>
-                              <p className="text-xs sm:text-sm font-semibold mb-1">Experience</p>
-                              <p className="text-xs sm:text-sm text-muted-foreground">{member.experience}</p>
-                            </div>
-                            <div>
-                              <p className="text-xs sm:text-sm font-semibold mb-1">Specialization</p>
-                              <ul className="text-xs sm:text-sm text-muted-foreground list-disc list-inside">
-                                {member.specialization.map((spec, specIndex) => (
-                                  <li key={specIndex}>{spec}</li>
-                                ))}
-                              </ul>
-                            </div>
-                            <p className="text-xs sm:text-sm text-muted-foreground">{member.description}</p>
-                            {member.achievements.length > 0 && (
-                              <div>
-                                <p className="text-xs sm:text-sm font-semibold mb-1">Achievements</p>
-                                <ul className="text-xs sm:text-sm text-muted-foreground list-disc list-inside">
-                                  {member.achievements.map((achievement, achIndex) => (
-                                    <li key={achIndex}>{achievement}</li>
+                        <Card key={index} className="shadow-medium overflow-hidden">
+                          <CardContent className="p-8">
+                            <div className="grid md:grid-cols-[200px,1fr] gap-8">
+                              <div className="flex flex-col items-center md:items-start">
+                                <div className="h-40 w-40 rounded-full gradient-hero flex items-center justify-center text-primary-foreground mb-4">
+                                  <span className="text-5xl font-bold">{member.imageInitials}</span>
+                                </div>
+                                <div className="flex flex-wrap gap-2 justify-center md:justify-start">
+                                  {member.specialization.map((spec, idx) => (
+                                    <Badge key={idx} variant="secondary">{spec}</Badge>
                                   ))}
-                                </ul>
+                                </div>
                               </div>
-                            )}
+
+                              <div className="space-y-4">
+                                <div>
+                                  <h2 className="text-3xl font-bold mb-1">{member.name}</h2>
+                                  <p className="text-lg text-muted-foreground mb-2">{member.role}</p>
+                                  <div className="flex flex-wrap gap-4 text-sm">
+                                    <div className="flex items-center space-x-2">
+                                      <Award className="h-4 w-4 text-accent" />
+                                      <span>{member.experience} Experience</span>
+                                    </div>
+                                    <div className="flex items-center space-x-2">
+                                      <BookOpen className="h-4 w-4 text-accent" />
+                                      <span>{member.education}</span>
+                                    </div>
+                                  </div>
+                                </div>
+
+                                <p className="text-muted-foreground leading-relaxed">
+                                  {member.description}
+                                </p>
+
+                                {member.achievements.length > 0 && (
+                                  <div>
+                                    <h3 className="font-bold mb-3">Key Achievements:</h3>
+                                    <ul className="space-y-2">
+                                      {member.achievements.map((achievement, idx) => (
+                                        <li key={idx} className="flex items-start space-x-2">
+                                          <span className="text-accent mt-1">•</span>
+                                          <span className="text-muted-foreground">{achievement}</span>
+                                        </li>
+                                      ))}
+                                    </ul>
+                                  </div>
+                                )}
+                              </div>
+                            </div>
                           </CardContent>
                         </Card>
                       ))}
@@ -1131,29 +1252,28 @@ const LivePreview = ({ selectedSectionId, activeSubSection }: LivePreviewProps) 
                   </div>
                 </section>
 
-                <section ref={facultyMethodologyRef} className="py-12 sm:py-20 bg-secondary/30">
-                  <div className="container mx-auto px-2 sm:px-4">
-                    <h2 className="text-xl sm:text-2xl md:text-3xl font-bold mb-8 sm:mb-12 text-center">Teaching Methodology</h2>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 max-w-5xl mx-auto">
+                <section ref={facultyMethodologyRef} className="py-20 bg-secondary/30">
+                  <div className="container mx-auto px-4">
+                    <h2 className="text-3xl font-bold mb-12 text-center">Our Teaching Methodology</h2>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
                       {faculty.methodology.map((method, index) => (
-                        <Card key={index} className="shadow-soft">
-                          <CardHeader>
-                            <CardTitle className="text-base sm:text-lg">{method.title}</CardTitle>
-                          </CardHeader>
-                          <CardContent>
-                            <p className="text-xs sm:text-sm text-muted-foreground">{method.description}</p>
-                          </CardContent>
-                        </Card>
+                        <div key={index} className="bg-card p-8 rounded-lg shadow-soft">
+                          <div className="inline-flex h-14 w-14 items-center justify-center rounded-full gradient-accent text-accent-foreground mb-4">
+                            {index === 0 ? <BookOpen className="h-6 w-6" /> : index === 1 ? <Users className="h-6 w-6" /> : index === 2 ? <Award className="h-6 w-6" /> : <Briefcase className="h-6 w-6" />}
+                          </div>
+                          <h3 className="text-xl font-bold mb-3">{method.title}</h3>
+                          <p className="text-muted-foreground">{method.description}</p>
+                        </div>
                       ))}
                     </div>
                   </div>
                 </section>
 
-                <section ref={facultyPromiseRef} className="py-12 sm:py-20">
-                  <div className="container mx-auto px-2 sm:px-4">
-                    <div className="max-w-4xl mx-auto">
-                      <h2 className="text-xl sm:text-2xl md:text-3xl font-bold mb-6 sm:mb-8 text-center">{faculty.promise.title}</h2>
-                      <div className="space-y-4 sm:space-y-6 text-sm sm:text-base text-muted-foreground">
+                <section ref={facultyPromiseRef} className="py-20">
+                  <div className="container mx-auto px-4">
+                    <div className="max-w-4xl mx-auto bg-primary/5 border-l-4 border-primary p-8 rounded-lg">
+                      <h2 className="text-2xl font-bold mb-4">{faculty.promise.title}</h2>
+                      <div className="space-y-4 text-muted-foreground">
                         {faculty.promise.paragraphs.map((paragraph, index) => (
                           <p key={index}>{paragraph}</p>
                         ))}
@@ -1201,7 +1321,7 @@ const LivePreview = ({ selectedSectionId, activeSubSection }: LivePreviewProps) 
   return (
     <div className="w-1/2 border-l bg-background overflow-hidden flex flex-col h-full min-w-0 flex-shrink-0">
       <div className="border-b px-4 py-2 flex-shrink-0">
-        <p className="text-sm font-semibold">Live Preview</p>
+        <p className="text-sm  font-semibold">Live Preview</p>
         <p className="text-xs text-muted-foreground">See your changes in real-time</p>
       </div>
       <div 

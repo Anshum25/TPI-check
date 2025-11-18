@@ -1,4 +1,5 @@
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
+import { useEffect } from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import Hero from "@/components/Hero";
@@ -8,6 +9,7 @@ import { Target, Users, Award, BookOpen } from "lucide-react";
 import { useContent } from "@/lib/content";
 
 const Home = () => {
+  const location = useLocation();
   const { content } = useContent();
   const { home } = content;
 
@@ -21,6 +23,7 @@ const Home = () => {
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
+      <HomeScrollEffect />
       <main className="flex-1">
         <Hero />
 
@@ -156,6 +159,41 @@ const Home = () => {
       <Footer />
     </div>
   );
+};
+
+// Hook must be at component level
+const HomeScrollEffect = () => {
+  const location = useLocation();
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    if (params.get("scroll") === "footer") {
+      let attempts = 0;
+      const tryScroll = () => {
+        const el = document.getElementById("site-footer");
+        if (el) {
+          // Use rAF twice to ensure layout settles, then scroll to bottom
+          requestAnimationFrame(() => requestAnimationFrame(() => {
+            window.scrollTo({ top: document.documentElement.scrollHeight, behavior: "smooth" });
+          }));
+          return;
+        }
+        if (attempts < 30) {
+          attempts += 1;
+          setTimeout(tryScroll, 200);
+        }
+      };
+      // Kick off after a short delay to allow initial render
+      const t = setTimeout(tryScroll, 100);
+      // Also attempt on full window load (assets ready)
+      const onLoad = () => tryScroll();
+      window.addEventListener('load', onLoad);
+      return () => {
+        clearTimeout(t);
+        window.removeEventListener('load', onLoad);
+      };
+    }
+  }, [location.search]);
+  return null;
 };
 
 export default Home;
