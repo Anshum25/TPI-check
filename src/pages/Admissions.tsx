@@ -91,13 +91,12 @@ const HeroSection = () => {
       <p className="text-xl max-w-3xl mx-auto text-primary-foreground/90 mb-8">{hero.subtitle}</p>
       <div className="flex flex-wrap justify-center gap-4">
         <a href={`tel:${contactCtas.phoneNumber}`}>
-          <Button size="lg" variant="secondary">
-            <Phone className="mr-2 h-5 w-5" />
+          <Button size="lg" className="gradient-accent">
             {contactCtas.phoneLabel}
           </Button>
         </a>
         <Link to={contactCtas.secondaryLink}>
-          <Button size="lg" variant="outline" className="bg-white/10 border-white text-white hover:bg-white hover:text-primary">
+          <Button size="lg" variant="outline" className="bg-white/10 backdrop-blur-sm border-white text-white hover:bg-white hover:text-primary">
             {contactCtas.secondaryText}
           </Button>
         </Link>
@@ -110,16 +109,14 @@ const StepsGrid = () => {
   const { steps } = useAdmissionsContent();
   return (
     <>
-      {steps.map((item, index) => (
-        <Card key={index} className="shadow-soft text-center">
-          <CardContent className="pt-6">
-            <div className="h-16 w-16 rounded-full gradient-hero flex items-center justify-center text-primary-foreground text-2xl font-bold mx-auto mb-4">
-              {item.step}
-            </div>
-            <h3 className="text-xl font-bold mb-2">{item.title}</h3>
-            <p className="text-muted-foreground text-sm">{item.description}</p>
-          </CardContent>
-        </Card>
+      {steps.map((step, index) => (
+        <div key={index} className="text-center p-6 rounded-lg bg-secondary/30">
+          <div className="inline-flex h-16 w-16 items-center justify-center rounded-full gradient-accent text-accent-foreground mb-4 text-2xl font-bold">
+            {step.step}
+          </div>
+          <h3 className="text-lg font-bold mb-2">{step.title}</h3>
+          <p className="text-sm text-muted-foreground">{step.description}</p>
+        </div>
       ))}
     </>
   );
@@ -133,12 +130,12 @@ const CourseDetailsGrid = () => {
         const Icon = iconMap[detail.icon];
         return (
           <Card key={index} className="shadow-soft">
-            <CardContent className="pt-6 flex items-start space-x-4">
-              <Icon className="h-6 w-6 text-accent flex-shrink-0 mt-1" />
-              <div>
-                <h3 className="font-bold mb-1">{detail.label}</h3>
-                <p className="text-muted-foreground text-sm">{detail.value}</p>
+            <CardContent className="pt-6">
+              <div className="flex items-center space-x-3 mb-3">
+                <Icon className="h-5 w-5 text-primary" />
+                <h3 className="font-bold text-base">{detail.label}</h3>
               </div>
+              <p className="text-sm text-muted-foreground">{detail.value}</p>
             </CardContent>
           </Card>
         );
@@ -149,32 +146,22 @@ const CourseDetailsGrid = () => {
 
 const TargetGroups = () => {
   const { targetGroups } = useAdmissionsContent();
-  const icons = [Users, Award, Users];
   return (
     <>
-      {targetGroups.map((group, index) => {
-        const Icon = icons[index] ?? Users;
-        return (
-          <Card key={index} className="shadow-medium">
-            <CardHeader>
-              <div className="h-16 w-16 rounded-full gradient-accent flex items-center justify-center text-accent-foreground mb-4">
-                <Icon className="h-8 w-8" />
-              </div>
-              <CardTitle>{group.title}</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <ul className="space-y-2">
-                {group.benefits.map((benefit, idx) => (
-                  <li key={idx} className="flex items-start space-x-2">
-                    <CheckCircle className="h-5 w-5 text-accent flex-shrink-0 mt-0.5" />
-                    <span className="text-sm text-muted-foreground">{benefit}</span>
-                  </li>
-                ))}
-              </ul>
-            </CardContent>
-          </Card>
-        );
-      })}
+      {targetGroups.map((group, index) => (
+        <Card key={index} className="shadow-soft">
+          <CardHeader>
+            <CardTitle>{group.title}</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ul className="space-y-2 text-sm text-muted-foreground list-disc list-inside">
+              {group.benefits.map((benefit, idx) => (
+                <li key={idx}>{benefit}</li>
+              ))}
+            </ul>
+          </CardContent>
+        </Card>
+      ))}
     </>
   );
 };
@@ -196,22 +183,16 @@ const WhyChooseList = () => {
 const FinalCta = () => {
   const { cta } = useAdmissionsContent();
   return (
-    <div className="gradient-hero rounded-2xl p-12 text-center shadow-medium max-w-4xl mx-auto">
-      <h2 className="text-3xl md:text-4xl font-bold text-primary-foreground mb-4">{cta.title}</h2>
-      <p className="text-lg text-primary-foreground/90 mb-6">{cta.subtitle}</p>
-      <p className="text-xl font-bold text-primary-foreground mb-8">{cta.tagline}</p>
+    <div className="max-w-4xl mx-auto text-center">
+      <h2 className="text-3xl md:text-4xl font-bold mb-4">{cta.title}</h2>
+      <p className="text-lg text-muted-foreground mb-6">{cta.subtitle}</p>
+      <p className="text-sm text-muted-foreground mb-6">{cta.tagline}</p>
       <div className="flex flex-wrap justify-center gap-4">
         <a href={`tel:${cta.phoneNumber}`}>
-          <Button size="lg" variant="secondary">
-            <Phone className="mr-2 h-5 w-5" />
-            {cta.phoneLabel}
-          </Button>
+          <Button size="lg" className="gradient-accent">{cta.phoneLabel}</Button>
         </a>
         <a href={cta.directionsUrl} target="_blank" rel="noopener noreferrer">
-          <Button size="lg" variant="outline" className="bg-white/10 border-white text-white hover:bg-white hover:text-primary">
-            <MapPin className="mr-2 h-5 w-5" />
-            {cta.directionsLabel}
-          </Button>
+          <Button size="lg" variant="outline">{cta.directionsLabel}</Button>
         </a>
       </div>
     </div>

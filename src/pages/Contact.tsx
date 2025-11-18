@@ -1,4 +1,5 @@
 import { useState, type FormEvent, type ChangeEvent } from "react";
+import { useContent } from "@/lib/content";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
@@ -12,6 +13,7 @@ import { MapPin, Phone, Mail, Clock } from "lucide-react";
 
 const Contact = () => {
   const { toast } = useToast();
+  const { content } = useContent();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -39,9 +41,9 @@ const Contact = () => {
       <main className="flex-1">
         <section className="gradient-hero py-20 text-primary-foreground">
           <div className="container mx-auto px-4 text-center">
-            <h1 className="text-4xl md:text-5xl font-bold mb-4">Contact Us</h1>
+            <h1 className="text-4xl md:text-5xl font-bold mb-4">{content.contact.hero.title || "Contact Us"}</h1>
             <p className="text-xl max-w-3xl mx-auto text-primary-foreground/90">
-              Get in touch with us to start your learning journey
+              {content.contact.hero.subtitle || "Get in touch with us to start your learning journey"}
             </p>
           </div>
         </section>
@@ -108,11 +110,9 @@ const Contact = () => {
                             <SelectValue placeholder="Select a course" />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="spoken-english">Spoken English</SelectItem>
-                            <SelectItem value="personality-development">Personality Development</SelectItem>
-                            <SelectItem value="business-communication">Business Communication</SelectItem>
-                            <SelectItem value="interview-prep">Interview Preparation</SelectItem>
-                            <SelectItem value="public-speaking">Public Speaking</SelectItem>
+                            {content.contact.courseOptions.map((opt) => (
+                              <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+                            ))}
                           </SelectContent>
                         </Select>
                       </div>
@@ -140,75 +140,31 @@ const Contact = () => {
               <div>
                 <h2 className="text-3xl font-bold mb-8">Contact Information</h2>
                 <div className="space-y-6">
-                  <Card className="shadow-soft">
-                    <CardContent className="pt-6">
-                      <div className="flex items-start space-x-4">
-                        <div className="h-12 w-12 rounded-full gradient-hero flex items-center justify-center flex-shrink-0">
-                          <MapPin className="h-6 w-6 text-primary-foreground" />
-                        </div>
-                        <div>
-                          <h3 className="font-bold mb-2">Address</h3>
-                          <p className="text-muted-foreground">
-                            123 Education Street<br />
-                            Learning District<br />
-                            City - 380001
-                          </p>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-
-                  <Card className="shadow-soft">
-                    <CardContent className="pt-6">
-                      <div className="flex items-start space-x-4">
-                        <div className="h-12 w-12 rounded-full gradient-hero flex items-center justify-center flex-shrink-0">
-                          <Phone className="h-6 w-6 text-primary-foreground" />
-                        </div>
-                        <div>
-                          <h3 className="font-bold mb-2">Phone</h3>
-                          <p className="text-muted-foreground">
-                            +91 98765 43210<br />
-                            +91 98765 43211
-                          </p>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-
-                  <Card className="shadow-soft">
-                    <CardContent className="pt-6">
-                      <div className="flex items-start space-x-4">
-                        <div className="h-12 w-12 rounded-full gradient-hero flex items-center justify-center flex-shrink-0">
-                          <Mail className="h-6 w-6 text-primary-foreground" />
-                        </div>
-                        <div>
-                          <h3 className="font-bold mb-2">Email</h3>
-                          <p className="text-muted-foreground">
-                            info@excellence.edu<br />
-                            admissions@excellence.edu
-                          </p>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-
-                  <Card className="shadow-soft">
-                    <CardContent className="pt-6">
-                      <div className="flex items-start space-x-4">
-                        <div className="h-12 w-12 rounded-full gradient-hero flex items-center justify-center flex-shrink-0">
-                          <Clock className="h-6 w-6 text-primary-foreground" />
-                        </div>
-                        <div>
-                          <h3 className="font-bold mb-2">Office Hours</h3>
-                          <p className="text-muted-foreground">
-                            Monday - Friday: 9:00 AM - 8:00 PM<br />
-                            Saturday: 9:00 AM - 6:00 PM<br />
-                            Sunday: Closed
-                          </p>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
+                  {content.contact.cards.map((c, i) => {
+                    const Icon = c.type === "address" ? MapPin : c.type === "phone" ? Phone : c.type === "email" ? Mail : Clock;
+                    return (
+                      <Card key={i} className="shadow-soft">
+                        <CardContent className="pt-6">
+                          <div className="flex items-start space-x-4">
+                            <div className="h-12 w-12 rounded-full gradient-hero flex items-center justify-center flex-shrink-0">
+                              <Icon className="h-6 w-6 text-primary-foreground" />
+                            </div>
+                            <div>
+                              <h3 className="font-bold mb-2">{c.title}</h3>
+                              <p className="text-muted-foreground">
+                                {c.lines.map((line, li) => (
+                                  <span key={li}>
+                                    {line}
+                                    {li < c.lines.length - 1 ? <><br /></> : null}
+                                  </span>
+                                ))}
+                              </p>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    );
+                  })}
                 </div>
               </div>
             </div>
@@ -220,7 +176,7 @@ const Contact = () => {
             <h2 className="text-3xl font-bold mb-8 text-center">Find Us</h2>
             <div className="max-w-4xl mx-auto">
               <div className="aspect-video bg-muted rounded-lg flex items-center justify-center">
-                <p className="text-muted-foreground">Map would be embedded here</p>
+                <p className="text-muted-foreground">{content.contact.mapNote || "Map would be embedded here"}</p>
               </div>
             </div>
           </div>
