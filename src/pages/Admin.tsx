@@ -79,18 +79,11 @@ const adminSections: AdminSection[] = [
     route: "/",
     filePath: "src/pages/Home.tsx",
   },
-  {
-    id: "header",
-    label: "Header & Navigation",
-    description: "Site title plus primary navigation links.",
-    icon: PanelsTopLeft,
-    type: "header",
-    route: "/",
-  },
+  
   {
     id: "footer",
-    label: "Footer & JSON",
-    description: "Footer text along with import/export utilities.",
+    label: "Footer",
+    description: "Footer text and lists.",
     icon: LayoutTemplate,
     type: "footer",
     route: "/",
@@ -605,28 +598,7 @@ const Admin = () => {
                       Upload Image
                     </Button>
                   </div>
-                  <div className="text-xs text-muted-foreground mt-1">
-                    Or enter image URL:
-                  </div>
-                  <Input
-                    value={slide.imageUrl.startsWith('data:') ? '' : slide.imageUrl}
-                    onChange={(e) => {
-                      setContent((prev) => ({
-                        ...prev,
-                        home: {
-                          ...prev.home,
-                          heroCarousel: {
-                            ...prev.home.heroCarousel,
-                            slides: prev.home.heroCarousel.slides.map((s, i) =>
-                              i === index ? { ...s, imageUrl: e.target.value } : s,
-                            ),
-                          },
-                        },
-                      }));
-                    }}
-                    placeholder="/src/assets/image.jpg or https://..."
-                    disabled={slide.imageUrl.startsWith('data:')}
-                  />
+                  
                 </div>
                 <div className="space-y-2">
                   <Label>Title</Label>
@@ -669,91 +641,45 @@ const Admin = () => {
                     rows={2}
                   />
                 </div>
-                <div className="grid gap-3 md:grid-cols-2">
-                  <div className="space-y-2">
-                    <Label>Primary Button Text</Label>
-                    <Input
-                      value={slide.primaryButtonText}
-                      onChange={(e) => {
-                        setContent((prev) => ({
-                          ...prev,
-                          home: {
-                            ...prev.home,
-                            heroCarousel: {
-                              ...prev.home.heroCarousel,
-                              slides: prev.home.heroCarousel.slides.map((s, i) =>
-                                i === index ? { ...s, primaryButtonText: e.target.value } : s,
-                              ),
-                            },
+                <div className="space-y-2">
+                  <Label>Primary Button Text</Label>
+                  <Input
+                    value={slide.primaryButtonText}
+                    onChange={(e) => {
+                      setContent((prev) => ({
+                        ...prev,
+                        home: {
+                          ...prev.home,
+                          heroCarousel: {
+                            ...prev.home.heroCarousel,
+                            slides: prev.home.heroCarousel.slides.map((s, i) =>
+                              i === index ? { ...s, primaryButtonText: e.target.value } : s,
+                            ),
                           },
-                        }));
-                      }}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Primary Button Link</Label>
-                    <Input
-                      value={slide.primaryButtonLink}
-                      onChange={(e) => {
-                        setContent((prev) => ({
-                          ...prev,
-                          home: {
-                            ...prev.home,
-                            heroCarousel: {
-                              ...prev.home.heroCarousel,
-                              slides: prev.home.heroCarousel.slides.map((s, i) =>
-                                i === index ? { ...s, primaryButtonLink: e.target.value } : s,
-                              ),
-                            },
-                          },
-                        }));
-                      }}
-                      placeholder="/admissions"
-                    />
-                  </div>
+                        },
+                      }));
+                    }}
+                  />
                 </div>
-                <div className="grid gap-3 md:grid-cols-2">
-                  <div className="space-y-2">
-                    <Label>Secondary Button Text</Label>
-                    <Input
-                      value={slide.secondaryButtonText}
-                      onChange={(e) => {
-                        setContent((prev) => ({
-                          ...prev,
-                          home: {
-                            ...prev.home,
-                            heroCarousel: {
-                              ...prev.home.heroCarousel,
-                              slides: prev.home.heroCarousel.slides.map((s, i) =>
-                                i === index ? { ...s, secondaryButtonText: e.target.value } : s,
-                              ),
-                            },
+                <div className="space-y-2">
+                  <Label>Secondary Button Text</Label>
+                  <Input
+                    value={slide.secondaryButtonText}
+                    onChange={(e) => {
+                      setContent((prev) => ({
+                        ...prev,
+                        home: {
+                          ...prev.home,
+                          heroCarousel: {
+                            ...prev.home.heroCarousel,
+                            slides: prev.home.heroCarousel.slides.map((s, i) =>
+                              i === index ? { ...s, secondaryButtonText: e.target.value } : s,
+                            ),
                           },
-                        }));
-                      }}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Secondary Button Link</Label>
-                    <Input
-                      value={slide.secondaryButtonLink}
-                      onChange={(e) => {
-                        setContent((prev) => ({
-                          ...prev,
-                          home: {
-                            ...prev.home,
-                            heroCarousel: {
-                              ...prev.home.heroCarousel,
-                              slides: prev.home.heroCarousel.slides.map((s, i) =>
-                                i === index ? { ...s, secondaryButtonLink: e.target.value } : s,
-                              ),
-                            },
-                          },
-                        }));
-                      }}
-                      placeholder="/about"
-                    />
-                  </div>
+                        },
+                      }));
+                    }}
+                  />
                 </div>
               </div>
             ))}
@@ -1098,178 +1024,7 @@ const Admin = () => {
         </CardContent>
       </Card>
 
-      <Card 
-        className="shadow-soft"
-        onMouseEnter={() => setActiveSubSection('footer')}
-        onFocus={() => setActiveSubSection('footer')}
-      >
-        <CardHeader>
-          <CardTitle>Social Media Links</CardTitle>
-          <CardDescription>Social media profile URLs for the footer.</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="footerFacebook">Facebook URL</Label>
-            <Input
-              id="footerFacebook"
-              value={content.footer.socialMedia.facebook}
-              onChange={(e) =>
-                setContent((prev) => ({
-                  ...prev,
-                  footer: {
-                    ...prev.footer,
-                    socialMedia: { ...prev.footer.socialMedia, facebook: e.target.value },
-                  },
-                }))
-              }
-              placeholder="https://facebook.com/..."
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="footerTwitter">Twitter URL</Label>
-            <Input
-              id="footerTwitter"
-              value={content.footer.socialMedia.twitter}
-              onChange={(e) =>
-                setContent((prev) => ({
-                  ...prev,
-                  footer: {
-                    ...prev.footer,
-                    socialMedia: { ...prev.footer.socialMedia, twitter: e.target.value },
-                  },
-                }))
-              }
-              placeholder="https://twitter.com/..."
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="footerInstagram">Instagram URL</Label>
-            <Input
-              id="footerInstagram"
-              value={content.footer.socialMedia.instagram}
-              onChange={(e) =>
-                setContent((prev) => ({
-                  ...prev,
-                  footer: {
-                    ...prev.footer,
-                    socialMedia: { ...prev.footer.socialMedia, instagram: e.target.value },
-                  },
-                }))
-              }
-              placeholder="https://instagram.com/..."
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="footerLinkedin">LinkedIn URL</Label>
-            <Input
-              id="footerLinkedin"
-              value={content.footer.socialMedia.linkedin}
-              onChange={(e) =>
-                setContent((prev) => ({
-                  ...prev,
-                  footer: {
-                    ...prev.footer,
-                    socialMedia: { ...prev.footer.socialMedia, linkedin: e.target.value },
-                  },
-                }))
-              }
-              placeholder="https://linkedin.com/..."
-            />
-          </div>
-        </CardContent>
-      </Card>
-
-      <Card 
-        className="shadow-soft"
-        onMouseEnter={() => setActiveSubSection('footer')}
-        onFocus={() => setActiveSubSection('footer')}
-      >
-        <CardHeader>
-          <CardTitle>Quick Links</CardTitle>
-          <CardDescription>Navigation links shown in the footer.</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="space-y-4">
-            {content.footer.quickLinks.map((link, index) => (
-              <div key={index} className="space-y-3 rounded-lg border p-4">
-                <div className="flex items-center justify-between gap-2">
-                  <Label className="text-xs uppercase tracking-wide text-muted-foreground">Link {index + 1}</Label>
-                  <Button
-                    type="button"
-                    size="icon"
-                    variant="ghost"
-                    onClick={() => {
-                      setContent((prev) => ({
-                        ...prev,
-                        footer: {
-                          ...prev.footer,
-                          quickLinks: prev.footer.quickLinks.filter((_, i) => i !== index),
-                        },
-                      }));
-                    }}
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                </div>
-                <div className="grid gap-3 md:grid-cols-2">
-                  <div className="space-y-2">
-                    <Label>Label</Label>
-                    <Input
-                      value={link.label}
-                      onChange={(e) => {
-                        setContent((prev) => ({
-                          ...prev,
-                          footer: {
-                            ...prev.footer,
-                            quickLinks: prev.footer.quickLinks.map((l, i) =>
-                              i === index ? { ...l, label: e.target.value } : l,
-                            ),
-                          },
-                        }));
-                      }}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>URL Path</Label>
-                    <Input
-                      value={link.to}
-                      onChange={(e) => {
-                        setContent((prev) => ({
-                          ...prev,
-                          footer: {
-                            ...prev.footer,
-                            quickLinks: prev.footer.quickLinks.map((l, i) =>
-                              i === index ? { ...l, to: e.target.value } : l,
-                            ),
-                          },
-                        }));
-                      }}
-                      placeholder="/about"
-                    />
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-          <Button
-            type="button"
-            variant="outline"
-            className="flex items-center gap-2"
-            onClick={() => {
-              setContent((prev) => ({
-                ...prev,
-                footer: {
-                  ...prev.footer,
-                  quickLinks: [...prev.footer.quickLinks, { label: "", to: "" }],
-                },
-              }));
-            }}
-          >
-            <Plus className="h-4 w-4" />
-            Add Quick Link
-          </Button>
-        </CardContent>
-      </Card>
+      
 
       <Card 
         className="shadow-soft"
@@ -1424,35 +1179,7 @@ const Admin = () => {
                             </CardContent>
                         </Card>
 
-                        <Card className="shadow-soft">
-                            <CardHeader>
-                                <CardTitle>Advanced JSON</CardTitle>
-          <CardDescription>Export or import the entire site content JSON. Useful for backups or migrating content.</CardDescription>
-                            </CardHeader>
-                            <CardContent className="space-y-4">
-                                <div className="space-y-2">
-                                    <Label htmlFor="jsonContent">Site Content JSON</Label>
-                                    <Textarea
-                                        id="jsonContent"
-                                        value={jsonValue}
-                                        onChange={(e) => setJsonValue(e.target.value)}
-                                        rows={10}
-                                        placeholder="Click Export JSON to view the current configuration..."
-                                    />
-            {importError && <p className="mt-1 text-sm text-destructive">{importError}</p>}
-                                </div>
-                                <div className="flex flex-wrap gap-3">
-            <Button type="button" variant="outline" className="flex items-center gap-2" onClick={handleExport}>
-                                        <Download className="h-4 w-4" />
-                                        Export JSON
-                                    </Button>
-            <Button type="button" className="flex items-center gap-2" onClick={handleImport}>
-                                        <Upload className="h-4 w-4" />
-                                        Import JSON
-                                    </Button>
-                                </div>
-                            </CardContent>
-                        </Card>
+                        
     </>
   );
 
@@ -3580,9 +3307,7 @@ const Admin = () => {
               </SidebarMenu>
             </SidebarGroup>
           </SidebarContent>
-          <SidebarFooter className="border-t px-4 py-4 text-xs text-sidebar-foreground/70">
-            Changes are stored locally in your browser.
-          </SidebarFooter>
+          
         </Sidebar>
         <SidebarInset className="flex-1 overflow-hidden min-w-0">
           <div className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 px-4 py-2 flex items-center justify-between">
