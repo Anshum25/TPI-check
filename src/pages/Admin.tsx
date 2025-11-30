@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import type { ReactNode, ChangeEvent } from "react";
+import type { ReactNode, ChangeEvent, FormEvent } from "react";
 import type { LucideIcon } from "lucide-react";
 import { useContent, DEFAULT_CONTENT } from "@/lib/content";
 import { useToast } from "@/hooks/use-toast";
@@ -56,6 +56,9 @@ import {
   PenLine,
   ExternalLink,
   X,
+  Lock,
+  Eye,
+  EyeOff,
 } from "lucide-react";
 
 export type AdminSection = {
@@ -201,6 +204,14 @@ const adminSections: AdminSection[] = [
     ],
   },
   {
+    id: "change-password",
+    label: "Change Password",
+    description: "Update the admin access password for this panel.",
+    icon: Lock,
+    type: "static",
+    route: "/admin",
+  },
+  {
     id: "not-found",
     label: "404 Page",
     description: "Fallback screen for unknown routes.",
@@ -229,12 +240,22 @@ const resolveGalleryImageSrc = (src: string) => {
 };
 
 const Admin = () => {
-    const { content, setContent, resetContent, exportJSON, importJSON } = useContent();
-    const { toast } = useToast();
-    const [jsonValue, setJsonValue] = useState("");
-    const [importError, setImportError] = useState<string | null>(null);
+  const { content, setContent, resetContent, exportJSON, importJSON } = useContent();
+  const { toast } = useToast();
+  const [jsonValue, setJsonValue] = useState("");
+  const [importError, setImportError] = useState<string | null>(null);
   const [activeSection, setActiveSection] = useState<AdminSection["id"]>("home");
   const [activeSubSection, setActiveSubSection] = useState<string | null>(null);
+  const [isAuthed, setIsAuthed] = useState(false);
+  const [loginPassword, setLoginPassword] = useState("");
+  const [oldPassword, setOldPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [showLoginPassword, setShowLoginPassword] = useState(false);
+  const [showOldPassword, setShowOldPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [hasExistingPassword, setHasExistingPassword] = useState(false);
   const courseDetailIconOptions = ["clock", "calendar", "map", "award", "users"] as const;
 
   const selectedSection = adminSections.find((section) => section.id === activeSection) ?? adminSections[0];
@@ -263,21 +284,38 @@ const Admin = () => {
       document.documentElement.style.overflow = prevHtmlOverflow;
       document.body.style.overflow = prevBodyOverflow;
     };
-
-  const handleAddContactCard = () => {
-    setContent((prev) => ({
-      ...prev,
-      contact: { ...prev.contact, cards: [...prev.contact.cards, { type: "address", title: "Address", lines: [""] }] },
-    }));
-  };
-
-  const handleRemoveContactCard = (index: number) => {
-    setContent((prev) => ({
-      ...prev,
-      contact: { ...prev.contact, cards: prev.contact.cards.filter((_, i) => i !== index) },
-    }));
-  };
   }, []);
+
+  const handleAdminLogin = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    // Frontend-only check against a hardcoded demo password.
+    const demoPassword = "tpi-admin";
+    if (loginPassword === demoPassword) {
+      setIsAuthed(true);
+      setLoginPassword("");
+      toast({ title: "Access granted", description: "You can now edit the site content." });
+    } else {
+      toast({ title: "Incorrect password", description: "Please try again.", variant: "destructive" as any });
+    }
+  };
+
+  const handleChangePasswordSubmit = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    // Frontend-only validation; does not persist anywhere.
+    if (!newPassword) {
+      toast({ title: "New password required", description: "Please enter a new password.", variant: "destructive" as any });
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      toast({ title: "Passwords do not match", description: "New password and confirmation must match.", variant: "destructive" as any });
+      return;
+    }
+    setOldPassword("");
+    setNewPassword("");
+    setConfirmPassword("");
+    setHasExistingPassword(true);
+    toast({ title: "Password updated (demo only)", description: "This change is not persisted; backend logic is not yet implemented." });
+  };
 
     const handleFeatureChange = (index: number, field: "title" | "description", value: string) => {
         setContent((prev) => ({
@@ -2809,34 +2847,6 @@ const Admin = () => {
         onFocus={() => setActiveSubSection('contact-form')}
       >
         <CardHeader>
-          <CardTitle>Course Options</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {content.contact.courseOptions.map((option, index) => (
-            <div key={index} className="rounded border p-4 space-y-2">
-              <div className="flex items-center justify-between">
-                <Label>Option {index + 1}</Label>
-                <Button variant="ghost" size="icon" onClick={() => handleRemoveCourseOption(index)}>
-                  <Trash2 className="h-4 w-4" />
-                </Button>
-              </div>
-              <Input placeholder="Value (e.g. slug)" value={option.value} onChange={(e) => handleCourseOptionChange(index, "value", e.target.value)} />
-              <Input placeholder="Label" value={option.label} onChange={(e) => handleCourseOptionChange(index, "label", e.target.value)} />
-            </div>
-          ))}
-          <Button variant="outline" className="flex items-center gap-2" onClick={handleAddCourseOption}>
-            <Plus className="h-4 w-4" />
-            Add Option
-          </Button>
-        </CardContent>
-      </Card>
-
-      <Card 
-        className="shadow-soft"
-        onMouseEnter={() => setActiveSubSection('contact-form')}
-        onFocus={() => setActiveSubSection('contact-form')}
-      >
-        <CardHeader>
           <CardTitle>Contact Cards</CardTitle>
           <CardDescription>Address, phone, email, and hours information.</CardDescription>
         </CardHeader>
@@ -2874,18 +2884,6 @@ const Admin = () => {
         </CardContent>
       </Card>
 
-      <Card 
-        className="shadow-soft"
-        onMouseEnter={() => setActiveSubSection('contact-map')}
-        onFocus={() => setActiveSubSection('contact-map')}
-      >
-        <CardHeader>
-          <CardTitle>Map Note</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <Textarea rows={2} value={content.contact.mapNote} onChange={(e) => setContent((prev) => ({ ...prev, contact: { ...prev.contact, mapNote: e.target.value } }))} />
-        </CardContent>
-      </Card>
     </>
   );
 
@@ -2972,6 +2970,33 @@ const Admin = () => {
         cards: prev.contact.cards.map((card, i) =>
           i === cardIndex ? { ...card, lines: card.lines.filter((_, li) => li !== lineIndex) } : card,
         ),
+      },
+    }));
+  };
+
+  const handleAddContactCard = () => {
+    setContent((prev) => ({
+      ...prev,
+      contact: {
+        ...prev.contact,
+        cards: [
+          ...prev.contact.cards,
+          {
+            type: "address",
+            title: "Address",
+            lines: [""],
+          },
+        ],
+      },
+    }));
+  };
+
+  const handleRemoveContactCard = (index: number) => {
+    setContent((prev) => ({
+      ...prev,
+      contact: {
+        ...prev.contact,
+        cards: prev.contact.cards.filter((_, i) => i !== index),
       },
     }));
   };
@@ -3225,7 +3250,11 @@ const Admin = () => {
     handleFacultyMemberStringListChange(index, field, [...content.faculty.members[index][field], ""]);
   };
 
-  const handleFacultyMemberStringItemRemove = (index: number, field: "specialization" | "achievements", itemIndex: number) => {
+  const handleFacultyMemberStringItemRemove = (
+    index: number,
+    field: "specialization" | "achievements",
+    itemIndex: number,
+  ) => {
     handleFacultyMemberStringListChange(
       index,
       field,
@@ -3240,9 +3269,22 @@ const Admin = () => {
         <CardDescription>Content displayed on the fallback page.</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
-        <Input placeholder="Title" value={content.notFound.title} onChange={(e) => handleNotFoundChange("title", e.target.value)} />
-        <Textarea rows={2} placeholder="Description" value={content.notFound.description} onChange={(e) => handleNotFoundChange("description", e.target.value)} />
-        <Input placeholder="Link Label" value={content.notFound.linkLabel} onChange={(e) => handleNotFoundChange("linkLabel", e.target.value)} />
+        <Input
+          placeholder="Title"
+          value={content.notFound.title}
+          onChange={(e) => handleNotFoundChange("title", e.target.value)}
+        />
+        <Textarea
+          rows={2}
+          placeholder="Description"
+          value={content.notFound.description}
+          onChange={(e) => handleNotFoundChange("description", e.target.value)}
+        />
+        <Input
+          placeholder="Link Label"
+          value={content.notFound.linkLabel}
+          onChange={(e) => handleNotFoundChange("linkLabel", e.target.value)}
+        />
       </CardContent>
     </Card>
   );
@@ -3254,6 +3296,80 @@ const Admin = () => {
     }));
   };
 
+  const renderChangePasswordEditor = () => (
+    <Card className="shadow-soft">
+      <CardHeader>
+        <CardTitle>Change Admin Password</CardTitle>
+        <CardDescription>Update the password required to access this admin panel.</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <form className="space-y-4" onSubmit={handleChangePasswordSubmit}>
+          <div className="space-y-2">
+            <Label htmlFor="oldPassword">Old Password</Label>
+            <div className="flex items-center gap-2">
+              <Input
+                id="oldPassword"
+                type={showOldPassword ? "text" : "password"}
+                value={oldPassword}
+                onChange={(e) => setOldPassword(e.target.value)}
+              />
+              <Button
+                type="button"
+                variant="outline"
+                size="icon"
+                onClick={() => setShowOldPassword((v) => !v)}
+              >
+                {showOldPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+              </Button>
+            </div>
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="newPassword">New Password</Label>
+            <div className="flex items-center gap-2">
+              <Input
+                id="newPassword"
+                type={showNewPassword ? "text" : "password"}
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                required
+              />
+              <Button
+                type="button"
+                variant="outline"
+                size="icon"
+                onClick={() => setShowNewPassword((v) => !v)}
+              >
+                {showNewPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+              </Button>
+            </div>
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="confirmPassword">Confirm New Password</Label>
+            <div className="flex items-center gap-2">
+              <Input
+                id="confirmPassword"
+                type={showConfirmPassword ? "text" : "password"}
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                required
+              />
+              <Button
+                type="button"
+                variant="outline"
+                size="icon"
+                onClick={() => setShowConfirmPassword((v) => !v)}
+              >
+                {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+              </Button>
+            </div>
+          </div>
+          <Button type="submit" className="w-full">
+            Change Password
+          </Button>
+        </form>
+      </CardContent>
+    </Card>
+  );
 
   const renderSectionContent = () => {
     switch (selectedSection.id) {
@@ -3279,6 +3395,8 @@ const Admin = () => {
         return renderFaqEditor();
       case "contact":
         return renderContactEditor();
+      case "change-password":
+        return renderChangePasswordEditor();
       case "faculty":
         return renderFacultyEditor();
       case "not-found":
@@ -3290,6 +3408,50 @@ const Admin = () => {
 
   const editableSections = adminSections.filter((section) => section.type !== "static");
   const staticSections = adminSections.filter((section) => section.type === "static");
+
+  // Gate the admin UI behind a simple login screen
+  if (!isAuthed) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <Card className="w-full max-w-md shadow-soft">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Lock className="h-5 w-5" />
+              Admin Access
+            </CardTitle>
+            <CardDescription>Enter the admin password to access this panel.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleAdminLogin} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="adminPassword">Password</Label>
+                <div className="flex items-center gap-2">
+                  <Input
+                    id="adminPassword"
+                    type={showLoginPassword ? "text" : "password"}
+                    value={loginPassword}
+                    onChange={(e) => setLoginPassword(e.target.value)}
+                    required
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="icon"
+                    onClick={() => setShowLoginPassword((v) => !v)}
+                  >
+                    {showLoginPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </Button>
+                </div>
+              </div>
+              <Button type="submit" className="w-full">
+                Login
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <SidebarProvider>
