@@ -142,6 +142,7 @@ export type SiteContent = {
     members: {
       name: string;
       role: string;
+      imageUrl?: string;
       imageInitials: string;
       education: string;
       experience: string;

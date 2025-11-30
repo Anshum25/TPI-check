@@ -263,6 +263,20 @@ const Admin = () => {
       document.documentElement.style.overflow = prevHtmlOverflow;
       document.body.style.overflow = prevBodyOverflow;
     };
+
+  const handleAddContactCard = () => {
+    setContent((prev) => ({
+      ...prev,
+      contact: { ...prev.contact, cards: [...prev.contact.cards, { type: "address", title: "Address", lines: [""] }] },
+    }));
+  };
+
+  const handleRemoveContactCard = (index: number) => {
+    setContent((prev) => ({
+      ...prev,
+      contact: { ...prev.contact, cards: prev.contact.cards.filter((_, i) => i !== index) },
+    }));
+  };
   }, []);
 
     const handleFeatureChange = (index: number, field: "title" | "description", value: string) => {
@@ -1764,6 +1778,7 @@ const Admin = () => {
             ...prev,
             admissions: { ...prev.admissions, whyChoose: next },
           })),
+        'admissions-why-choose'
       )}
 
       <Card 
@@ -2923,20 +2938,6 @@ const Admin = () => {
     }));
   };
 
-  const handleAddContactCard = () => {
-    setContent((prev) => ({
-      ...prev,
-      contact: { ...prev.contact, cards: [...prev.contact.cards, { type: "address", title: "Address", lines: [""] }] },
-    }));
-  };
-
-  const handleRemoveContactCard = (index: number) => {
-    setContent((prev) => ({
-      ...prev,
-      contact: { ...prev.contact, cards: prev.contact.cards.filter((_, i) => i !== index) },
-    }));
-  };
-
   const handleContactCardLineChange = (cardIndex: number, lineIndex: number, value: string) => {
     setContent((prev) => ({
       ...prev,
@@ -3008,6 +3009,30 @@ const Admin = () => {
                   <Trash2 className="h-4 w-4" />
                 </Button>
               </div>
+
+              {/* Display picture controls first */}
+              <div className="space-y-2">
+                <Label>Display Picture</Label>
+                <div className="flex items-center gap-4">
+                  {member.imageUrl ? (
+                    <img src={member.imageUrl} alt={member.name || `Member ${index + 1}`} className="h-16 w-16 rounded-full object-cover border" />
+                  ) : (
+                    <div className="h-16 w-16 rounded-full bg-secondary flex items-center justify-center text-sm text-muted-foreground border">No Image</div>
+                  )}
+                  <input id={`faculty-image-${index}`} type="file" accept="image/*" className="hidden" onChange={(e) => handleFacultyMemberImageChange(index, e.currentTarget.files && e.currentTarget.files[0] ? e.currentTarget.files[0] : null)} />
+                  <div className="flex items-center gap-4">
+                    <Button variant="outline" size="sm" type="button" onClick={() => document.getElementById(`faculty-image-${index}`)?.click()}>
+                      Upload Image
+                    </Button>
+                    {member.imageUrl && (
+                      <Button variant="ghost" size="sm" type="button" onClick={() => handleFacultyMemberChange(index, "imageUrl", "")}>
+                        Remove Image
+                      </Button>
+                    )}
+                  </div>
+                </div>
+              </div>
+
               <Input placeholder="Name" value={member.name} onChange={(e) => handleFacultyMemberChange(index, "name", e.target.value)} />
               <Input placeholder="Role" value={member.role} onChange={(e) => handleFacultyMemberChange(index, "role", e.target.value)} />
               <div className="grid gap-4 md:grid-cols-2">
@@ -3016,6 +3041,7 @@ const Admin = () => {
               </div>
               <Input placeholder="Education" value={member.education} onChange={(e) => handleFacultyMemberChange(index, "education", e.target.value)} />
               <Textarea rows={3} placeholder="Description" value={member.description} onChange={(e) => handleFacultyMemberChange(index, "description", e.target.value)} />
+
               <div className="space-y-2">
                 <Label>Specializations</Label>
                 {member.specialization.map((item, specIndex) => (
@@ -3101,7 +3127,7 @@ const Admin = () => {
 
   const handleFacultyMemberChange = (
     index: number,
-    field: "name" | "role" | "imageInitials" | "education" | "experience" | "description",
+    field: "name" | "role" | "imageInitials" | "education" | "experience" | "description" | "imageUrl",
     value: string,
   ) => {
     setContent((prev) => ({
@@ -3113,6 +3139,21 @@ const Admin = () => {
         ),
       },
     }));
+  };
+
+  const handleFacultyMemberImageChange = (index: number, file: File | null) => {
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      setContent((prev) => ({
+        ...prev,
+        faculty: {
+          ...prev.faculty,
+          members: prev.faculty.members.map((m, i) => (i === index ? { ...m, imageUrl: (reader.result as string) } : m)),
+        },
+      }));
+    };
+    reader.readAsDataURL(file);
   };
 
   const handleFacultyMemberStringListChange = (

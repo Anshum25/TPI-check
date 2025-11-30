@@ -34,7 +34,7 @@ const Hero = () => {
   const prevSlide = () => setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length);
 
   return (
-    <div className="relative h-[600px] overflow-hidden">
+    <div className="relative h-[630px] overflow-hidden">
       {slides.map((slide, index) => (
         <div
           key={index}

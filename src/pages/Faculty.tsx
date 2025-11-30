@@ -28,9 +28,13 @@ const Faculty = () => {
                   <CardContent className="p-8">
                     <div className="grid md:grid-cols-[200px,1fr] gap-8">
                       <div className="flex flex-col items-center md:items-start">
-                        <div className="h-40 w-40 rounded-full gradient-hero flex items-center justify-center text-primary-foreground mb-4">
-                          <span className="text-5xl font-bold">{member.imageInitials}</span>
-                        </div>
+                        {member.imageUrl ? (
+                          <img src={member.imageUrl} alt={member.name} className="h-40 w-40 rounded-full object-cover mb-4 border" />
+                        ) : (
+                          <div className="h-40 w-40 rounded-full gradient-hero flex items-center justify-center text-primary-foreground mb-4">
+                            <span className="text-5xl font-bold">{member.imageInitials}</span>
+                          </div>
+                        )}
                         <div className="flex flex-wrap gap-2 justify-center md:justify-start">
                           {member.specialization.map((spec, idx) => (
                             <Badge key={idx} variant="secondary">{spec}</Badge>
