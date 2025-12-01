@@ -92,13 +92,15 @@ const Hero = () => {
         <ChevronRight className="h-6 w-6" />
       </button>
 
-      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex space-x-2">
+      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-3">
         {slides.map((_, index) => (
           <button
             key={index}
             onClick={() => setCurrentSlide(index)}
-            className={`h-2 rounded-full transition-all ${
-              index === currentSlide ? "w-8 bg-white" : "w-2 bg-white/50"
+            className={`transition-all duration-300 rounded-full ${
+              index === currentSlide
+                ? "w-8 h-3 bg-white"
+                : "w-3 h-3 bg-white/60 hover:bg-white/80"
             }`}
             aria-label={`Go to slide ${index + 1}`}
           />
