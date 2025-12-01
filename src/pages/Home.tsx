@@ -60,24 +60,40 @@ const Home = () => {
         
 
         {/* Learn English + Director's Desk */}
-        <section className="py-20">
+        <section className="py-20 md:py-24 relative">
           <div className="container mx-auto px-4">
-            <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 text-foreground">
-              {home.heroTitle}
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-10 items-start">
-              <div>
-                <h3 className="text-2xl md:text-3xl font-bold text-foreground leading-tight mb-3 ">
-                  {home.heroTitle}
-                </h3>
-                <p className="text-base md:text-lg text-muted-foreground">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-16 items-center">
+              {/* Left Content */}
+              <div className="space-y-6">
+                <div>
+                  <span className="inline-block px-3 py-1 bg-primary/10 text-primary text-xs font-semibold uppercase tracking-wider rounded-full mb-4">
+                    Our Methodology
+                  </span>
+                  <h2 className="text-3xl md:text-4xl font-bold text-foreground leading-tight">
+                    {home.heroTitle}
+                  </h2>
+                </div>
+                <p className="text-lg text-muted-foreground leading-relaxed">
                   {home.heroSubtitle}
                 </p>
+                <div className="pt-6 border-t border-border">
+                  <p className="text-sm font-semibold text-primary mb-3 uppercase tracking-wider">Key Point</p>
+                  <p className="text-foreground font-semibold text-lg">
+                    Direct mentorship from the institute founders with proven teaching methods
+                  </p>
+                </div>
               </div>
-              <div>
-                <div className="text-right text-sm md:text-base font-medium text-muted-foreground mb-2">Director's desk</div>
-                <div className="rounded-2xl overflow-hidden bg-card shadow-soft">
-                  <div className="aspect-video w-full">
+
+              {/* Right - Video */}
+              <div className="relative">
+                <div className="absolute -top-6 -right-6 w-24 h-24 bg-accent/10 rounded-3xl blur-2xl" />
+                <div className="absolute -bottom-10 -left-10 w-32 h-32 bg-primary/10 rounded-3xl blur-3xl" />
+
+                <div className="relative bg-white dark:bg-slate-950 rounded-2xl shadow-medium overflow-hidden border border-border/50 hover:shadow-lg transition-shadow duration-300">
+                  <div className="absolute top-4 right-4 z-10 bg-background/80 backdrop-blur px-3 py-1 rounded-full">
+                    <p className="text-xs font-semibold text-foreground uppercase tracking-wider">Director's Desk</p>
+                  </div>
+                  <div className="aspect-video w-full bg-muted">
                     <iframe
                       src={home.directorVideoUrl}
                       title="Director's desk video"
