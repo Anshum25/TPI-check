@@ -2,9 +2,11 @@ import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Menu, X, Phone } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import RequestCallbackDialog from "@/components/RequestCallbackDialog";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [callbackOpen, setCallbackOpen] = useState(false);
   const location = useLocation();
 
   const isActive = (path: string) => location.pathname === path;
@@ -51,7 +53,7 @@ const Header = () => {
                 {link.label}
               </Link>
             ))}
-            <Button size="sm" className="gradient-accent">
+            <Button size="sm" className="gradient-accent" type="button" onClick={() => setCallbackOpen(true)}>
               <Phone className="mr-2 h-4 w-4" />
               Request Callback
             </Button>
@@ -80,7 +82,7 @@ const Header = () => {
                   {link.label}
                 </Link>
               ))}
-              <Button size="sm" className="gradient-accent w-full">
+              <Button size="sm" className="gradient-accent w-full" type="button" onClick={() => setCallbackOpen(true)}>
                 <Phone className="mr-2 h-4 w-4" />
                 Request Callback
               </Button>
@@ -88,6 +90,7 @@ const Header = () => {
           </nav>
         )}
       </div>
+      <RequestCallbackDialog open={callbackOpen} onOpenChange={setCallbackOpen} />
     </header>
   );
 };

@@ -11,7 +11,7 @@ import { useContent } from "@/lib/content";
 const Home = () => {
   const location = useLocation();
   const { content } = useContent();
-  const { home } = content;
+  const { home, admissions } = content;
 
   const featureIcons = [
     <Target key="icon-0" className="h-6 w-6" />,
@@ -52,6 +52,8 @@ const Home = () => {
             </div>
           </div>
         </section>
+
+        
 
         {/* Learn English + Director's Desk */}
         <section className="py-20">
@@ -152,6 +154,23 @@ const Home = () => {
                   </Button>
                 </Link>
               </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Secondary CTA Section (Ready to Get Started?) - shown below the gradient CTA */}
+        <section className="py-20">
+          <div className="container mx-auto px-4 text-center">
+            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-3">{admissions.cta.title}</h2>
+            <p className="text-lg text-muted-foreground max-w-3xl mx-auto mb-3">{admissions.cta.subtitle}</p>
+            <p className="text-sm text-muted-foreground mb-6">{admissions.cta.tagline}</p>
+            <div className="inline-flex items-center gap-3 bg-secondary/30 rounded-full p-2">
+              <a href={`tel:${admissions.cta.phoneNumber}`}>
+                <Button size="lg" className="gradient-accent">{admissions.cta.phoneLabel}</Button>
+              </a>
+              <a href={admissions.cta.directionsUrl} target="_blank" rel="noopener noreferrer">
+                <Button size="lg" variant="outline">{admissions.cta.directionsLabel}</Button>
+              </a>
             </div>
           </div>
         </section>

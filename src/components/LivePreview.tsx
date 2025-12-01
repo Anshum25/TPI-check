@@ -1,4 +1,4 @@
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useState } from "react";
 import { useContent } from "@/lib/content";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -14,6 +14,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Target, Users, Award, BookOpen, Phone, Menu, Facebook, Twitter, Instagram, Linkedin, Mail, MapPin, Clock, Calendar, CheckCircle, TrendingUp, Heart, Star, Image as ImageIcon, HelpCircle, Briefcase } from "lucide-react";
+import RequestCallbackDialog from "@/components/RequestCallbackDialog";
 import heroClassroom from "@/assets/hero-classroom.jpg";
 import speakingConfidence from "@/assets/speaking-confidence.jpg";
 import studentSuccess from "@/assets/student-success.jpg";
@@ -32,6 +33,7 @@ interface LivePreviewProps {
 const LivePreview = ({ selectedSectionId, activeSubSection }: LivePreviewProps) => {
   const { content } = useContent();
   const previewRef = useRef<HTMLDivElement>(null);
+  const [callbackOpen, setCallbackOpen] = useState(false);
   
   // Home page refs
   const heroCarouselRef = useRef<HTMLDivElement>(null);
@@ -58,6 +60,7 @@ const LivePreview = ({ selectedSectionId, activeSubSection }: LivePreviewProps) 
   const admissionsStepsRef = useRef<HTMLDivElement>(null);
   const admissionsDetailsRef = useRef<HTMLDivElement>(null);
   const admissionsTargetGroupsRef = useRef<HTMLDivElement>(null);
+  const admissionsWhyChooseRef = useRef<HTMLDivElement>(null);
   const admissionsCtaRef = useRef<HTMLDivElement>(null);
   
   // Success Stories page refs
@@ -128,6 +131,7 @@ const LivePreview = ({ selectedSectionId, activeSubSection }: LivePreviewProps) 
       'admissions-steps': admissionsStepsRef,
       'admissions-details': admissionsDetailsRef,
       'admissions-target-groups': admissionsTargetGroupsRef,
+      'admissions-why-choose': admissionsWhyChooseRef,
       'admissions-cta': admissionsCtaRef,
       // Success Stories page
       'success-hero': successHeroRef,
@@ -372,6 +376,7 @@ const LivePreview = ({ selectedSectionId, activeSubSection }: LivePreviewProps) 
                   </div>
                 </section>
               </div>
+              <RequestCallbackDialog open={callbackOpen} onOpenChange={setCallbackOpen} />
             </div>
           );
         case "header":
@@ -409,7 +414,7 @@ const LivePreview = ({ selectedSectionId, activeSubSection }: LivePreviewProps) 
                           {link.label}
                         </a>
                       ))}
-                      <Button size="sm" className="gradient-accent flex-shrink-0 text-xs sm:text-sm">
+                      <Button size="sm" className="gradient-accent flex-shrink-0 text-xs sm:text-sm" type="button" onClick={() => setCallbackOpen(true)}>
                         <Phone className="mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" />
                         <span className="hidden lg:inline">Request Callback</span>
                         <span className="lg:hidden">Callback</span>
@@ -757,6 +762,24 @@ const LivePreview = ({ selectedSectionId, activeSubSection }: LivePreviewProps) 
                         </Card>
                       ))}
                     </div>
+                  </div>
+                </section>
+
+                <section ref={admissionsWhyChooseRef} className="py-12 sm:py-20 bg-secondary/30">
+                  <div className="container mx-auto px-2 sm:px-4">
+                    <h2 className="text-xl sm:text-2xl md:text-3xl font-bold mb-8 sm:mb-12 text-center">Why Choose Us?</h2>
+                    <Card className="max-w-4xl mx-auto shadow-medium">
+                      <CardContent className="pt-6">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
+                          {admissions.whyChoose.map((reason, index) => (
+                            <div key={index} className="flex items-start space-x-2 sm:space-x-3">
+                              <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-accent flex-shrink-0 mt-0.5" />
+                              <span className="text-xs sm:text-sm text-muted-foreground">{reason}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </CardContent>
+                    </Card>
                   </div>
                 </section>
 
@@ -1200,9 +1223,13 @@ const LivePreview = ({ selectedSectionId, activeSubSection }: LivePreviewProps) 
                           <CardContent className="p-8">
                             <div className="grid md:grid-cols-[200px,1fr] gap-8">
                               <div className="flex flex-col items-center md:items-start">
-                                <div className="h-40 w-40 rounded-full gradient-hero flex items-center justify-center text-primary-foreground mb-4">
-                                  <span className="text-5xl font-bold">{member.imageInitials}</span>
-                                </div>
+                                {member.imageUrl ? (
+                                  <img src={member.imageUrl} alt={member.name} className="h-40 w-40 rounded-full object-cover mb-4 border" />
+                                ) : (
+                                  <div className="h-40 w-40 rounded-full gradient-hero flex items-center justify-center text-primary-foreground mb-4">
+                                    <span className="text-5xl font-bold">{member.imageInitials}</span>
+                                  </div>
+                                )}
                                 <div className="flex flex-wrap gap-2 justify-center md:justify-start">
                                   {member.specialization.map((spec, idx) => (
                                     <Badge key={idx} variant="secondary">{spec}</Badge>

@@ -1,41 +1,9 @@
-import { useState, type FormEvent, type ChangeEvent } from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import TestimonialCard from "@/components/TestimonialCard";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { useToast } from "@/hooks/use-toast";
-import { Star } from "lucide-react";
 
 const Reviews = () => {
-  const { toast } = useToast();
-  const [open, setOpen] = useState(false);
-  const [form, setForm] = useState({
-    name: "",
-    role: "",
-    rating: 5,
-    content: "",
-  });
-
-  const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    setForm((f) => ({ ...f, [name]: value }));
-  };
-
-  const handleRatingChange = (value: number) => setForm((f) => ({ ...f, rating: value }));
-
-  const handleSubmit = (e: FormEvent) => {
-    e.preventDefault();
-    toast({
-      title: "Thank you!",
-      description: "Your review has been submitted.",
-    });
-    setForm({ name: "", role: "", rating: 5, content: "" });
-    setOpen(false);
-  };
   const testimonials = [
     {
       name: "Priya Sharma",
@@ -129,64 +97,17 @@ const Reviews = () => {
           <div className="container mx-auto px-4 text-center">
             <h2 className="text-3xl font-bold mb-8">Want to Share Your Experience?</h2>
             <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
-              We'd love to hear about your journey with us. Your feedback helps us improve and inspires others to take the first step.
+              We'd love to hear about your journey with us. Please leave your review on Google so others can see your experience.
             </p>
-            <Dialog open={open} onOpenChange={setOpen}>
-              <DialogTrigger asChild>
-                <Button className="inline-flex items-center justify-center px-8 py-3 rounded-lg gradient-accent text-accent-foreground font-semibold hover:opacity-90 transition-opacity">
-                  Submit Your Review
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="sm:max-w-lg">
-                <DialogHeader>
-                  <DialogTitle>Submit Your Review</DialogTitle>
-                  <DialogDescription>
-                    Share your experience with us. Your feedback may be featured on this page.
-                  </DialogDescription>
-                </DialogHeader>
-                <form onSubmit={handleSubmit} className="space-y-4">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="name">Full Name *</Label>
-                      <Input id="name" name="name" value={form.name} onChange={handleChange} required placeholder="Your name" />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="role">Role</Label>
-                      <Input id="role" name="role" value={form.role} onChange={handleChange} placeholder="e.g., Student, Engineer" />
-                    </div>
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Rating *</Label>
-                    <div className="flex items-center gap-1">
-                      {[1, 2, 3, 4, 5].map((r) => (
-                        <button
-                          key={r}
-                          type="button"
-                          aria-label={`Rate ${r} star${r > 1 ? 's' : ''}`}
-                          onClick={() => handleRatingChange(r)}
-                          className="p-1 rounded hover:scale-105 transition-transform"
-                        >
-                          <Star
-                            className={`${form.rating >= r ? "fill-red-500 stroke-red-500" : "stroke-gray-300"}`}
-                            size={22}
-                          />
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="content">Your Review *</Label>
-                    <Textarea id="content" name="content" value={form.content} onChange={handleChange} rows={4} required placeholder="Write your feedback here..." />
-                  </div>
-                  <DialogFooter>
-                    <Button type="button" variant="ghost" onClick={() => setOpen(false)}>
-                      Cancel
-                    </Button>
-                    <Button type="submit" className="gradient-accent">Submit</Button>
-                  </DialogFooter>
-                </form>
-              </DialogContent>
-            </Dialog>
+            <a
+              href="https://www.google.com/search?q=turning+point+institute#lrd=0x395e84cf0a8203a1:0xd1a3ec8eb1a3e77e,3,,,,"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <Button className="inline-flex items-center justify-center px-8 py-3 rounded-lg gradient-accent text-accent-foreground font-semibold hover:opacity-90 transition-opacity">
+                Submit Your Review
+              </Button>
+            </a>
           </div>
         </section>
       </main>
