@@ -16,6 +16,24 @@ const JoinUsSection = () => {
             </p>
           </div>
 
+          {/* Transformation Journey */}
+          <div className="mb-14 md:mb-16 flex items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-sm font-bold text-primary">1</div>
+              <p className="text-sm font-medium text-foreground hidden md:block">Basics</p>
+            </div>
+            <div className="flex-1 h-1 bg-gradient-to-r from-primary to-transparent rounded-full" />
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-sm font-bold text-primary">2</div>
+              <p className="text-sm font-medium text-foreground hidden md:block">Intermediate</p>
+            </div>
+            <div className="flex-1 h-1 bg-gradient-to-r from-primary via-accent to-transparent rounded-full" />
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full gradient-accent flex items-center justify-center text-sm font-bold text-white">3</div>
+              <p className="text-sm font-medium text-foreground hidden md:block">Fluent</p>
+            </div>
+          </div>
+
           {/* Split Layout */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-stretch mb-16">
             {/* Left - Main Content */}
