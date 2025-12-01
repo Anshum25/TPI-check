@@ -4,6 +4,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import Hero from "@/components/Hero";
 import Differentiators from "@/components/Differentiators";
+import JoinUsSection from "@/components/JoinUsSection";
 import TestimonialCard from "@/components/TestimonialCard";
 import { Button } from "@/components/ui/button";
 import { Target, Users, Award, BookOpen } from "lucide-react";
@@ -28,6 +29,7 @@ const Home = () => {
       <main className="flex-1">
         <Hero />
         <Differentiators />
+        <JoinUsSection />
 
         {/* Features Section */}
         <section className="py-20 bg-secondary/30">
