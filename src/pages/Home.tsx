@@ -5,6 +5,7 @@ import Footer from "@/components/Footer";
 import Hero from "@/components/Hero";
 import Differentiators from "@/components/Differentiators";
 import JoinUsSection from "@/components/JoinUsSection";
+import ActivityVideos from "@/components/ActivityVideos";
 import TestimonialCard from "@/components/TestimonialCard";
 import { Button } from "@/components/ui/button";
 import { Target, Users, Award, BookOpen } from "lucide-react";
