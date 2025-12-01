@@ -32,26 +32,41 @@ const Home = () => {
         <Differentiators />
         <JoinUsSection />
 
-        {/* Features Section */}
-        <section className="py-20 bg-secondary/30">
+        {/* Achievements Section */}
+        <section className="py-12 md:py-16">
           <div className="container mx-auto px-4">
-            <div className="text-center mb-12">
-              <h2 className="text-3xl md:text-4xl font-bold mb-4">Why Choose Us?</h2>
-              <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                We provide quality education with a focus on practical skills and real-world application
+            <div className="text-center mb-10">
+              <h2 className="text-2xl md:text-3xl font-bold mb-2 text-foreground">What You'll Achieve</h2>
+              <p className="text-muted-foreground max-w-2xl mx-auto">
+                Master English through our proven methodology
               </p>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-              {home.features.map((feature, index) => (
-                <div
-                  key={index}
-                  className="text-center p-6 rounded-lg bg-card shadow-soft hover:shadow-medium transition-all duration-300"
-                >
-                  <div className="inline-flex h-14 w-14 items-center justify-center rounded-full gradient-hero text-primary-foreground mb-4">
-                    {featureIcons[index] ?? <Target className="h-6 w-6" />}
+
+            <div className="max-w-3xl mx-auto space-y-5">
+              {[
+                {
+                  title: "Achieve Clarity",
+                  description: "from Basic to most Advance sentence structures"
+                },
+                {
+                  title: "Achieve Fluency",
+                  description: "with complete understanding of grammar concepts and flow of language"
+                },
+                {
+                  title: "Achieve Confidence",
+                  description: "through numerous stage activities and public speaking sessions"
+                },
+                {
+                  title: "Achieve Perfection",
+                  description: "by mastering all aspects of the language"
+                }
+              ].map((item, index) => (
+                <div key={index} className="flex items-start gap-4 pb-4 border-b border-border/50 last:border-b-0">
+                  <div className="flex-shrink-0 w-1 h-8 gradient-accent rounded-full" />
+                  <div>
+                    <h3 className="text-lg font-bold text-primary mb-1">{item.title}</h3>
+                    <p className="text-muted-foreground text-sm">{item.description}</p>
                   </div>
-                  <h3 className="text-xl font-bold mb-2">{feature.title}</h3>
-                  <p className="text-muted-foreground">{feature.description}</p>
                 </div>
               ))}
             </div>
