@@ -26,34 +26,34 @@ const Header = () => {
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="w-full px-4">
+      <div className="container mx-auto px-4">
         <div className="flex h-16 items-center justify-between">
-          <Link to="/" className="flex items-center space-x-2">
+          <Link to="/" className="flex-shrink-0">
             <div className="flex items-center">
               <img
                 src="https://turningpointinstitute.in/wp-content/uploads/2022/07/cropped-cropped-cropped-Blue-Dark-Minimalist-Initial-T-Letter-Logo-512-x-512-px-1.png"
                 alt="Logo"
                 className="h-10 w-10 rounded-full object-cover"
               />
-              <div className="ml-3">
-                <h1 className="text-lg font-bold leading-tight">TURNING POINT INSTITUTE</h1>
+              <div className="ml-2">
+                <h1 className="text-sm font-bold leading-tight">TURNING POINT</h1>
                 <p className="text-xs text-muted-foreground">THE ONE TO TURN TO</p>
               </div>
             </div>
           </Link>
 
-          <nav className="hidden md:flex items-center space-x-6">
+          <nav className="hidden lg:flex items-center space-x-1">
             {navLinks.map((link) => (
               <Link
                 key={link.path}
                 to={link.path}
-                className={`text-sm font-medium transition-colors hover:text-primary ${isActive(link.path) ? "text-primary" : "text-foreground/60"
+                className={`px-3 py-2 text-sm font-medium transition-colors hover:text-primary ${isActive(link.path) ? "text-primary" : "text-foreground/60"
                   }`}
               >
                 {link.label}
               </Link>
             ))}
-            <Button size="sm" className="gradient-accent" type="button" onClick={() => setCallbackOpen(true)}>
+            <Button size="sm" className="gradient-accent ml-4" type="button" onClick={() => setCallbackOpen(true)}>
               <Phone className="mr-2 h-4 w-4" />
               Request Callback
             </Button>
