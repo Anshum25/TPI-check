@@ -61,22 +61,6 @@ const Differentiators = () => {
           </div>
         </div>
 
-        {/* Bottom Stats */}
-        <div className="mt-12 grid grid-cols-2 md:grid-cols-4 gap-6">
-          {[
-            { number: "10,000+", label: "Students Trained" },
-            { number: "25+", label: "Years of Excellence" },
-            { number: "95%", label: "Success Rate" },
-            { number: "4.9/5", label: "Student Rating" },
-          ].map((stat, index) => (
-            <div key={index} className="text-center p-4 bg-card rounded-lg shadow-soft">
-              <div className="text-2xl md:text-3xl font-bold text-primary mb-1">
-                {stat.number}
-              </div>
-              <p className="text-xs md:text-sm text-muted-foreground font-medium">{stat.label}</p>
-            </div>
-          ))}
-        </div>
       </div>
     </section>
   );
