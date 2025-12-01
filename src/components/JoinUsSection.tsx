@@ -3,15 +3,15 @@ const JoinUsSection = () => {
     <section className="py-16 md:py-24 relative overflow-hidden">
       <div className="container mx-auto px-4">
         <div className="max-w-6xl mx-auto">
-          {/* Large Bold Title Section */}
-          <div className="mb-16 md:mb-20">
-            <div className="inline-block mb-4">
-              <span className="text-sm font-semibold text-primary uppercase tracking-wider">Start Your Journey</span>
+          {/* Title Section */}
+          <div className="mb-14 md:mb-16">
+            <div className="inline-block mb-3">
+              <span className="text-xs font-semibold text-primary uppercase tracking-widest">Start Your Journey</span>
             </div>
-            <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight text-foreground mb-6">
+            <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold leading-tight text-foreground mb-3">
               Bring a <span className="text-primary">Turning Point</span> in your life
             </h2>
-            <p className="text-lg md:text-xl text-muted-foreground max-w-2xl">
+            <p className="text-base md:text-lg text-muted-foreground max-w-2xl">
               Be fluent and confident in English, from basic to advanced level
             </p>
           </div>
