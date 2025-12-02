@@ -15,8 +15,8 @@ const CourseDetails = () => {
 
           {/* Main Layout */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-stretch">
-            {/* Left - Key Details */}
-            <div className="space-y-6">
+            {/* Left - Schedule Card */}
+            <div className="order-2 md:order-1 bg-card border border-border/60 rounded-2xl shadow-soft p-6 md:p-8">
               <div className="flex items-start gap-4">
                 <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
                   <Clock className="w-6 h-6 text-primary" />
