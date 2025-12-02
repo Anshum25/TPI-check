@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useLocation } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Card } from "@/components/ui/card";
@@ -9,6 +10,27 @@ const Gallery = () => {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const { content } = useContent();
   const { gallery } = content;
+
+  const location = useLocation();
+  const params = new URLSearchParams(location.search);
+  const initialTab = params.get("tab") === "videos" ? "videos" : "images";
+
+  const videos = (gallery.videos && gallery.videos.length > 0
+    ? gallery.videos
+    : [
+        {
+          title: "Speaking activities done in the later part of the course",
+          url: "https://www.youtube.com/embed/sLMm9trcZYc",
+        },
+        {
+          title: "Turning Point Institute student presentation",
+          url: "https://www.youtube.com/embed/0oCurzqfzXQ",
+        },
+        {
+          title: "Group discussion and public speaking practice",
+          url: "https://www.youtube.com/embed/3YB4pYCOZkQ",
+        },
+      ]);
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -23,20 +45,19 @@ const Gallery = () => {
 
         <section className="py-20">
           <div className="container mx-auto px-4">
-            <Tabs defaultValue="all" className="w-full">
-              <TabsList className="grid w-full max-w-md mx-auto grid-cols-4 mb-12">
-                <TabsTrigger value="all">All</TabsTrigger>
-                <TabsTrigger value="classroom">Classroom</TabsTrigger>
-                <TabsTrigger value="events">Events</TabsTrigger>
-                <TabsTrigger value="students">Students</TabsTrigger>
+            <Tabs defaultValue={initialTab} className="w-full">
+              <TabsList className="grid w-full max-w-xs mx-auto grid-cols-2 mb-12">
+                <TabsTrigger value="images">Images</TabsTrigger>
+                <TabsTrigger value="videos">Videos</TabsTrigger>
               </TabsList>
 
-              {Object.entries(gallery.categories).map(([category, categoryImages]) => (
-                <TabsContent key={category} value={category}>
+              {/* Images Tab */}
+              <TabsContent value="images">
+                {gallery.categories?.all && gallery.categories.all.length > 0 ? (
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {categoryImages.map((image, index) => (
+                    {gallery.categories.all.map((image, index) => (
                       <Card
-                        key={`${category}-${index}`}
+                        key={`image-${index}`}
                         className="overflow-hidden cursor-pointer shadow-soft hover:shadow-medium transition-all duration-300"
                         onClick={() => setSelectedImage(image.src)}
                       >
@@ -53,8 +74,41 @@ const Gallery = () => {
                       </Card>
                     ))}
                   </div>
-                </TabsContent>
-              ))}
+                ) : (
+                  <p className="text-center text-muted-foreground">No images found.</p>
+                )}
+              </TabsContent>
+
+              {/* Videos Tab */}
+              <TabsContent value="videos">
+                {videos && videos.length > 0 ? (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {videos.map((video, index) => (
+                      <Card
+                        key={`video-${index}`}
+                        className="overflow-hidden shadow-soft hover:shadow-medium transition-all duration-300"
+                      >
+                        <div className="aspect-video w-full bg-muted">
+                          <iframe
+                            src={video.url}
+                            title={video.title}
+                            className="w-full h-full"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowFullScreen
+                          />
+                        </div>
+                        {video.title && (
+                          <div className="p-4">
+                            <p className="text-sm font-semibold text-foreground line-clamp-2">{video.title}</p>
+                          </div>
+                        )}
+                      </Card>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-center text-muted-foreground">No videos found.</p>
+                )}
+              </TabsContent>
             </Tabs>
           </div>
         </section>

@@ -6,6 +6,7 @@ import Hero from "@/components/Hero";
 import Differentiators from "@/components/Differentiators";
 import JoinUsSection from "@/components/JoinUsSection";
 import ActivityVideos from "@/components/ActivityVideos";
+import FacultyHighlight from "@/components/FacultyHighlight";
 import TestimonialCard from "@/components/TestimonialCard";
 import { Button } from "@/components/ui/button";
 import { Target, Users, Award, BookOpen } from "lucide-react";
@@ -32,17 +33,19 @@ const Home = () => {
         <Differentiators />
         <JoinUsSection />
 
+        <FacultyHighlight />
+
         {/* Achievements Section */}
-        <section className="py-12 md:py-16">
+        <section className="py-10 md:py-14">
           <div className="container mx-auto px-4">
-            <div className="text-center mb-10">
+            <div className="text-center mb-8">
               <h2 className="text-2xl md:text-3xl font-bold mb-2 text-foreground">What You'll Achieve</h2>
               <p className="text-muted-foreground max-w-2xl mx-auto">
                 Master English through our proven methodology
               </p>
             </div>
 
-            <div className="max-w-3xl mx-auto space-y-5">
+            <div className="max-w-4xl mx-auto bg-card/80 border border-border/60 rounded-2xl shadow-soft px-6 py-4 md:px-8 md:py-6 space-y-4">
               {[
                 {
                   title: "Achieve Clarity",
@@ -61,11 +64,15 @@ const Home = () => {
                   description: "by mastering all aspects of the language"
                 }
               ].map((item, index) => (
-                <div key={index} className="flex items-start gap-4 pb-4 border-b border-border/50 last:border-b-0">
-                  <div className="flex-shrink-0 w-1 h-8 gradient-accent rounded-full" />
+                <div
+                  key={index}
+                  className={`flex items-start gap-4 py-3 border-b border-border/40 last:border-b-0 pl-5 border-l-4 ${
+                    index % 2 === 1 ? 'border-accent' : 'border-primary'
+                  }`}
+                >
                   <div>
-                    <h3 className="text-lg font-bold text-primary mb-1">{item.title}</h3>
-                    <p className="text-muted-foreground text-sm">{item.description}</p>
+                    <h3 className="text-base md:text-lg font-bold text-primary mb-1">{item.title}</h3>
+                    <p className="text-muted-foreground text-sm md:text-[15px]">{item.description}</p>
                   </div>
                 </div>
               ))}
@@ -149,7 +156,7 @@ const Home = () => {
         </section> */}
 
         {/* Testimonials Section */}
-        <section className="py-20 bg-secondary/30">
+        {/* <section className="py-20 bg-secondary/30">
           <div className="container mx-auto px-4">
             <div className="text-center mb-12">
               <h2 className="text-3xl md:text-4xl font-bold mb-4">Student Success Stories</h2>
@@ -168,9 +175,10 @@ const Home = () => {
               </Link>
             </div>
           </div>
-        </section>
+        </section> */}
 
-        {/* CTA Section */}
+        {/* CTA Section - removed from home page */}
+        {/**
         <section className="py-20">
           <div className="container mx-auto px-4">
             <div className="gradient-hero rounded-2xl p-12 text-center shadow-medium">
@@ -195,6 +203,7 @@ const Home = () => {
             </div>
           </div>
         </section>
+        */}
 
         {/* Secondary CTA Section (Ready to Get Started?) - shown below the gradient CTA */}
         <section className="py-20">
