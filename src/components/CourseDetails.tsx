@@ -17,39 +17,6 @@ const CourseDetails = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-stretch">
             {/* Left - Schedule Card */}
             <div className="order-2 md:order-1 bg-card border border-border/60 rounded-2xl shadow-soft p-6 md:p-8">
-              <div className="flex items-start gap-4">
-                <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
-                  <Clock className="w-6 h-6 text-primary" />
-                </div>
-                <div>
-                  <p className="font-bold text-foreground text-lg">Duration</p>
-                  <p className="text-muted-foreground">Two months</p>
-                </div>
-              </div>
-
-              <div className="flex items-start gap-4">
-                <div className="w-12 h-12 rounded-lg bg-accent/10 flex items-center justify-center flex-shrink-0">
-                  <Calendar className="w-6 h-6 text-accent" />
-                </div>
-                <div>
-                  <p className="font-bold text-foreground text-lg">Sessions</p>
-                  <p className="text-muted-foreground">Monday to Friday (90 minutes)</p>
-                </div>
-              </div>
-
-              <div className="flex items-start gap-4">
-                <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
-                  <Users className="w-6 h-6 text-primary" />
-                </div>
-                <div>
-                  <p className="font-bold text-foreground text-lg">Seminars</p>
-                  <p className="text-muted-foreground">Twice in a month (Saturday)</p>
-                </div>
-              </div>
-            </div>
-
-            {/* Right - Schedule Card */}
-            <div className="bg-card border border-border/60 rounded-2xl shadow-soft p-6 md:p-8">
               <h3 className="text-2xl font-bold text-foreground mb-8">Batch Schedule</h3>
 
               {/* Morning Batches */}
@@ -89,6 +56,39 @@ const CourseDetails = () => {
                     <span className="text-muted-foreground text-sm md:text-base">Batch 5</span>
                     <span className="font-semibold text-foreground text-sm md:text-base">7:30 pm to 9:00 pm</span>
                   </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Right - Key Details */}
+            <div className="order-1 md:order-2 space-y-6">
+              <div className="flex items-start gap-4">
+                <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+                  <Clock className="w-6 h-6 text-primary" />
+                </div>
+                <div>
+                  <p className="font-bold text-foreground text-lg">Duration</p>
+                  <p className="text-muted-foreground">Two months</p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-4">
+                <div className="w-12 h-12 rounded-lg bg-accent/10 flex items-center justify-center flex-shrink-0">
+                  <Calendar className="w-6 h-6 text-accent" />
+                </div>
+                <div>
+                  <p className="font-bold text-foreground text-lg">Sessions</p>
+                  <p className="text-muted-foreground">Monday to Friday (90 minutes)</p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-4">
+                <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+                  <Users className="w-6 h-6 text-primary" />
+                </div>
+                <div>
+                  <p className="font-bold text-foreground text-lg">Seminars</p>
+                  <p className="text-muted-foreground">Twice in a month (Saturday)</p>
                 </div>
               </div>
             </div>
