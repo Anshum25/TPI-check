@@ -5,10 +5,10 @@ const CourseDetails = () => {
     <section className="py-12 md:py-20 relative overflow-hidden">
       <div className="container mx-auto px-4">
         <div className="max-w-5xl mx-auto">
-          {/* Header */}
-          <div className="mb-10 md:mb-12">
-            <span className="text-xs font-semibold text-primary uppercase tracking-widest mb-3 inline-block">Program Overview</span>
-            <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold leading-tight text-foreground mb-3">
+          {/* Header - Full Width */}
+          <div className="mb-12 md:mb-14">
+            <span className="text-xs font-semibold text-primary uppercase tracking-widest mb-4 inline-block">Program Overview</span>
+            <h2 className="text-3xl md:text-4xl font-bold leading-tight text-foreground">
               The <span className="text-primary">Course</span>
             </h2>
           </div>
