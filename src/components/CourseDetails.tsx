@@ -1,135 +1,102 @@
-import { Clock, Calendar, Users, ChevronDown } from "lucide-react";
-import { useState } from "react";
+import { Clock, Calendar, Users } from "lucide-react";
 
 const CourseDetails = () => {
-  const [expandedSchedule, setExpandedSchedule] = useState<"morning" | "evening" | null>("morning");
-
-  const batches = {
-    morning: [
-      { name: "Batch 1", time: "8:00 am to 9:30 am" },
-      { name: "Batch 2", time: "9:30 am to 11:00 am" },
-      { name: "Batch 3", time: "11:00 am to 12:30 pm" },
-    ],
-    evening: [
-      { name: "Batch 4", time: "6:00 pm to 7:30 pm" },
-      { name: "Batch 5", time: "7:30 pm to 9:00 pm" },
-    ],
-  };
+  const batches = [
+    { name: "Batch 1", time: "8:00 - 9:30 AM", type: "morning", color: "from-blue-500 to-cyan-500" },
+    { name: "Batch 2", time: "9:30 - 11:00 AM", type: "morning", color: "from-blue-600 to-blue-400" },
+    { name: "Batch 3", time: "11:00 AM - 12:30 PM", type: "morning", color: "from-cyan-500 to-blue-500" },
+    { name: "Batch 4", time: "6:00 - 7:30 PM", type: "evening", color: "from-rose-500 to-orange-500" },
+    { name: "Batch 5", time: "7:30 - 9:00 PM", type: "evening", color: "from-rose-600 to-rose-400" },
+  ];
 
   return (
-    <section className="py-12 md:py-16 relative overflow-hidden">
+    <section className="py-16 md:py-20 relative overflow-hidden">
       <div className="container mx-auto px-4">
-        <div className="max-w-5xl mx-auto">
-          {/* Header - Left Aligned */}
-          <div className="mb-10 md:mb-12">
-            <span className="inline-block px-3 py-1 bg-primary/10 text-primary text-xs font-semibold uppercase tracking-wider rounded-full mb-3">
-              Program Overview
+        <div className="max-w-6xl mx-auto">
+          {/* Header */}
+          <div className="mb-12 md:mb-14">
+            <span className="inline-block px-3 py-1 bg-primary/10 text-primary text-xs font-semibold uppercase tracking-wider rounded-full mb-4">
+              Program Details
             </span>
-            <h2 className="text-2xl md:text-3xl font-bold text-foreground leading-tight">
+            <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-6">
               The <span className="text-primary">Course</span>
             </h2>
-          </div>
 
-          {/* Key Details Grid - Compact on Mobile */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 mb-10 md:mb-12">
-            <div className="bg-card border border-border/40 rounded-xl p-5 md:p-6">
-              <div className="flex items-start gap-3">
-                <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0 mt-1">
-                  <Clock className="w-5 h-5 text-primary" />
-                </div>
-                <div>
-                  <p className="font-bold text-foreground text-sm md:text-base">Duration</p>
-                  <p className="text-muted-foreground text-sm">Two months</p>
-                </div>
+            {/* Key Stats - 3 Column Layout */}
+            <div className="grid grid-cols-3 gap-3 md:gap-6 max-w-3xl">
+              <div className="bg-gradient-to-br from-primary/10 to-primary/5 rounded-lg p-4 md:p-5 border border-primary/20">
+                <Clock className="w-6 h-6 md:w-7 md:h-7 text-primary mb-2" />
+                <p className="text-xs md:text-sm font-semibold text-foreground">Duration</p>
+                <p className="text-lg md:text-2xl font-bold text-primary">2 Months</p>
               </div>
-            </div>
 
-            <div className="bg-card border border-border/40 rounded-xl p-5 md:p-6">
-              <div className="flex items-start gap-3">
-                <div className="w-10 h-10 rounded-lg bg-accent/10 flex items-center justify-center flex-shrink-0 mt-1">
-                  <Calendar className="w-5 h-5 text-accent" />
-                </div>
-                <div>
-                  <p className="font-bold text-foreground text-sm md:text-base">Sessions</p>
-                  <p className="text-muted-foreground text-sm">Mon-Fri (90 min)</p>
-                </div>
+              <div className="bg-gradient-to-br from-accent/10 to-accent/5 rounded-lg p-4 md:p-5 border border-accent/20">
+                <Calendar className="w-6 h-6 md:w-7 md:h-7 text-accent mb-2" />
+                <p className="text-xs md:text-sm font-semibold text-foreground">Sessions</p>
+                <p className="text-lg md:text-2xl font-bold text-accent">Mon-Fri</p>
               </div>
-            </div>
 
-            <div className="bg-card border border-border/40 rounded-xl p-5 md:p-6">
-              <div className="flex items-start gap-3">
-                <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0 mt-1">
-                  <Users className="w-5 h-5 text-primary" />
-                </div>
-                <div>
-                  <p className="font-bold text-foreground text-sm md:text-base">Seminars</p>
-                  <p className="text-muted-foreground text-sm">2x/month (Sat)</p>
-                </div>
+              <div className="bg-gradient-to-br from-purple-500/10 to-purple-500/5 rounded-lg p-4 md:p-5 border border-purple-500/20">
+                <Users className="w-6 h-6 md:w-7 md:h-7 text-purple-500 mb-2" />
+                <p className="text-xs md:text-sm font-semibold text-foreground">Seminars</p>
+                <p className="text-lg md:text-2xl font-bold text-purple-500">2x/Month</p>
               </div>
             </div>
           </div>
 
-          {/* Batch Schedule - Expandable on Mobile */}
-          <div className="bg-card border border-border/60 rounded-xl shadow-soft overflow-hidden">
-            <h3 className="text-lg md:text-xl font-bold text-foreground p-5 md:p-6 border-b border-border/40">Batch Schedule</h3>
+          {/* Batch Schedule - Large Cards Grid */}
+          <div>
+            <h3 className="text-xl md:text-2xl font-bold text-foreground mb-6">Available Batches</h3>
 
-            <div className="divide-y divide-border/40">
-              {/* Morning Schedule */}
-              <div>
-                <button
-                  onClick={() => setExpandedSchedule(expandedSchedule === "morning" ? null : "morning")}
-                  className="w-full flex items-center justify-between p-5 md:p-6 hover:bg-secondary/30 transition-colors"
-                >
-                  <div className="flex items-center gap-3">
-                    <span className="w-1.5 h-1.5 md:w-2 md:h-2 rounded-full bg-primary"></span>
-                    <h4 className="font-bold text-foreground text-sm md:text-base">Morning Batches</h4>
-                  </div>
-                  <ChevronDown
-                    className={`w-5 h-5 text-muted-foreground transition-transform ${
-                      expandedSchedule === "morning" ? "rotate-180" : ""
-                    }`}
-                  />
-                </button>
-
-                {expandedSchedule === "morning" && (
-                  <div className="px-5 md:px-6 pb-5 md:pb-6 space-y-3 bg-secondary/20">
-                    {batches.morning.map((batch, idx) => (
-                      <div key={idx} className="flex items-center justify-between text-sm">
-                        <span className="text-muted-foreground">{batch.name}</span>
-                        <span className="font-semibold text-foreground">{batch.time}</span>
-                      </div>
-                    ))}
-                  </div>
-                )}
+            {/* Morning Section */}
+            <div className="mb-10">
+              <div className="flex items-center gap-2 mb-4">
+                <span className="w-1 h-6 rounded-full bg-gradient-to-b from-blue-500 to-cyan-500"></span>
+                <h4 className="text-lg font-bold text-foreground">Morning</h4>
               </div>
-
-              {/* Evening Schedule */}
-              <div>
-                <button
-                  onClick={() => setExpandedSchedule(expandedSchedule === "evening" ? null : "evening")}
-                  className="w-full flex items-center justify-between p-5 md:p-6 hover:bg-secondary/30 transition-colors"
-                >
-                  <div className="flex items-center gap-3">
-                    <span className="w-1.5 h-1.5 md:w-2 md:h-2 rounded-full bg-accent"></span>
-                    <h4 className="font-bold text-foreground text-sm md:text-base">Evening Batches</h4>
-                  </div>
-                  <ChevronDown
-                    className={`w-5 h-5 text-muted-foreground transition-transform ${
-                      expandedSchedule === "evening" ? "rotate-180" : ""
-                    }`}
-                  />
-                </button>
-
-                {expandedSchedule === "evening" && (
-                  <div className="px-5 md:px-6 pb-5 md:pb-6 space-y-3 bg-secondary/20">
-                    {batches.evening.map((batch, idx) => (
-                      <div key={idx} className="flex items-center justify-between text-sm">
-                        <span className="text-muted-foreground">{batch.name}</span>
-                        <span className="font-semibold text-foreground">{batch.time}</span>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {batches.slice(0, 3).map((batch, idx) => (
+                  <div
+                    key={idx}
+                    className={`bg-gradient-to-br ${batch.color} rounded-2xl p-6 md:p-8 text-white shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 cursor-pointer border border-white/20`}
+                  >
+                    <div className="flex items-end justify-between h-full">
+                      <div>
+                        <p className="text-sm font-semibold opacity-90 mb-2">Enrollment Available</p>
+                        <h5 className="text-3xl md:text-4xl font-bold mb-4">{batch.name}</h5>
                       </div>
-                    ))}
+                    </div>
+                    <p className="text-base md:text-lg font-bold mt-4 bg-white/20 backdrop-blur-sm rounded-lg px-3 py-2 inline-block">
+                      {batch.time}
+                    </p>
                   </div>
-                )}
+                ))}
+              </div>
+            </div>
+
+            {/* Evening Section */}
+            <div>
+              <div className="flex items-center gap-2 mb-4">
+                <span className="w-1 h-6 rounded-full bg-gradient-to-b from-rose-500 to-orange-500"></span>
+                <h4 className="text-lg font-bold text-foreground">Evening</h4>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-2xl">
+                {batches.slice(3).map((batch, idx) => (
+                  <div
+                    key={idx}
+                    className={`bg-gradient-to-br ${batch.color} rounded-2xl p-6 md:p-8 text-white shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 cursor-pointer border border-white/20`}
+                  >
+                    <div className="flex items-end justify-between h-full">
+                      <div>
+                        <p className="text-sm font-semibold opacity-90 mb-2">Enrollment Available</p>
+                        <h5 className="text-3xl md:text-4xl font-bold mb-4">{batch.name}</h5>
+                      </div>
+                    </div>
+                    <p className="text-base md:text-lg font-bold mt-4 bg-white/20 backdrop-blur-sm rounded-lg px-3 py-2 inline-block">
+                      {batch.time}
+                    </p>
+                  </div>
+                ))}
               </div>
             </div>
           </div>
