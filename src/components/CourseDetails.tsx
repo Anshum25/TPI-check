@@ -15,8 +15,8 @@ const CourseDetails = () => {
 
           {/* Main Layout */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-stretch">
-            {/* Left - Schedule Card */}
-            <div className="order-2 md:order-1 bg-card border border-border/60 rounded-2xl shadow-soft p-6 md:p-8">
+            {/* Left - Key Details (on desktop) / Bottom (on mobile) */}
+            <div className="order-2 md:order-1 space-y-6">
               <h3 className="text-2xl font-bold text-foreground mb-8">Batch Schedule</h3>
 
               {/* Morning Batches */}
