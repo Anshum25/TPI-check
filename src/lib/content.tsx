@@ -16,6 +16,14 @@ type SimpleCard = { title: string; description: string };
 type BenefitSection = { title: string; items: string[] };
 type Question = { q: string; a: string };
 type FAQCategory = { category: string; questions: Question[] };
+type MethodologySection = {
+  title: string;
+  intro?: string;
+  subtitle?: string;
+  description?: string;
+  objectives?: string[];
+  objectivesTitle?: string;
+};
 
 export type SiteContent = {
   home: {
