@@ -2,99 +2,101 @@ import { Clock, Calendar, Users } from "lucide-react";
 
 const CourseDetails = () => {
   const batches = [
-    { name: "Batch 1", time: "8:00 - 9:30 AM", type: "morning", color: "from-blue-500 to-cyan-500" },
-    { name: "Batch 2", time: "9:30 - 11:00 AM", type: "morning", color: "from-blue-600 to-blue-400" },
-    { name: "Batch 3", time: "11:00 AM - 12:30 PM", type: "morning", color: "from-cyan-500 to-blue-500" },
-    { name: "Batch 4", time: "6:00 - 7:30 PM", type: "evening", color: "from-rose-500 to-orange-500" },
-    { name: "Batch 5", time: "7:30 - 9:00 PM", type: "evening", color: "from-rose-600 to-rose-400" },
+    { name: "Batch 1", time: "8:00 am - 9:30 am" },
+    { name: "Batch 2", time: "9:30 am - 11:00 am" },
+    { name: "Batch 3", time: "11:00 am - 12:30 pm" },
+    { name: "Batch 4", time: "6:00 pm - 7:30 pm" },
+    { name: "Batch 5", time: "7:30 pm - 9:00 pm" },
   ];
 
   return (
-    <section className="py-16 md:py-20 relative overflow-hidden">
+    <section className="py-12 md:py-16 relative overflow-hidden">
       <div className="container mx-auto px-4">
-        <div className="max-w-6xl mx-auto">
-          {/* Header */}
-          <div className="mb-12 md:mb-14">
-            <span className="inline-block px-3 py-1 bg-primary/10 text-primary text-xs font-semibold uppercase tracking-wider rounded-full mb-4">
-              Program Details
-            </span>
-            <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-6">
+        <div className="max-w-5xl mx-auto">
+          {/* Header - Left Aligned */}
+          <div className="mb-10 md:mb-14">
+            <span className="text-xs font-semibold text-primary uppercase tracking-widest mb-3 inline-block">Program Overview</span>
+            <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold leading-tight text-foreground mb-2">
               The <span className="text-primary">Course</span>
             </h2>
+          </div>
 
-            {/* Key Stats - 3 Column Layout */}
-            <div className="grid grid-cols-3 gap-3 md:gap-6 max-w-3xl">
-              <div className="bg-gradient-to-br from-primary/10 to-primary/5 rounded-lg p-4 md:p-5 border border-primary/20">
-                <Clock className="w-6 h-6 md:w-7 md:h-7 text-primary mb-2" />
-                <p className="text-xs md:text-sm font-semibold text-foreground">Duration</p>
-                <p className="text-lg md:text-2xl font-bold text-primary">2 Months</p>
+          {/* Key Details - Grid Layout */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 mb-10 md:mb-12">
+            <div className="border-l-4 border-primary pl-4 md:pl-6 py-3">
+              <div className="flex items-center gap-2 mb-2">
+                <Clock className="w-5 h-5 text-primary" />
+                <p className="font-bold text-foreground">Duration</p>
               </div>
+              <p className="text-muted-foreground text-sm md:text-base">Two months</p>
+            </div>
 
-              <div className="bg-gradient-to-br from-accent/10 to-accent/5 rounded-lg p-4 md:p-5 border border-accent/20">
-                <Calendar className="w-6 h-6 md:w-7 md:h-7 text-accent mb-2" />
-                <p className="text-xs md:text-sm font-semibold text-foreground">Sessions</p>
-                <p className="text-lg md:text-2xl font-bold text-accent">Mon-Fri</p>
+            <div className="border-l-4 border-accent pl-4 md:pl-6 py-3">
+              <div className="flex items-center gap-2 mb-2">
+                <Calendar className="w-5 h-5 text-accent" />
+                <p className="font-bold text-foreground">Sessions</p>
               </div>
+              <p className="text-muted-foreground text-sm md:text-base">Monday to Friday (90 min)</p>
+            </div>
 
-              <div className="bg-gradient-to-br from-purple-500/10 to-purple-500/5 rounded-lg p-4 md:p-5 border border-purple-500/20">
-                <Users className="w-6 h-6 md:w-7 md:h-7 text-purple-500 mb-2" />
-                <p className="text-xs md:text-sm font-semibold text-foreground">Seminars</p>
-                <p className="text-lg md:text-2xl font-bold text-purple-500">2x/Month</p>
+            <div className="border-l-4 border-primary pl-4 md:pl-6 py-3">
+              <div className="flex items-center gap-2 mb-2">
+                <Users className="w-5 h-5 text-primary" />
+                <p className="font-bold text-foreground">Seminars</p>
               </div>
+              <p className="text-muted-foreground text-sm md:text-base">Twice in a month (Saturday)</p>
             </div>
           </div>
 
-          {/* Batch Schedule - Large Cards Grid */}
+          {/* Batch Schedule */}
           <div>
-            <h3 className="text-xl md:text-2xl font-bold text-foreground mb-6">Available Batches</h3>
+            <h3 className="text-xl md:text-2xl font-bold text-foreground mb-6">Batch Schedule</h3>
 
-            {/* Morning Section */}
-            <div className="mb-10">
-              <div className="flex items-center gap-2 mb-4">
-                <span className="w-1 h-6 rounded-full bg-gradient-to-b from-blue-500 to-cyan-500"></span>
-                <h4 className="text-lg font-bold text-foreground">Morning</h4>
+            {/* Morning Batches */}
+            <div className="mb-8 md:mb-10">
+              <div className="flex items-center gap-3 mb-4">
+                <span className="text-sm font-semibold text-primary uppercase tracking-wider">Morning</span>
+                <span className="w-8 h-0.5 rounded-full bg-primary/30"></span>
               </div>
+
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {batches.slice(0, 3).map((batch, idx) => (
                   <div
                     key={idx}
-                    className={`bg-gradient-to-br ${batch.color} rounded-2xl p-6 md:p-8 text-white shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 cursor-pointer border border-white/20`}
+                    className="bg-card border border-border/60 rounded-xl p-5 md:p-6 shadow-soft hover:shadow-medium transition-all duration-300 hover:border-primary/40"
                   >
-                    <div className="flex items-end justify-between h-full">
-                      <div>
-                        <p className="text-sm font-semibold opacity-90 mb-2">Enrollment Available</p>
-                        <h5 className="text-3xl md:text-4xl font-bold mb-4">{batch.name}</h5>
-                      </div>
+                    <div className="mb-4">
+                      <p className="text-xs md:text-sm font-semibold text-primary uppercase tracking-wider mb-2">Enrollment Open</p>
+                      <h5 className="text-lg md:text-xl font-bold text-foreground">{batch.name}</h5>
                     </div>
-                    <p className="text-base md:text-lg font-bold mt-4 bg-white/20 backdrop-blur-sm rounded-lg px-3 py-2 inline-block">
-                      {batch.time}
-                    </p>
+                    <div className="pt-4 border-t border-border/40">
+                      <p className="text-sm md:text-base font-semibold text-primary">{batch.time}</p>
+                    </div>
                   </div>
                 ))}
               </div>
             </div>
 
-            {/* Evening Section */}
+            {/* Evening Batches */}
             <div>
-              <div className="flex items-center gap-2 mb-4">
-                <span className="w-1 h-6 rounded-full bg-gradient-to-b from-rose-500 to-orange-500"></span>
-                <h4 className="text-lg font-bold text-foreground">Evening</h4>
+              <div className="flex items-center gap-3 mb-4">
+                <span className="text-sm font-semibold text-accent uppercase tracking-wider">Evening</span>
+                <span className="w-8 h-0.5 rounded-full bg-accent/30"></span>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-2xl">
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {batches.slice(3).map((batch, idx) => (
                   <div
                     key={idx}
-                    className={`bg-gradient-to-br ${batch.color} rounded-2xl p-6 md:p-8 text-white shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 cursor-pointer border border-white/20`}
+                    className="bg-card border border-border/60 rounded-xl p-5 md:p-6 shadow-soft hover:shadow-medium transition-all duration-300 hover:border-accent/40"
                   >
-                    <div className="flex items-end justify-between h-full">
-                      <div>
-                        <p className="text-sm font-semibold opacity-90 mb-2">Enrollment Available</p>
-                        <h5 className="text-3xl md:text-4xl font-bold mb-4">{batch.name}</h5>
-                      </div>
+                    <div className="mb-4">
+                      <p className="text-xs md:text-sm font-semibold text-accent uppercase tracking-wider mb-2">Enrollment Open</p>
+                      <h5 className="text-lg md:text-xl font-bold text-foreground">{batch.name}</h5>
                     </div>
-                    <p className="text-base md:text-lg font-bold mt-4 bg-white/20 backdrop-blur-sm rounded-lg px-3 py-2 inline-block">
-                      {batch.time}
-                    </p>
+                    <div className="pt-4 border-t border-border/40">
+                      <p className="text-sm md:text-base font-semibold text-accent">{batch.time}</p>
+                    </div>
                   </div>
                 ))}
               </div>
