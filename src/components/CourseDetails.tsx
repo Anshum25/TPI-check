@@ -1,4 +1,6 @@
-import { Clock, Calendar, Users } from "lucide-react";
+import { Clock, Calendar, Users, ArrowRight } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
 
 const CourseDetails = () => {
   return (
