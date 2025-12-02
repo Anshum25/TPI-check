@@ -93,6 +93,17 @@ const CourseDetails = () => {
                   <p className="text-muted-foreground">Twice in a month (Saturday)</p>
                 </div>
               </div>
+
+              {/* CTA Section */}
+              <div className="mt-auto pt-8 border-t border-border/40">
+                <p className="text-muted-foreground text-sm mb-4">Ready to start your transformation journey?</p>
+                <Button asChild className="w-full gradient-accent">
+                  <Link to="/admissions">
+                    Enroll Now
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </Link>
+                </Button>
+              </div>
             </div>
           </div>
         </div>
