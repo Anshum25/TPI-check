@@ -16,6 +16,14 @@ type SimpleCard = { title: string; description: string };
 type BenefitSection = { title: string; items: string[] };
 type Question = { q: string; a: string };
 type FAQCategory = { category: string; questions: Question[] };
+type MethodologySection = {
+  title: string;
+  intro?: string;
+  subtitle?: string;
+  description?: string;
+  objectives?: string[];
+  objectivesTitle?: string;
+};
 
 export type SiteContent = {
   home: {
@@ -35,6 +43,7 @@ export type SiteContent = {
     features: Feature[];
     directorVideoUrl: string;
     testimonials: Testimonial[];
+    methodologySections: MethodologySection[];
     ctaTitle: string;
     ctaText: string;
   };
@@ -221,6 +230,34 @@ export const DEFAULT_CONTENT: SiteContent = {
         role: "HR Manager",
         content: "Excellent teaching methods and supportive instructors. Worth every penny invested in my growth.",
         rating: 5,
+      },
+    ],
+    methodologySections: [
+      {
+        title: "Coaching Method",
+        intro: "You are going to study with Mr Ashish Bhatt and Mrs Pragna Bhatt who have taught thousands of students in more than two decades. Their highly interactive and practical method will help you to create your own sentence structures with amazing clarity in Grammar and other aspects. You are going to speak thousands of sentences during the grammar session, which are asked to you in Hindi/Gujarati for every grammar point being taught. During this step by step we connect all structures with logic and visualization in such a way that you will find out that each 5+ every sentence is formed by using basic 4 to 5 rules only! In this process your smartest errors will be rectified and you will develop presence of mind to use simplest to most complex structures for expressing yourself with the confidence that your grammar is always correct. This will help you in participating in variety of speaking activities with confidence and get true fluency in English.",
+      },
+      {
+        title: "Speaking Activities",
+        subtitle: "Speak Fluently As Effectively As In Your Mother Tongue",
+        description: "With every passing grammar lecture you will find improvement in speaking English, which will be strengthened by various speaking activities like Public Speaking, Role-Plays, Group Discussions, Debates, Presentations, Small Dramas and more.... All of those activities are spontaneous and highly interactive. The format of the activities are designed in such a way that gradually it becomes more interesting and challenging with the time and improvement in your speaking skills. You will be performing from the stage again and again. Your body language, presentation skills, confidence level etc. will be improved in this phase. Having got rid of stage fear, you will be able to communicate in English in any one in any situation fluently and effectively.",
+        objectivesTitle: "Activities are held aiming at following objectives:",
+        objectives: [
+          "Confirming clarity in use of various sentence structures and vocabulary while speaking fluently",
+          "Developing ability to articulate and respond quickly in smart manner ( Negotiating and handling resistance)",
+          "Making good rapport at professional and social level by verbal and non verbal expressions",
+          "Refining eye contact, gestures, movement of body parts and over all body language",
+          "Removing stage fear while giving presentation and then responding to the questions from any corner of the audience and so on...",
+        ],
+      },
+      {
+        title: "Reading and Writing",
+        description: "Growing in white collar profession is not possible without excellent reading and writing skills. Specially designed modules for reading and writing will enable you to read and write as effectively as in your mother tongue. With the help of reading techniques taught by us and absolute clarity in sentence formations, you will be able to read with perfect understanding and at double speed. You will be able to make written communication very effectively and the course will enable you to present your ideas in the way you want. Whether you would like to make it precise or elaborate or enthusiastic, you will have the tools to do it. This will enhance your performance specially working at corporate level.",
+      },
+      {
+        title: "Personal Support",
+        subtitle: "No Matter What !! We Are There You Will Achieve Your Goal !",
+        description: "When you join our institute you become part of Turning Point Family. We make sure that each and every student gets the desired result. We are continuously monitoring the performance of all the students through various parameters and if required we provide personal support to the weak students. If you miss any lecture also our team is at your help to cover up what you had missed. The goal for which you have joined must be achieved. The only condition for our support is that you have to regular and do the work regularly which is of around 30 minutes.",
       },
     ],
     ctaTitle: "Ready to Transform Your Future?",
@@ -1043,5 +1080,3 @@ export const useContent = () => {
   if (!ctx) throw new Error("useContent must be used within ContentProvider");
   return ctx;
 };
-
-export default ContentProvider;

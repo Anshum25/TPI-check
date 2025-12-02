@@ -7,6 +7,8 @@ import Differentiators from "@/components/Differentiators";
 import JoinUsSection from "@/components/JoinUsSection";
 import ActivityVideos from "@/components/ActivityVideos";
 import FacultyHighlight from "@/components/FacultyHighlight";
+import CourseDetails from "@/components/CourseDetails";
+import MethodologySection from "@/components/MethodologySection";
 import TestimonialCard from "@/components/TestimonialCard";
 import { Button } from "@/components/ui/button";
 import { Target, Users, Award, BookOpen } from "lucide-react";
@@ -32,6 +34,8 @@ const Home = () => {
         <Hero />
         <Differentiators />
         <JoinUsSection />
+        <CourseDetails />
+        <MethodologySection />
 
         <FacultyHighlight />
 
