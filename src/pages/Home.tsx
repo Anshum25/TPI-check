@@ -33,6 +33,7 @@ const Home = () => {
         <Hero />
         <Differentiators />
         <JoinUsSection />
+        <CourseDetails />
 
         <FacultyHighlight />
 
