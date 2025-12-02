@@ -35,6 +35,7 @@ const Home = () => {
         <Differentiators />
         <JoinUsSection />
         <CourseDetails />
+        <MethodologySection />
 
         <FacultyHighlight />
 
