@@ -1,3 +1,5 @@
+import { useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { useContent } from "@/lib/content";
@@ -8,6 +10,20 @@ import { Award, BookOpen, Users, Briefcase } from "lucide-react";
 const Faculty = () => {
   const { content } = useContent();
   const faculty = content.faculty;
+  const location = useLocation();
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const memberSlug = params.get("member");
+    if (!memberSlug) return;
+
+    const el = document.querySelector<HTMLElement>(`[data-faculty-slug='${memberSlug}']`);
+    if (el) {
+      setTimeout(() => {
+        el.scrollIntoView({ behavior: "smooth", block: "start" });
+      }, 150);
+    }
+  }, [location.search]);
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -23,8 +39,13 @@ const Faculty = () => {
         <section className="py-20">
           <div className="container mx-auto px-4">
             <div className="space-y-12">
-              {faculty.members.map((member, index) => (
-                <Card key={index} className="shadow-medium overflow-hidden">
+              {faculty.members.map((member, index) => {
+                const slug = member.name
+                  .toLowerCase()
+                  .replace(/[^a-z0-9]+/g, "-")
+                  .replace(/(^-|-$)+/g, "");
+                return (
+                <Card key={index} data-faculty-slug={slug} className="shadow-medium overflow-hidden">
                   <CardContent className="p-8">
                     <div className="grid md:grid-cols-[200px,1fr] gap-8">
                       <div className="flex flex-col items-center md:items-start">
@@ -77,7 +98,7 @@ const Faculty = () => {
                     </div>
                   </CardContent>
                 </Card>
-              ))}
+              );})}
             </div>
           </div>
         </section>
@@ -101,7 +122,7 @@ const Faculty = () => {
 
         <section className="py-20">
           <div className="container mx-auto px-4">
-            <div className="max-w-4xl mx-auto bg-primary/5 border-l-4 border-primary p-8 rounded-lg">
+            <div className="max-w-4xl mx-auto bg-gradient-to-r from-sky-50 via-white to-rose-50 border border-border/60 p-8 rounded-2xl shadow-soft">
               <h2 className="text-2xl font-bold mb-4">{faculty.promise.title}</h2>
               {faculty.promise.paragraphs.map((p, i) => (
                 <p key={i} className={`text-muted-foreground ${i === 0 ? 'mb-4' : ''}`}>{p}</p>

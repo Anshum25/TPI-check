@@ -119,6 +119,7 @@ export type SiteContent = {
   gallery: {
     hero: HeroContent;
     categories: Record<"all" | "classroom" | "events" | "students", { src: string; title: string; category: string }[]>;
+    videos: { title: string; url: string }[];
   };
   reviews: {
     hero: HeroContent;
@@ -615,6 +616,20 @@ export const DEFAULT_CONTENT: SiteContent = {
       ],
       students: [{ src: studentSuccess, title: "Successful Students Batch", category: "students" }],
     },
+    videos: [
+      {
+        title: "Speaking activities done in the later part of the course",
+        url: "https://www.youtube.com/embed/sLMm9trcZYc",
+      },
+      {
+        title: "Turning Point Institute student presentation",
+        url: "https://www.youtube.com/embed/VIDEO_ID_2",
+      },
+      {
+        title: "Group discussion and public speaking practice",
+        url: "https://www.youtube.com/embed/VIDEO_ID_3",
+      },
+    ],
   },
   reviews: {
     hero: {

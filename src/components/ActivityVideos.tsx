@@ -58,7 +58,7 @@ const ActivityVideos = () => {
 
         {/* Watch More Button */}
         <div className="flex justify-center">
-          <Link to="/gallery">
+          <Link to="/gallery?tab=videos">
             <Button variant="outline">Watch More</Button>
           </Link>
         </div>
