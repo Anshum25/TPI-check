@@ -36,7 +36,7 @@ const Header = () => {
                 className="h-10 w-10 rounded-full object-cover"
               />
               <div className="ml-2">
-                <h1 className="text-sm font-bold leading-tight">TURNING POINT</h1>
+                <h1 className="text-sm font-bold leading-tight">TURNING POINT INSTITUTE</h1>
                 <p className="text-xs text-muted-foreground">THE ONE TO TURN TO</p>
               </div>
             </div>
