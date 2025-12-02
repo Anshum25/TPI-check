@@ -43,6 +43,7 @@ export type SiteContent = {
     features: Feature[];
     directorVideoUrl: string;
     testimonials: Testimonial[];
+    methodologySections: MethodologySection[];
     ctaTitle: string;
     ctaText: string;
   };
