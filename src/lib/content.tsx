@@ -1043,5 +1043,3 @@ export const useContent = () => {
   if (!ctx) throw new Error("useContent must be used within ContentProvider");
   return ctx;
 };
-
-export default ContentProvider;
