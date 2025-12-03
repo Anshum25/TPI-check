@@ -16,7 +16,7 @@ const CourseDetails = () => {
           </div>
 
           {/* Main Layout */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-stretch">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-28 items-stretch">
             {/* Left - Schedule Card (on desktop) / Last (on mobile) */}
             <div className="order-2 md:order-1 bg-card border border-border/60 rounded-2xl shadow-soft p-6 md:p-8">
               <h3 className="text-2xl font-bold text-foreground mb-8">Batch Schedule</h3>

@@ -1,13 +1,11 @@
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import { Users, Award, TrendingUp, Heart } from "lucide-react";
+import AboutHighlightSection from "@/components/AboutHighlightSection";
 import { useContent } from "@/lib/content";
 
 const About = () => {
   const { content } = useContent();
   const { about } = content;
-
-  const statIcons = [Users, Award, TrendingUp, Heart];
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -20,23 +18,7 @@ const About = () => {
           </div>
         </section>
 
-        <section className="py-16">
-          <div className="container mx-auto px-4">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-              {about.stats.map((stat, index) => {
-                const Icon = statIcons[index] ?? Users;
-                return (
-                <div key={index} className="text-center p-6 rounded-lg bg-secondary/30">
-                  <div className="inline-flex h-16 w-16 items-center justify-center rounded-full gradient-accent text-accent-foreground mb-4">
-                      <Icon className="h-8 w-8" />
-                  </div>
-                  <div className="text-3xl font-bold mb-2">{stat.value}</div>
-                  <div className="text-sm text-muted-foreground">{stat.label}</div>
-                </div>
-              )})}
-            </div>
-          </div>
-        </section>
+        <AboutHighlightSection />
 
         <section className="py-20">
           <div className="container mx-auto px-4">
