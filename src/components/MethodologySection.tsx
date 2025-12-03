@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { ChevronDown } from "lucide-react";
 import { useContent } from "@/lib/content";
 
@@ -8,6 +8,7 @@ const MethodologySection = () => {
   const methodologySections = home.methodologySections || [];
 
   const [expandedIndex, setExpandedIndex] = useState<number>(0);
+  const contentRefs = useRef<Array<HTMLDivElement | null>>([]);
 
   if (methodologySections.length === 0) return null;
 
@@ -46,8 +47,19 @@ const MethodologySection = () => {
                 </button>
 
                 {/* Expanded Content */}
-                {expandedIndex === index && (
-                  <div className="border-t border-border/40 p-5 md:p-6 bg-secondary/10 space-y-5">
+                <div
+                  ref={(el) => (contentRefs.current[index] = el)}
+                  style={{
+                    maxHeight:
+                      expandedIndex === index
+                        ? (contentRefs.current[index]?.scrollHeight || 0) + 24
+                        : 0,
+                  }}
+                  className={`border-t border-border/40 bg-secondary/10 space-y-5 overflow-hidden transition-[max-height] duration-300 ease-in-out transition-opacity ${
+                    expandedIndex === index ? "opacity-100" : "opacity-0"
+                  }`}
+                >
+                  <div className="p-5 md:p-6">
                     {section.intro && (
                       <p className="text-foreground text-sm md:text-base leading-relaxed">{section.intro}</p>
                     )}
@@ -82,7 +94,7 @@ const MethodologySection = () => {
                       </div>
                     )}
                   </div>
-                )}
+                </div>
               </div>
             ))}
           </div>

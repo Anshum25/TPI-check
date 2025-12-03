@@ -9,6 +9,8 @@ import ActivityVideos from "@/components/ActivityVideos";
 import FacultyHighlight from "@/components/FacultyHighlight";
 import CourseDetails from "@/components/CourseDetails";
 import MethodologySection from "@/components/MethodologySection";
+import GainFromCourse from "@/components/GainFromCourse";
+import HomeReviewsSection from "@/components/HomeReviewsSection";
 import TestimonialCard from "@/components/TestimonialCard";
 import { Button } from "@/components/ui/button";
 import { Target, Users, Award, BookOpen } from "lucide-react";
@@ -36,6 +38,7 @@ const Home = () => {
         <JoinUsSection />
         <CourseDetails />
         <MethodologySection />
+        <GainFromCourse />
 
         <FacultyHighlight />
 
@@ -208,6 +211,9 @@ const Home = () => {
           </div>
         </section>
         */}
+
+        {/* Reviews from achievers */}
+        <HomeReviewsSection />
 
         {/* Secondary CTA Section (Ready to Get Started?) - shown below the gradient CTA */}
         <section className="py-20">
