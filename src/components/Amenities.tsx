@@ -41,18 +41,20 @@ const Amenities = ({
   }, [carouselImages.length]);
 
   return (
-    <section className="py-16 bg-secondary/5">
+    <section className="py-16 md:py-20">
       <div className="container mx-auto px-4">
-        {/* Header Bar */}
-        <div className="bg-primary text-primary-foreground py-4 px-8 rounded-t-lg mb-0">
-          <h2 className="text-3xl font-bold">{title}</h2>
-        </div>
+        <div className="max-w-7xl mx-auto">
+          {/* Header Section */}
+          <div className="mb-12 md:mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold text-foreground">
+              {title}
+            </h2>
+          </div>
 
-        {/* Content Section */}
-        <div className="bg-white rounded-b-lg shadow-soft overflow-hidden">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-0">
+          {/* Content Grid */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-stretch">
             {/* Left Side - Carousel (Larger) */}
-            <div className="relative w-full bg-gray-300 min-h-96 lg:min-h-full">
+            <div className="relative w-full h-80 md:h-96 lg:h-full lg:min-h-[500px] rounded-lg overflow-hidden shadow-soft bg-muted">
               {/* Carousel Images */}
               {carouselImages.map((image, index) => (
                 <div
@@ -69,24 +71,24 @@ const Amenities = ({
                 </div>
               ))}
 
-              {/* Image Counter */}
-              <div className="absolute bottom-4 left-4 bg-black/50 text-white px-4 py-2 rounded-full text-sm font-medium">
+              {/* Image Counter Badge */}
+              <div className="absolute bottom-4 left-4 bg-foreground/80 text-background px-3 py-1.5 rounded text-xs font-semibold">
                 {currentSlide + 1} / {carouselImages.length}
               </div>
             </div>
 
             {/* Right Side - Description and Amenities List */}
-            <div className="p-8 lg:p-12 flex flex-col justify-center">
-              <p className="text-base text-foreground/80 mb-8 leading-relaxed">
+            <div className="flex flex-col justify-start">
+              <p className="text-base md:text-lg text-muted-foreground mb-8 leading-relaxed">
                 {description}
               </p>
 
               {/* Amenities List */}
-              <ul className="space-y-4">
+              <ul className="space-y-3 md:space-y-4">
                 {amenitiesList.map((item, index) => (
-                  <li key={index} className="flex items-start gap-3 text-foreground">
-                    <span className="text-primary font-bold mt-1 text-lg">•</span>
-                    <span className="text-sm leading-relaxed">{item}</span>
+                  <li key={index} className="flex items-start gap-3">
+                    <span className="text-primary font-bold text-lg leading-none flex-shrink-0 mt-0.5">•</span>
+                    <span className="text-sm md:text-base text-foreground leading-relaxed">{item}</span>
                   </li>
                 ))}
               </ul>
