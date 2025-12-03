@@ -1,6 +1,7 @@
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import AboutHighlightSection from "@/components/AboutHighlightSection";
+import Amenities from "@/components/Amenities";
 import { useContent } from "@/lib/content";
 
 const About = () => {
@@ -19,6 +20,8 @@ const About = () => {
         </section>
 
         <AboutHighlightSection />
+
+        <Amenities />
 
         <section className="py-20">
           <div className="container mx-auto px-4">
