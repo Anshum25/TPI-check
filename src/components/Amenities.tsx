@@ -44,13 +44,6 @@ const Amenities = ({
     <section className="py-16 md:py-24">
       <div className="container mx-auto px-4">
         <div className="max-w-6xl mx-auto">
-          {/* Header Section */}
-          <div className="mb-12 md:mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-foreground">
-              {title}
-            </h2>
-          </div>
-
           {/* Content Grid */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-center">
             {/* Left Side - Carousel with rounded corners */}
@@ -77,8 +70,12 @@ const Amenities = ({
               </div>
             </div>
 
-            {/* Right Side - Description and Amenities List */}
+            {/* Right Side - Header, Description and Amenities List */}
             <div className="flex flex-col justify-center">
+              <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-6">
+                {title}
+              </h2>
+
               <p className="text-sm md:text-base text-muted-foreground mb-8 leading-relaxed">
                 {description}
               </p>
