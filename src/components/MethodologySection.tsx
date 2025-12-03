@@ -1,4 +1,12 @@
+<<<<<<< Updated upstream
 import { useState, useRef } from "react";
+=======
+<<<<<<< HEAD
+import { useState, useRef, useEffect } from "react";
+=======
+import { useState, useRef } from "react";
+>>>>>>> 0bef1156273d178316a7d79021bb14b628c27d2b
+>>>>>>> Stashed changes
 import { ChevronDown } from "lucide-react";
 import { useContent } from "@/lib/content";
 
@@ -8,7 +16,15 @@ const MethodologySection = () => {
   const methodologySections = home.methodologySections || [];
 
   const [expandedIndex, setExpandedIndex] = useState<number>(0);
+<<<<<<< Updated upstream
   const contentRefs = useRef<Array<HTMLDivElement | null>>([]);
+=======
+<<<<<<< HEAD
+  const contentRefs = useRef<(HTMLDivElement | null)[]>([]);
+=======
+  const contentRefs = useRef<Array<HTMLDivElement | null>>([]);
+>>>>>>> 0bef1156273d178316a7d79021bb14b628c27d2b
+>>>>>>> Stashed changes
 
   if (methodologySections.length === 0) return null;
 
@@ -19,7 +35,7 @@ const MethodologySection = () => {
           {/* Header */}
           <div className="mb-10 md:mb-14">
             <span className="text-xs font-semibold text-primary uppercase tracking-widest mb-4 inline-block">How We Teach</span>
-            <h2 className="text-3xl md:text-4xl font-bold leading-tight text-foreground">
+            <h2 className="text-2xl md:text-4xl font-bold leading-tight text-foreground whitespace-nowrap">
               Our <span className="text-primary">Teaching Methodology</span>
             </h2>
           </div>
@@ -40,13 +56,28 @@ const MethodologySection = () => {
                     </h3>
                   </div>
                   <ChevronDown
-                    className={`w-5 h-5 text-muted-foreground flex-shrink-0 transition-transform ${
+                    className={`w-5 h-5 text-muted-foreground flex-shrink-0 transition-transform duration-500 ease-in-out ${
                       expandedIndex === index ? "rotate-180" : ""
                     }`}
                   />
                 </button>
 
                 {/* Expanded Content */}
+<<<<<<< Updated upstream
+=======
+<<<<<<< HEAD
+                <div 
+                  ref={(el) => (contentRefs.current[index] = el)}
+                  className={`overflow-hidden transition-all duration-700 ease-in-out ${
+                    expandedIndex === index ? 'max-h-screen opacity-100' : 'max-h-0 opacity-0'
+                  }`}
+                  style={{
+                    maxHeight: expandedIndex === index ? contentRefs.current[index]?.scrollHeight + 'px' : '0px'
+                  }}
+                >
+                  <div className="border-t border-border/40 p-5 md:p-6 bg-secondary/10 space-y-5">
+=======
+>>>>>>> Stashed changes
                 <div
                   ref={(el) => (contentRefs.current[index] = el)}
                   style={{
@@ -60,6 +91,10 @@ const MethodologySection = () => {
                   }`}
                 >
                   <div className="p-5 md:p-6">
+<<<<<<< Updated upstream
+=======
+>>>>>>> 0bef1156273d178316a7d79021bb14b628c27d2b
+>>>>>>> Stashed changes
                     {section.intro && (
                       <p className="text-foreground text-sm md:text-base leading-relaxed">{section.intro}</p>
                     )}
@@ -79,7 +114,7 @@ const MethodologySection = () => {
                     {section.objectives && section.objectives.length > 0 && (
                       <div>
                         {section.objectivesTitle && (
-                          <h5 className="font-bold text-foreground mb-3 text-sm md:text-base">
+                          <h5 className="font-bold text-foreground mb-3 mt-8 text-sm md:text-base">
                             {section.objectivesTitle}
                           </h5>
                         )}

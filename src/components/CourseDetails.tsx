@@ -4,8 +4,14 @@ import { Link } from "react-router-dom";
 
 const CourseDetails = () => {
   return (
-    <section className="py-12 md:py-20 relative overflow-hidden">
-      <div className="container mx-auto px-4">
+    <section className="py-6 md:py-20 relative overflow-hidden bg-gradient-to-br from-rose-50/80 via-blue-50/60 to-purple-50/70 dark:from-rose-950/20 dark:via-blue-950/15 dark:to-purple-950/25">
+      {/* Decorative background elements */}
+      <div className="absolute top-10 left-10 w-20 h-20 bg-rose-200/30 dark:bg-rose-800/20 rounded-full blur-xl"></div>
+      <div className="absolute top-32 right-16 w-16 h-16 bg-blue-200/40 dark:bg-blue-800/25 rounded-full blur-lg"></div>
+      <div className="absolute bottom-20 left-1/4 w-12 h-12 bg-purple-200/35 dark:bg-purple-800/20 rounded-full blur-md"></div>
+      <div className="absolute bottom-32 right-1/3 w-24 h-24 bg-pink-200/25 dark:bg-pink-800/15 rounded-full blur-2xl"></div>
+      
+      <div className="container mx-auto px-4 relative z-10">
         <div className="max-w-5xl mx-auto">
           {/* Header - Full Width */}
           <div className="mb-12 md:mb-14">
@@ -98,8 +104,8 @@ const CourseDetails = () => {
               <div className="mt-auto pt-8 border-t border-border/40">
                 <p className="text-muted-foreground text-sm mb-4">Ready to start your transformation journey?</p>
                 <Button asChild className="w-full gradient-accent">
-                  <Link to="/admissions">
-                    Enroll Now
+                  <Link to="/contact">
+                    Contact Us
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </Link>
                 </Button>

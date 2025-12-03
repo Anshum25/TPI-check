@@ -1,6 +1,6 @@
 const JoinUsSection = () => {
   return (
-    <section className="py-16 md:py-24 relative overflow-hidden">
+    <section className="py-8 md:py-24 relative overflow-hidden">
       <div className="container mx-auto px-4">
         <div className="max-w-6xl mx-auto">
           {/* Title Section */}
@@ -85,10 +85,10 @@ const JoinUsSection = () => {
             </div>
           </div>
 
-          {/* Bottom Full Width Message */}
-          <div className="bg-gradient-to-r from-primary/10 via-transparent to-accent/10 border border-primary/20 rounded-xl p-8 md:p-12">
+          {/* Bottom Full Width Message - Hidden on mobile, shown on desktop */}
+          <div className="hidden md:block bg-gradient-to-r from-primary/10 via-transparent to-accent/10 border border-primary/20 rounded-xl p-8 md:p-12">
             <div className="max-w-3xl">
-              <h3 className="text-xl md:text-2xl font-bold text-foreground mb-4">Our Promise</h3>
+              <h3 className="text-xl md:text-2xl font-bold text-foreground mb-4">You belong here.</h3>
               <p className="text-muted-foreground leading-relaxed">
                 The real strength of any institute is its teachers. At Turning Point, you're not just a student – you're part of a community led by the founders themselves. Your success is our responsibility. You'll experience a teaching method that's proven effective for making students fluent, confident, and genuinely interested in learning English.
               </p>

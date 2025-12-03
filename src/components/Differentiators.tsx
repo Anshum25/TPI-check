@@ -44,14 +44,14 @@ const Differentiators = () => {
             </div>
             <div className="space-y-4">
               <div className="flex items-start gap-3">
-                <div className="w-1.5 h-1.5 rounded-full bg-accent flex-shrink-0 mt-2" />
+                <div className="w-2 h-2 rounded-full bg-accent flex-shrink-0 mt-2" />
                 <div>
                   <p className="font-semibold text-foreground">Coaching by Founders</p>
                   <p className="text-sm text-muted-foreground">Direct mentorship from institute founders with 25+ years experience</p>
                 </div>
               </div>
               <div className="flex items-start gap-3">
-                <div className="w-1.5 h-1.5 rounded-full bg-accent flex-shrink-0 mt-2" />
+                <div className="w-2 h-2 rounded-full bg-accent flex-shrink-0 mt-2" />
                 <div>
                   <p className="font-semibold text-foreground">No Franchises/No Branches</p>
                   <p className="text-sm text-muted-foreground">Single location ensures consistent quality and personalized attention</p>

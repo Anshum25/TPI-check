@@ -37,6 +37,21 @@ const Home = () => {
         <Differentiators />
         <JoinUsSection />
         <CourseDetails />
+        {/* "You belong here" paragraph - Shown on mobile only after CourseDetails */}
+        <section className="block md:hidden pt-10 pb-2">
+          <div className="container mx-auto px-4">
+            <div className="max-w-6xl mx-auto">
+              <div className="bg-gradient-to-r from-primary/10 via-transparent to-accent/10 border border-primary/20 rounded-xl p-6">
+                <div className="max-w-3xl">
+                  <h3 className="text-xl font-bold text-foreground mb-4">You belong here.</h3>
+                  <p className="text-muted-foreground leading-relaxed">
+                    The real strength of any institute is its teachers. At Turning Point, you're not just a student – you're part of a community led by the founders themselves. Your success is our responsibility. You'll experience a teaching method that's proven effective for making students fluent, confident, and genuinely interested in learning English.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
         <MethodologySection />
         <GainFromCourse />
 
@@ -73,9 +88,12 @@ const Home = () => {
               ].map((item, index) => (
                 <div
                   key={index}
-                  className={`flex items-start gap-4 py-3 border-b border-border/40 last:border-b-0 pl-5 border-l-4 ${
-                    index % 2 === 1 ? 'border-accent' : 'border-primary'
-                  }`}
+                  className={`flex items-start gap-4 py-3 border-b last:border-b pl-5 border-l-4 ${index === 1 || index === 3 ? 'border-accent' : 'border-primary'
+                    }`}
+                  style={{
+                    borderLeftColor: index === 1 || index === 3 ? 'hsl(0 84% 50%)' : 'hsl(217 91% 28%)',
+                    borderBottomColor: index === 1 || index === 3 ? 'hsl(0 84% 50%)' : 'hsl(217 91% 28%)'
+                  }}
                 >
                   <div>
                     <h3 className="text-base md:text-lg font-bold text-primary mb-1">{item.title}</h3>
@@ -87,7 +105,7 @@ const Home = () => {
           </div>
         </section>
 
-        
+
 
         {/* Learn English + Director's Desk */}
         <section className="py-20 md:py-24 relative">

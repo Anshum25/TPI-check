@@ -34,7 +34,7 @@ const Hero = () => {
   const prevSlide = () => setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length);
 
   return (
-    <div className="relative h-[630px] overflow-hidden">
+    <div className="relative h-[400px] md:h-[630px] overflow-hidden">
       {slides.map((slide, index) => (
         <div
           key={index}
@@ -79,14 +79,14 @@ const Hero = () => {
 
       <button
         onClick={prevSlide}
-        className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/20 backdrop-blur-sm hover:bg-white/30 text-white p-2 rounded-full transition-all"
+        className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/20 backdrop-blur-sm hover:bg-white/30 text-white p-2 rounded-full transition-all hidden md:block"
         aria-label="Previous slide"
       >
         <ChevronLeft className="h-6 w-6" />
       </button>
       <button
         onClick={nextSlide}
-        className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/20 backdrop-blur-sm hover:bg-white/30 text-white p-2 rounded-full transition-all"
+        className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/20 backdrop-blur-sm hover:bg-white/30 text-white p-2 rounded-full transition-all hidden md:block"
         aria-label="Next slide"
       >
         <ChevronRight className="h-6 w-6" />
