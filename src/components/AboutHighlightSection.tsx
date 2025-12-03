@@ -2,7 +2,7 @@ const AboutHighlightSection = () => {
   return (
     <section className="py-12 md:py-16">
       <div className="container mx-auto px-4">
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-6xl mx-auto">
           <h2 className="text-2xl md:text-3xl font-extrabold tracking-tight text-foreground mb-5">
             <span className="text-primary">Your search for effective coaching</span> ENDS HERE...
           </h2>
