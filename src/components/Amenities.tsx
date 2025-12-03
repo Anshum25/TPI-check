@@ -41,57 +41,55 @@ const Amenities = ({
   }, [carouselImages.length]);
 
   return (
-    <section className="py-20 bg-white">
+    <section className="py-16 bg-secondary/5">
       <div className="container mx-auto px-4">
         {/* Header Bar */}
-        <div className="mb-12">
-          <div className="bg-slate-800 text-white py-3 px-6 rounded-t-lg mb-0">
-            <h2 className="text-2xl font-bold">{title}</h2>
-          </div>
+        <div className="bg-primary text-primary-foreground py-4 px-8 rounded-t-lg mb-0">
+          <h2 className="text-3xl font-bold">{title}</h2>
+        </div>
 
-          {/* Content Section */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
-            {/* Left Side - Description and Amenities List */}
-            <div className="pt-8">
-              <p className="text-lg text-slate-700 mb-6 leading-relaxed">
+        {/* Content Section */}
+        <div className="bg-white rounded-b-lg shadow-soft overflow-hidden">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-0">
+            {/* Left Side - Carousel (Larger) */}
+            <div className="relative w-full bg-gray-300 min-h-96 lg:min-h-full">
+              {/* Carousel Images */}
+              {carouselImages.map((image, index) => (
+                <div
+                  key={index}
+                  className={`absolute inset-0 transition-opacity duration-500 ${
+                    index === currentSlide ? "opacity-100" : "opacity-0"
+                  }`}
+                >
+                  <img
+                    src={image}
+                    alt={`Amenity ${index + 1}`}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              ))}
+
+              {/* Image Counter */}
+              <div className="absolute bottom-4 left-4 bg-black/50 text-white px-4 py-2 rounded-full text-sm font-medium">
+                {currentSlide + 1} / {carouselImages.length}
+              </div>
+            </div>
+
+            {/* Right Side - Description and Amenities List */}
+            <div className="p-8 lg:p-12 flex flex-col justify-center">
+              <p className="text-base text-foreground/80 mb-8 leading-relaxed">
                 {description}
               </p>
 
               {/* Amenities List */}
-              <ul className="space-y-3">
+              <ul className="space-y-4">
                 {amenitiesList.map((item, index) => (
-                  <li key={index} className="flex items-start gap-3 text-slate-700">
-                    <span className="text-slate-800 font-bold mt-1">•</span>
-                    <span className="text-base leading-relaxed">{item}</span>
+                  <li key={index} className="flex items-start gap-3 text-foreground">
+                    <span className="text-primary font-bold mt-1 text-lg">•</span>
+                    <span className="text-sm leading-relaxed">{item}</span>
                   </li>
                 ))}
               </ul>
-            </div>
-
-            {/* Right Side - Carousel */}
-            <div className="pt-8">
-              <div className="relative w-full h-72 bg-gray-200 rounded-lg overflow-hidden shadow-soft">
-                {/* Carousel Images */}
-                {carouselImages.map((image, index) => (
-                  <div
-                    key={index}
-                    className={`absolute inset-0 transition-opacity duration-500 ${
-                      index === currentSlide ? "opacity-100" : "opacity-0"
-                    }`}
-                  >
-                    <img
-                      src={image}
-                      alt={`Amenity ${index + 1}`}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                ))}
-              </div>
-
-              {/* Image Counter */}
-              <div className="text-center mt-4 text-sm text-slate-600">
-                {currentSlide + 1} / {carouselImages.length}
-              </div>
             </div>
           </div>
         </div>
