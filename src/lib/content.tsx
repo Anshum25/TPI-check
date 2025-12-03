@@ -270,7 +270,6 @@ export const DEFAULT_CONTENT: SiteContent = {
       { label: "About Us", to: "/about" },
       { label: "Faculty", to: "/faculty" },
       { label: "Admissions", to: "/admissions" },
-      { label: "Success Stories", to: "/success-stories" },
       { label: "Gallery", to: "/gallery" },
       { label: "Reviews", to: "/reviews" },
       { label: "FAQ", to: "/faq" },
@@ -307,7 +306,7 @@ export const DEFAULT_CONTENT: SiteContent = {
   },
   about: {
     hero: {
-      title: "About Excellence Institute",
+      title: "About Turning Point Institute",
       subtitle: "Empowering individuals through quality education since 1999",
     },
     stats: [
@@ -894,7 +893,7 @@ export const DEFAULT_CONTENT: SiteContent = {
   },
   faculty: {
     hero: {
-      title: "Meet Our Faculty",
+      title: "Owners are the Teachers!!",
       subtitle: "Learn from the founders with 25+ years of experience - No Franchises, No Branches",
     },
     members: [
@@ -993,7 +992,19 @@ const ContentContext = createContext<ContentContextValue | undefined>(undefined)
 // Migration function to ensure backward compatibility
 const migrateContent = (stored: any): SiteContent => {
   const migrated = { ...DEFAULT_CONTENT, ...stored };
-  
+
+  // Ensure About hero title uses the updated institute name even if older content is cached
+  if (migrated.about && migrated.about.hero) {
+    migrated.about.hero.title = DEFAULT_CONTENT.about.hero.title;
+  }
+
+  // Remove deprecated Success Stories nav item if present in cached content
+  if (Array.isArray(migrated.header?.nav)) {
+    migrated.header.nav = migrated.header.nav.filter(
+      (item: any) => item?.to !== "/success-stories" && item?.label !== "Success Stories",
+    );
+  }
+
   // Migrate footer if it exists but is missing new fields
   if (stored.footer && typeof stored.footer === 'object') {
     migrated.footer = {

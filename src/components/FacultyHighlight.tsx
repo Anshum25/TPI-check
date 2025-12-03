@@ -30,7 +30,7 @@ const FacultyHighlight = () => {
           <span className="inline-flex items-center px-4 py-1 rounded-full text-xs font-semibold uppercase tracking-wider border border-primary/20 text-primary bg-primary/5 mb-3">
             Core Faculty
           </span>
-          <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-2">Meet Our Faculty</h2>
+          <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-2">Owners are the Teachers!!</h2>
           <p className="text-sm md:text-base text-muted-foreground max-w-2xl mx-auto">
             Meet the founders and core faculty who personally mentor every student at Turning Point.
           </p>

@@ -44,21 +44,10 @@ const Amenities = ({
     <section className="py-16 md:py-24">
       <div className="container mx-auto px-4">
         <div className="max-w-7xl mx-auto">
-          {/* Header Section */}
-          <div className="mb-12 md:mb-16">
-            <span className="text-xs font-semibold text-primary uppercase tracking-widest mb-3 inline-block">
-              Our Facilities
-            </span>
-            <h2 className="text-4xl md:text-5xl font-bold text-foreground">
-              <span>{title}</span>
-            </h2>
-            <div className="h-1 bg-gradient-to-r from-primary to-transparent w-24 mt-6" />
-          </div>
-
-          {/* Content Grid - Larger carousel */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8 items-stretch">
-            {/* Left Side - Carousel with rounded corners - Takes 2 columns */}
-            <div className="lg:col-span-2 relative w-full h-80 md:h-[450px] lg:h-[500px] rounded-2xl overflow-hidden shadow-medium bg-muted">
+          {/* Content Grid */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-stretch">
+            {/* Left Side - Carousel with rounded corners - narrower (7/12) */}
+            <div className="lg:col-span-7 relative w-full h-80 md:h-[420px] lg:h-[480px] rounded-2xl overflow-hidden shadow-medium bg-muted">
               {/* Carousel Images */}
               {carouselImages.map((image, index) => (
                 <div
@@ -81,18 +70,19 @@ const Amenities = ({
               </div>
             </div>
 
-            {/* Right Side - Description and Amenities List - Takes 1 column */}
-            <div className="flex flex-col justify-start bg-secondary/30 rounded-xl p-6 md:p-8">
-              <p className="text-xs md:text-sm text-muted-foreground mb-6 leading-relaxed font-medium">
+            {/* Right Side - Badge, Heading, Description and Amenities List (no card) */}
+            <div className="lg:col-span-5 flex flex-col justify-start p-1 md:p-2">
+              <span className="self-start text-[10px] md:text-xs font-semibold text-primary uppercase tracking-widest mb-3 inline-flex px-3 py-1 rounded-full bg-primary/10 border border-primary/20">
+                Our Facilities
+              </span>
+              <h3 className="text-3xl md:text-5xl font-extrabold text-foreground mb-4">{title}</h3>
+              <p className="text-sm md:text-base text-muted-foreground mb-6 leading-relaxed max-w-prose">
                 {description}
               </p>
-
-              {/* Amenities List */}
-              <ul className="space-y-2.5 md:space-y-3">
+              <ul className="space-y-3 list-disc pl-5">
                 {amenitiesList.map((item, index) => (
-                  <li key={index} className="flex items-start gap-2">
-                    <span className="text-primary font-bold text-base leading-none flex-shrink-0 mt-0.5">•</span>
-                    <span className="text-xs md:text-sm text-foreground/90 leading-snug">{item}</span>
+                  <li key={index} className="text-sm md:text-base text-foreground/90 leading-snug">
+                    {item}
                   </li>
                 ))}
               </ul>

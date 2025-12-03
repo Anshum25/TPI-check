@@ -1,6 +1,7 @@
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import AboutHighlightSection from "@/components/AboutHighlightSection";
+import AboutServingCommunity from "@/components/AboutServingCommunity";
 import Amenities from "@/components/Amenities";
 import { useContent } from "@/lib/content";
 
@@ -21,11 +22,13 @@ const About = () => {
 
         <AboutHighlightSection />
 
+        <AboutServingCommunity />
+
         <Amenities />
 
         <section className="py-20">
           <div className="container mx-auto px-4">
-            <div className="max-w-4xl mx-auto">
+            <div className="max-w-6xl mx-auto">
               <h2 className="text-3xl font-bold mb-8 text-center">Our Story</h2>
               <div className="space-y-6 text-lg text-muted-foreground">
                 {about.story.map((paragraph, index) => (
@@ -39,7 +42,7 @@ const About = () => {
         <section className="py-20 bg-secondary/30">
           <div className="container mx-auto px-4">
             <h2 className="text-3xl font-bold mb-12 text-center">Our Core Values</h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
               {about.coreValues.map((value, index) => (
                 <div key={index} className="bg-card p-8 rounded-lg shadow-soft">
                   <h3 className="text-xl font-bold mb-4">{value.title}</h3>
@@ -52,7 +55,7 @@ const About = () => {
 
         <section className="py-20">
           <div className="container mx-auto px-4">
-            <div className="max-w-4xl mx-auto text-center">
+            <div className="max-w-6xl mx-auto text-center">
               <h2 className="text-3xl font-bold mb-6">Why We're Different</h2>
               <div className="space-y-4 text-left">
                 {about.differentiators.map((item, index) => (
