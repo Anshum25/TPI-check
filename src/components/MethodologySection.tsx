@@ -1,11 +1,17 @@
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 import { useState, useRef } from "react";
 =======
+=======
+>>>>>>> Stashed changes
 <<<<<<< HEAD
 import { useState, useRef, useEffect } from "react";
 =======
 import { useState, useRef } from "react";
 >>>>>>> 0bef1156273d178316a7d79021bb14b628c27d2b
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
 import { ChevronDown } from "lucide-react";
 import { useContent } from "@/lib/content";
@@ -17,13 +23,19 @@ const MethodologySection = () => {
 
   const [expandedIndex, setExpandedIndex] = useState<number>(0);
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
   const contentRefs = useRef<Array<HTMLDivElement | null>>([]);
 =======
+=======
+>>>>>>> Stashed changes
 <<<<<<< HEAD
   const contentRefs = useRef<(HTMLDivElement | null)[]>([]);
 =======
   const contentRefs = useRef<Array<HTMLDivElement | null>>([]);
 >>>>>>> 0bef1156273d178316a7d79021bb14b628c27d2b
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
 
   if (methodologySections.length === 0) return null;
@@ -64,7 +76,10 @@ const MethodologySection = () => {
 
                 {/* Expanded Content */}
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 =======
+=======
+>>>>>>> Stashed changes
 <<<<<<< HEAD
                 <div 
                   ref={(el) => (contentRefs.current[index] = el)}
@@ -76,6 +91,9 @@ const MethodologySection = () => {
                   }}
                 >
                   <div className="border-t border-border/40 p-5 md:p-6 bg-secondary/10 space-y-5">
+=======
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
                 <div
@@ -92,6 +110,10 @@ const MethodologySection = () => {
                 >
                   <div className="p-5 md:p-6">
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
+=======
+>>>>>>> 0bef1156273d178316a7d79021bb14b628c27d2b
+>>>>>>> Stashed changes
 =======
 >>>>>>> 0bef1156273d178316a7d79021bb14b628c27d2b
 >>>>>>> Stashed changes
