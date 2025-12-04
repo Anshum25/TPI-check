@@ -6,9 +6,10 @@ interface TestimonialCardProps {
   role: string;
   content: string;
   rating: number;
+  hideRole?: boolean;
 }
 
-const TestimonialCard = ({ name, role, content, rating }: TestimonialCardProps) => {
+const TestimonialCard = ({ name, role, content, rating, hideRole = false }: TestimonialCardProps) => {
   return (
     <Card className="shadow-soft hover:shadow-medium transition-all duration-300">
       <CardContent className="pt-6">
@@ -28,8 +29,8 @@ const TestimonialCard = ({ name, role, content, rating }: TestimonialCardProps) 
             {name.charAt(0)}
           </div>
           <div>
-            <p className="font-semibold">{name}</p>
-            <p className="text-sm text-muted-foreground">{role}</p>
+            <p className="font-semibold whitespace-nowrap overflow-hidden text-ellipsis">{name}</p>
+            {!hideRole && <p className="text-sm text-muted-foreground">{role}</p>}
           </div>
         </div>
       </CardContent>

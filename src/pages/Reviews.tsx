@@ -2,8 +2,15 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import TestimonialCard from "@/components/TestimonialCard";
 import { Button } from "@/components/ui/button";
+import { useContent } from "@/lib/content";
+import googleLogo from "@/assets/google.svg";
+import facebookLogo from "@/assets/facebook.svg";
+import justdialLogo from "@/assets/justdial.svg";
 
 const Reviews = () => {
+  const { content } = useContent();
+  const reviewLinks = content?.successStories?.cta?.reviewLinks || [];
+
   const testimonials = [
     {
       name: "Priya Sharma",
@@ -61,6 +68,20 @@ const Reviews = () => {
     },
   ];
 
+  // Small helper for section header with icon
+  const SectionHeader = ({ title, icon }: { title: string; icon: React.ReactNode }) => (
+    <div className="flex items-center justify-center gap-3 mb-6">
+      <div className="h-9 w-9 rounded-lg bg-card border border-border/60 grid place-items-center shadow-soft">
+        {icon}
+      </div>
+      <h2 className="text-2xl md:text-3xl font-bold text-foreground">{title}</h2>
+    </div>
+  );
+
+  // Resolve platform link by label
+  const getLink = (labelIncludes: string) =>
+    reviewLinks.find((l: any) => (l.label || "").toLowerCase().includes(labelIncludes))?.url || "#";
+
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
@@ -74,25 +95,76 @@ const Reviews = () => {
           </div>
         </section>
 
-        <section className="py-20">
-          <div className="container mx-auto px-4">
-            <div className="text-center mb-12">
-              <div className="inline-flex items-center space-x-2 bg-accent/10 px-6 py-3 rounded-full">
-                <span className="text-3xl font-bold text-accent">4.9</span>
-                <span className="text-muted-foreground">out of 5 stars</span>
-                <span className="text-muted-foreground">•</span>
-                <span className="text-muted-foreground">Based on 500+ reviews</span>
-              </div>
+        {/* Google Reviews */}
+        <section className="py-16 md:py-20 relative overflow-hidden bg-gradient-to-br from-rose-50/60 via-blue-50/50 to-purple-50/60 dark:from-rose-950/15 dark:via-blue-950/10 dark:to-purple-950/15">
+          <div className="container mx-auto px-4 relative z-10">
+            <div className="text-center">
+              <SectionHeader
+                title="Google Reviews"
+                icon={<img src={googleLogo} alt="Google" className="h-5 w-5" />}
+              />
+              <p className="text-muted-foreground mb-8">Highlights from our latest Google reviews</p>
             </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {testimonials.map((testimonial, index) => (
-                <TestimonialCard key={index} {...testimonial} />
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {testimonials.slice(0, 3).map((t, i) => (
+                <TestimonialCard key={`g-${i}`} {...t} hideRole />
               ))}
+            </div>
+            <div className="text-center mt-8">
+              <a href="https://www.google.com/search?q=turning+point+institute#lrd=0x395e84cf0a8203a1:0xd1a3ec8eb1a3e77e,1,,,," target="_blank" rel="noopener noreferrer">
+                <Button variant="outline" className="px-6">Watch More</Button>
+              </a>
             </div>
           </div>
         </section>
 
+        {/* Facebook Reviews */}
+        <section className="py-16">
+          <div className="container mx-auto px-4">
+            <div className="text-center">
+              <SectionHeader
+                title="Facebook Reviews"
+                icon={<img src={facebookLogo} alt="Facebook" className="h-5 w-5" />}
+              />
+              <p className="text-muted-foreground mb-8">Stories shared by our community on Facebook</p>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {testimonials.slice(3, 6).map((t, i) => (
+                <TestimonialCard key={`f-${i}`} {...t} hideRole />
+              ))}
+            </div>
+            <div className="text-center mt-8">
+              <a href={getLink("facebook")} target="_blank" rel="noopener noreferrer">
+                <Button variant="outline" className="px-6">Watch More</Button>
+              </a>
+            </div>
+          </div>
+        </section>
+
+        {/* JustDial Reviews */}
+        <section className="py-16">
+          <div className="container mx-auto px-4">
+            <div className="text-center">
+              <SectionHeader
+                title="JustDial Reviews"
+                icon={<img src={justdialLogo} alt="JustDial" className="h-5 w-5" />}
+              />
+              <p className="text-muted-foreground mb-8">Ratings and feedback from JustDial</p>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {testimonials.slice(6, 9).map((t, i) => (
+                <TestimonialCard key={`j-${i}`} {...t} hideRole />
+              ))}
+            </div>
+            <div className="text-center mt-8">
+              <a href={getLink("just")} target="_blank" rel="noopener noreferrer">
+                <Button variant="outline" className="px-6">Watch More</Button>
+              </a>
+            </div>
+          </div>
+        </section>
+
+        {/* Submit review stays at the bottom */}
         <section className="py-20 bg-secondary/30">
           <div className="container mx-auto px-4 text-center">
             <h2 className="text-3xl font-bold mb-8">Want to Share Your Experience?</h2>
