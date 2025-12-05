@@ -129,18 +129,22 @@ const FAQ = () => {
 
         <section className="py-20">
           <div className="container mx-auto px-4">
-            <div className="max-w-4xl mx-auto space-y-8">
+            <div className="max-w-4xl  mx-auto space-y-8">
               {faqs.map((category, index) => (
                 <Card key={index} className="shadow-soft">
                   <CardContent className="pt-6">
                     <h2 className="text-2xl font-bold mb-4 text-primary">{category.category}</h2>
                     <Accordion type="single" collapsible className="w-full">
                       {category.questions.map((faq, qIndex) => (
-                        <AccordionItem key={qIndex} value={`item-${index}-${qIndex}`}>
-                          <AccordionTrigger className="text-left">
+                        <AccordionItem
+                          key={qIndex}
+                          value={`item-${index}-${qIndex}`}
+                       
+                        >
+                          <AccordionTrigger className="text-left hover:no-underline hover:text-primary data-[state=open]:text-primary transition-colors py-5">
                             {faq.q}
                           </AccordionTrigger>
-                          <AccordionContent className="text-muted-foreground">
+                          <AccordionContent className="text-muted-foreground leading-relaxed md:leading-7 text-[15px] md:text-base transition-all duration-100">
                             {faq.a}
                           </AccordionContent>
                         </AccordionItem>

@@ -7,7 +7,7 @@ const GainFromCourse = () => {
   const { admissions } = content;
   const groups = admissions.targetGroups || [];
 
-  const [expandedIndex, setExpandedIndex] = useState<number>(0);
+  const [expandedIndex, setExpandedIndex] = useState<number>(-1);
   const contentRefs = useRef<Array<HTMLDivElement | null>>([]);
 
   if (!groups.length) return null;

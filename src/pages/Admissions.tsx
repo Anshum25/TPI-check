@@ -2,17 +2,9 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { CheckCircle, Clock, Calendar, MapPin, Phone, Users, Award } from "lucide-react";
-import { Link } from "react-router-dom";
+import { CheckCircle } from "lucide-react";
 import { useContent } from "@/lib/content";
-
-const iconMap = {
-  clock: Clock,
-  calendar: Calendar,
-  map: MapPin,
-  award: Award,
-  users: Users,
-} as const;
+import CourseDetails from "@/components/CourseDetails";
 
 const Admissions = () => {
   return (
@@ -34,14 +26,7 @@ const Admissions = () => {
           </div>
         </section>
 
-        <section className="py-20 bg-secondary/30">
-          <div className="container mx-auto px-4">
-            <h2 className="text-3xl font-bold mb-12 text-center">Course Details</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
-              <CourseDetailsGrid />
-            </div>
-          </div>
-        </section>
+        <CourseDetails />
 
         <section className="py-20">
           <div className="container mx-auto px-4">
@@ -84,23 +69,11 @@ const useAdmissionsContent = () => {
 };
 
 const HeroSection = () => {
-  const { hero, contactCtas } = useAdmissionsContent();
+  const { hero } = useAdmissionsContent();
   return (
     <>
       <h1 className="text-4xl md:text-5xl font-bold mb-4">{hero.title}</h1>
-      <p className="text-xl max-w-3xl mx-auto text-primary-foreground/90 mb-8">{hero.subtitle}</p>
-      <div className="flex flex-wrap justify-center gap-4">
-        <a href={`tel:${contactCtas.phoneNumber}`}>
-          <Button size="lg" className="gradient-accent">
-            {contactCtas.phoneLabel}
-          </Button>
-        </a>
-        <Link to={contactCtas.secondaryLink}>
-          <Button size="lg" variant="outline" className="bg-white/10 backdrop-blur-sm border-white text-white hover:bg-white hover:text-primary">
-            {contactCtas.secondaryText}
-          </Button>
-        </Link>
-      </div>
+      <p className="text-xl max-w-3xl mx-auto text-primary-foreground/90">{hero.subtitle}</p>
     </>
   );
 };
@@ -122,27 +95,7 @@ const StepsGrid = () => {
   );
 };
 
-const CourseDetailsGrid = () => {
-  const { courseDetails } = useAdmissionsContent();
-  return (
-    <>
-      {courseDetails.map((detail, index) => {
-        const Icon = iconMap[detail.icon];
-        return (
-          <Card key={index} className="shadow-soft">
-            <CardContent className="pt-6">
-              <div className="flex items-center space-x-3 mb-3">
-                <Icon className="h-5 w-5 text-primary" />
-                <h3 className="font-bold text-base">{detail.label}</h3>
-              </div>
-              <p className="text-sm text-muted-foreground">{detail.value}</p>
-            </CardContent>
-          </Card>
-        );
-      })}
-    </>
-  );
-};
+// CourseDetailsGrid replaced by shared <CourseDetails /> component used on Home page.
 
 const TargetGroups = () => {
   const { targetGroups } = useAdmissionsContent();
