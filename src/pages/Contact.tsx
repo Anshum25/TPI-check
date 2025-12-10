@@ -19,13 +19,14 @@ const Contact = () => {
     lastName: "",
     workingPerson: "",
     phone: "",
+    area: "",
     times: { morning: false, afternoon: false, evening: false },
   });
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
     toast({ title: "Request submitted", description: "We'll call you back shortly." });
-    setForm({ firstName: "", lastName: "", workingPerson: "", phone: "", times: { morning: false, afternoon: false, evening: false } });
+    setForm({ firstName: "", lastName: "", workingPerson: "", phone: "", area: "", times: { morning: false, afternoon: false, evening: false } });
   };
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -86,6 +87,17 @@ const Contact = () => {
                       <div className="space-y-2">
                         <Label htmlFor="phone">Contact Number *</Label>
                         <Input id="phone" name="phone" type="tel" placeholder="Enter your number" value={form.phone} onChange={handleChange} required />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label htmlFor="area">Area of Residence/Work</Label>
+                        <Input
+                          id="area"
+                          name="area"
+                          placeholder="e.g., Ahmedabad"
+                          value={form.area}
+                          onChange={handleChange}
+                        />
                       </div>
 
                       <div className="space-y-3">

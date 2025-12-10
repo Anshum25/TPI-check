@@ -5,8 +5,9 @@ import justdialLogo from "@/assets/justdial.svg";
 
 const HomeReviewsSection = () => {
   const { content } = useContent();
-  const { successStories } = content;
+  const { successStories, home } = content;
   const links = successStories.cta.reviewLinks || [];
+  const homeReviews = home?.homeReviews;
 
   if (!links.length) return null;
 
@@ -19,10 +20,10 @@ const HomeReviewsSection = () => {
       <div className="container mx-auto px-4 relative z-10">
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-3">
-            Review from our achievers
+            {homeReviews?.title || "Review from our achievers"}
           </h2>
           <p className="text-muted-foreground mb-6">
-            Read authentic reviews from students who transformed their English and personality with us.
+            {homeReviews?.subtitle || "Read authentic reviews from students who transformed their English and personality with us."}
           </p>
         
         </div>
