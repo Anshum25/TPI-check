@@ -32,6 +32,25 @@ const Gallery = () => {
         },
       ]);
 
+  const toEmbedUrl = (url: string) => {
+    if (!url) return "";
+    try {
+      // Short youtu.be links
+      if (url.includes("youtu.be/")) {
+        const id = url.split("youtu.be/")[1]?.split(/[?&#]/)[0];
+        return id ? `https://www.youtube.com/embed/${id}` : url;
+      }
+      // watch?v= links
+      if (url.includes("watch?v=")) {
+        const id = url.split("watch?v=")[1]?.split(/[?&#]/)[0];
+        return id ? `https://www.youtube.com/embed/${id}` : url;
+      }
+      return url;
+    } catch {
+      return url;
+    }
+  };
+
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
@@ -81,16 +100,16 @@ const Gallery = () => {
 
               {/* Videos Tab */}
               <TabsContent value="videos">
-                {videos && videos.length > 0 ? (
+                {videos && videos.filter((v) => !!v.url).length > 0 ? (
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {videos.map((video, index) => (
+                    {videos.filter((v) => !!v.url).map((video, index) => (
                       <Card
                         key={`video-${index}`}
                         className="overflow-hidden shadow-soft hover:shadow-medium transition-all duration-300"
                       >
                         <div className="aspect-video w-full bg-muted">
                           <iframe
-                            src={video.url}
+                            src={toEmbedUrl(video.url)}
                             title={video.title}
                             className="w-full h-full"
                             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"

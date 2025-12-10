@@ -20,6 +20,7 @@ const RequestCallbackDialog = ({ open, onOpenChange }: Props) => {
     lastName: "",
     workingPerson: "",
     phone: "",
+    area: "",
     times: {
       morning: false,
       afternoon: false,
@@ -35,13 +36,13 @@ const RequestCallbackDialog = ({ open, onOpenChange }: Props) => {
   const onSubmit = (e: FormEvent) => {
     e.preventDefault();
     toast({ title: "Request submitted", description: "We'll call you back shortly." });
-    setForm({ firstName: "", lastName: "", workingPerson: "", phone: "", times: { morning: false, afternoon: false, evening: false } });
+    setForm({ firstName: "", lastName: "", workingPerson: "", phone: "", area: "", times: { morning: false, afternoon: false, evening: false } });
     onOpenChange(false);
   };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-lg max-w-[92vw] min-h-[520px] max-h-[90vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-lg max-w-[92vw] min-h-[520px] overflow-visible">
         <DialogHeader>
           <DialogTitle>Request a call back</DialogTitle>
           <DialogDescription>Fill in your details and pick a suitable time.</DialogDescription>
@@ -77,6 +78,17 @@ const RequestCallbackDialog = ({ open, onOpenChange }: Props) => {
               <div className="space-y-2">
                 <Label htmlFor="phone">Contact Number *</Label>
                 <Input id="phone" name="phone" type="tel" placeholder="Enter your number" value={form.phone} onChange={onChange} required />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="area">Area of Residence/Work</Label>
+                <Input
+                  id="area"
+                  name="area"
+                  placeholder="e.g., Ahmedabad"
+                  value={form.area}
+                  onChange={onChange}
+                />
               </div>
 
               <div className="space-y-3">

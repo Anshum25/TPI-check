@@ -11,7 +11,7 @@ const slugifyName = (name: string) =>
 
 const FacultyHighlight = () => {
   const { content } = useContent();
-  const { faculty } = content;
+  const { faculty, home } = content;
   const navigate = useNavigate();
 
   const highlighted = useMemo(() => faculty.members.slice(0, 3), [faculty.members]);
@@ -28,15 +28,18 @@ const FacultyHighlight = () => {
       <div className="container mx-auto px-4">
         <div className="text-center mb-10">
           <span className="inline-flex items-center px-4 py-1 rounded-full text-xs font-semibold uppercase tracking-wider border border-primary/20 text-primary bg-primary/5 mb-3">
-            Core Faculty
+            {home.facultyHighlight?.badgeLabel || "Core Faculty"}
           </span>
-          <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-2">Owners are the Teachers!!</h2>
+          <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-2">
+            {home.facultyHighlight?.title || "Owners are the Teachers!!"}
+          </h2>
           <p className="text-sm md:text-base text-muted-foreground max-w-2xl mx-auto">
-            Meet the founders and core faculty who personally mentor every student at Turning Point.
+            {home.facultyHighlight?.description ||
+              "Meet the founders and core faculty who personally mentor every student at Turning Point."}
           </p>
         </div>
 
-        <div className="grid gap-6 md:grid-cols-3">
+        <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
           {highlighted.map((member, index) => (
             <button
               key={index}

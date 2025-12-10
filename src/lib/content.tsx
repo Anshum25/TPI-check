@@ -4,7 +4,37 @@ import speakingConfidence from "@/assets/speaking-confidence.jpg";
 import studentSuccess from "@/assets/student-success.jpg";
 
 export type Feature = { title: string; description: string };
-export type Testimonial = { name: string; role: string; content: string; rating?: number; achievement?: string };
+
+type CourseBatchItem = { label: string; time: string };
+type CourseBatchGroup = { heading: string; color?: "primary" | "accent"; items: CourseBatchItem[] };
+type CourseKeyDetail = { icon: "clock" | "calendar" | "users"; title: string; description: string };
+type CourseOverview = {
+  kicker?: string;
+  title?: string;
+  titleBefore?: string;
+  titleHighlight?: string;
+  titleAfter?: string;
+  schedule?: CourseBatchGroup[];
+  details?: CourseKeyDetail[];
+  ctaText?: string;
+  ctaButton?: string;
+  ctaLink?: string;
+};
+type DifferentiatorItem = { title: string; description?: string };
+type DifferentiatorCard = {
+  icon: "award" | "users";
+  title: string;
+  items: DifferentiatorItem[];
+  footerText?: string;
+};
+export type Testimonial = {
+  name: string;
+  role: string;
+  content: string;
+  rating?: number;
+  achievement?: string;
+  source?: "google" | "facebook" | "justdial";
+};
 
 type HeroContent = {
   title: string;
@@ -14,6 +44,19 @@ type HeroContent = {
 type Stat = { value: string; label: string };
 type SimpleCard = { title: string; description: string };
 type BenefitSection = { title: string; items: string[] };
+type JoinUs = {
+  kicker?: string;
+  titleBefore?: string;
+  titleHighlight?: string;
+  titleAfter?: string;
+  subtitle?: string;
+  steps?: { label: string }[];
+  reasons?: { title: string; description: string }[];
+  reasonsHeading?: string;
+  statCard?: { metric: string; heading: string; description: string };
+  infoCard?: { title: string; description: string };
+  bottom?: { title: string; description: string };
+};
 type Question = { q: string; a: string };
 type FAQCategory = { category: string; questions: Question[] };
 type MethodologySection = {
@@ -41,9 +84,47 @@ export type SiteContent = {
       }[];
     };
     features: Feature[];
+    differentiators?: { cards: DifferentiatorCard[] };
+    joinUs?: JoinUs;
+    courseOverview?: CourseOverview;
     directorVideoUrl: string;
+    methodologyBadge?: string;
+    methodologyKeyPoint?: string;
     testimonials: Testimonial[];
+    methodologyHeading: string;
+    methodologyTitle: string;
     methodologySections: MethodologySection[];
+    gainHeading: string;
+    gainTitle: string;
+    gainGroups?: {
+      title: string;
+      subtitle: string;
+      items: { title: string; description: string }[];
+    }[];
+    achievementsSection?: {
+      title: string;
+      subtitle: string;
+      items: { title: string; description: string }[];
+    };
+    facultyHighlight?: {
+      badgeLabel: string;
+      title: string;
+      description: string;
+    };
+    activityVideos?: {
+      title: string;
+      subtitle: string;
+      videos: { title: string; videoUrl: string }[];
+    };
+    activityImages?: {
+      title: string;
+      subtitle: string;
+      images: { title: string; src: string }[];
+    };
+    homeReviews?: {
+      title: string;
+      subtitle: string;
+    };
     ctaTitle: string;
     ctaText: string;
   };
@@ -62,6 +143,7 @@ export type SiteContent = {
     };
     quickLinks: { label: string; to: string }[];
     courses: string[];
+    whatWeDo?: string[];
     contact: {
       address: string;
       phone: string;
@@ -72,6 +154,21 @@ export type SiteContent = {
   about: {
     hero: HeroContent;
     stats: Stat[];
+    highlight?: {
+      headingPrimary: string;
+      headingSecondary: string;
+      paragraphs: string[];
+    };
+    amenities?: {
+      title: string;
+      description: string;
+      amenitiesList: string[];
+      carouselImages: string[];
+    };
+    community?: {
+      title: string;
+      description: string;
+    };
     story: string[];
     coreValues: SimpleCard[];
     differentiators: SimpleCard[];
@@ -134,6 +231,11 @@ export type SiteContent = {
     hero: HeroContent;
     ratingSummary: { score: string; label: string; count: string };
     testimonials: Testimonial[];
+    sections?: {
+      google: { title: string; description: string };
+      facebook: { title: string; description: string };
+      justdial: { title: string; description: string };
+    };
     cta: { title: string; description: string; buttonText: string; mailTo: string };
   };
   faq: {
@@ -205,13 +307,122 @@ export const DEFAULT_CONTENT: SiteContent = {
         },
       ],
     },
+    joinUs: {
+      kicker: "Start Your Journey",
+      titleBefore: "Bring a",
+      titleHighlight: "Turning Point",
+      subtitle: "Be fluent and confident in English, from basic to advanced level",
+      steps: [
+        { label: "Basics" },
+        { label: "Intermediate" },
+        { label: "Fluent" },
+      ],
+      reasons: [
+        {
+          title: "Established Since 1999",
+          description:
+            "Founded by Ashish Bhatt and Pragna Bhatt, we've been the ultimate solution for effective English communication skills in Ahmedabad for over 25 years.",
+        },
+        {
+          title: "Learn Directly from Founders",
+          description:
+            "Study with Mr Ashish Bhatt and Mrs Pragna Bhatt themselves. Their rich experience in making students fluent and confident is unmatched.",
+        },
+        {
+          title: "Out of the Box Teaching",
+          description:
+            "Our unique approach is completely unconventional and highly effective. You'll find learning Spoken English easy and genuinely interesting.",
+        },
+      ],
+      statCard: {
+        metric: "25+",
+        heading: "Years of Excellence",
+        description:
+          "Two decades of transforming lives and building confidence in English communication. Join thousands of successful alumni.",
+      },
+      infoCard: {
+        title: "Perfect Institute For You",
+        description:
+          "If you're looking for the best English speaking classes in Ahmedabad, Turning Point is the ultimate choice. We've evolved into an institution of excellence.",
+      },
+      bottom: {
+        title: "You belong here.",
+        description:
+          "The real strength of any institute is its teachers. At Turning Point, you're not just a student – you're part of a community led by the founders themselves. Your success is our responsibility. You'll experience a teaching method that's proven effective for making students fluent, confident, and genuinely interested in learning English.",
+      },
+    },
+    courseOverview: {
+      kicker: "Program Overview",
+      titleBefore: "The",
+      titleHighlight: "Course",
+      titleAfter: "",
+      schedule: [
+        {
+          heading: "Morning",
+          color: "primary",
+          items: [
+            { label: "Batch 1", time: "8:00 am to 9:30 am" },
+            { label: "Batch 2", time: "9:30 am to 11:00 am" },
+            { label: "Batch 3", time: "11:00 am to 12:30 pm" },
+          ],
+        },
+        {
+          heading: "Evening",
+          color: "accent",
+          items: [
+            { label: "Batch 4", time: "6:00 pm to 7:30 pm" },
+            { label: "Batch 5", time: "7:30 pm to 9:00 pm" },
+          ],
+        },
+      ],
+      details: [
+        { icon: "clock", title: "Duration", description: "Two months" },
+        { icon: "calendar", title: "Sessions", description: "Monday to Friday (90 minutes)" },
+        { icon: "users", title: "Seminars", description: "Twice in a month (Saturday)" },
+      ],
+      ctaText: "Ready to start your transformation journey?",
+      ctaButton: "Contact Us",
+      ctaLink: "/contact",
+    },
     features: [
       { title: "Expert Training", description: "Learn from experienced professionals with proven teaching methods" },
       { title: "10,000+ Students", description: "Join our successful alumni network since 1999" },
       { title: "Certified Programs", description: "Receive recognized certificates upon course completion" },
       { title: "Practical Approach", description: "Real-world scenarios and interactive learning methods" },
     ],
+    differentiators: {
+      cards: [
+        {
+          icon: "award",
+          title: "An Institute Exclusively for",
+          items: [
+            { title: "Spoken English" },
+            { title: "Personality Development" },
+          ],
+          footerText:
+            "Specialized training designed specifically for these core areas of transformation",
+        },
+        {
+          icon: "users",
+          title: "Trained 10,000+ Students Since 1999",
+          items: [
+            {
+              title: "Coaching by Founders",
+              description:
+                "Direct mentorship from institute founders with 25+ years experience",
+            },
+            {
+              title: "No Franchises/No Branches",
+              description:
+                "Single location ensures consistent quality and personalized attention",
+            },
+          ],
+        },
+      ],
+    },
     directorVideoUrl: "https://www.youtube.com/embed/sLMm9trcZYc",
+    methodologyBadge: "Our Methodology",
+    methodologyKeyPoint: "Direct mentorship from the institute founders with proven teaching methods",
     testimonials: [
       {
         name: "Priya Sharma",
@@ -232,6 +443,8 @@ export const DEFAULT_CONTENT: SiteContent = {
         rating: 5,
       },
     ],
+    methodologyHeading: "How We Teach",
+    methodologyTitle: "Our Teaching Methodology",
     methodologySections: [
       {
         title: "Coaching Method",
@@ -260,6 +473,132 @@ export const DEFAULT_CONTENT: SiteContent = {
         description: "When you join our institute you become part of Turning Point Family. We make sure that each and every student gets the desired result. We are continuously monitoring the performance of all the students through various parameters and if required we provide personal support to the weak students. If you miss any lecture also our team is at your help to cover up what you had missed. The goal for which you have joined must be achieved. The only condition for our support is that you have to regular and do the work regularly which is of around 30 minutes.",
       },
     ],
+    gainHeading: "What You Will Gain",
+    gainTitle: "What you would gain from the course!",
+    gainGroups: [
+      {
+        title: "Working Professionals",
+        subtitle: "Make English your strength and achieve higher professional growth!",
+        items: [
+          {
+            title: "Correct Language (Written Communication)",
+            description: "Present your ideas effectively with extraordinary skills to construct smallest to most complex sentences with absolute clarity and decency.",
+          },
+          {
+            title: "Presentation Skills (Verbal Communication)",
+            description: "Speak fluently in English with tremendous confidence that you are always correct in the language. Remove stage fear and develop correct body language by performing various activities on the stage.",
+          },
+          {
+            title: "Be a quick learner ( Reading Skills)",
+            description: "Develop ability To Read with Double speed and understand the mails and Other written Communication Without Any Confusion . Pursue Further Education or Training with Excellent Reading Skills and Get Success",
+          },
+        ],
+      },
+      {
+        title: "Students",
+        subtitle: "Make English your language to get success in higher education and social life",
+        items: [
+          {
+            title: "Replace your mother tongue with English",
+            description: "Get so much clarity and perfection in English that you would speak in English every where and with anyone.",
+          },
+          {
+            title: "Make your higher education interesting and burden-less",
+            description: "Develop very effective reading and writing skills which would help you to study effectively and get good marks in collage.",
+          },
+          {
+            title: "Transform into a confident and out spoken person",
+            description: "A number of speaking activities will help you transform into a person with confidence to communicate effectively and create own identity where ever you go.",
+          },
+        ],
+      },
+      {
+        title: "Homemakers",
+        subtitle: "Get fluency and confidence in spoken English and play your roles effectively.",
+        items: [
+          {
+            title: "Be the best teacher of your child",
+            description: "You will get amazing clarity in English language which will help you to support your child who is studying in English medium. Also you will be able to communicate effectively with your child's teacher in English.",
+          },
+          {
+            title: "Be fluent and confident",
+            description: "A lot of practice will make you fluent in English and you will be confident to speak in English just like your mother tongue. It will give confidence to your child as well as an environment to learn better in English medium school.",
+          },
+          {
+            title: "Be presentable in social life",
+            description: "A lot of speaking activities like public speaking, group discussions, role plays and more will help you to become confident and presentable in your social circle.",
+          },
+        ],
+      },
+    ],
+    achievementsSection: {
+      title: "What You'll Achieve",
+      subtitle: "Master English through our proven methodology",
+      items: [
+        {
+          title: "Achieve Clarity",
+          description: "from Basic to most Advance sentence structures",
+        },
+        {
+          title: "Achieve Fluency",
+          description: "with complete understanding of grammar concepts and flow of language",
+        },
+        {
+          title: "Achieve Confidence",
+          description: "through numerous stage activities and public speaking sessions",
+        },
+        {
+          title: "Achieve Perfection",
+          description: "by mastering all aspects of the language",
+        },
+      ],
+    },
+    facultyHighlight: {
+      badgeLabel: "Core Faculty",
+      title: "Owners are the Teachers!!",
+      description:
+        "Meet the founders and core faculty who personally mentor every student at Turning Point.",
+    },
+    activityVideos: {
+      title: "Student Activities",
+      subtitle: "Watch real student activities and transformations in action",
+      videos: [
+        {
+          title: "Group Discussion Activity",
+          videoUrl: "https://www.youtube.com/embed/sLMm9trcZYc",
+        },
+        {
+          title: "Public Speaking & Confidence Building",
+          videoUrl: "https://www.youtube.com/embed/sLMm9trcZYc",
+        },
+        {
+          title: "Interactive Role Play Session",
+          videoUrl: "https://www.youtube.com/embed/sLMm9trcZYc",
+        },
+      ],
+    },
+    activityImages: {
+      title: "Moments that Matter",
+      subtitle: "Glimpses of real classrooms, stage activities, and everyday learning moments",
+      images: [
+        {
+          title: "Classroom Interaction",
+          src: "/src/assets/hero-classroom.jpg",
+        },
+        {
+          title: "Speaking & Confidence",
+          src: "/src/assets/speaking-confidence.jpg",
+        },
+        {
+          title: "Student Success",
+          src: "/src/assets/student-success.jpg",
+        },
+      ],
+    },
+    homeReviews: {
+      title: "Review from our achievers",
+      subtitle: "Read authentic reviews from students who transformed their English and personality with us.",
+    },
     ctaTitle: "Ready to Transform Your Future?",
     ctaText: "Join thousands of successful students and start your journey towards excellence today",
   },
@@ -297,6 +636,11 @@ export const DEFAULT_CONTENT: SiteContent = {
       "Business Communication",
       "Interview Preparation",
     ],
+    whatWeDo: [
+      "Coaching by Founders",
+      "No Franchises or Branches",
+      "Practical, Results-Oriented Approach",
+    ],
     contact: {
       address: "123 Education Street, Learning City, 380001",
       phone: "+91 98765 43210",
@@ -309,6 +653,14 @@ export const DEFAULT_CONTENT: SiteContent = {
       title: "About Turning Point Institute",
       subtitle: "Empowering individuals through quality education since 1999",
     },
+    highlight: {
+      headingPrimary: "Your search for effective coaching",
+      headingSecondary: "ENDS HERE...",
+      paragraphs: [
+        "Established in 1999 by Mr. Ashish Bhatt and Mrs. Pragna Bhatt, Turning Point Institute has trained thousands of people from all walks of life. Dedication to the purpose and unmatched skills in imparting coaching have helped Turning Point win love and admiration from all its students. For those searching for English speaking classes near me, Turning Point Institute offers a proven track record of success.",
+        "The enduring benefits of the training can be measured by the fact that there have been hundreds of families whose 2 to 3 members, or even entire families, have taken our courses to upgrade their abilities and keep pace with today’s dynamic world.",
+      ],
+    },
     stats: [
       { value: "10,000+", label: "Students Trained" },
       { value: "25+", label: "Years Experience" },
@@ -320,6 +672,36 @@ export const DEFAULT_CONTENT: SiteContent = {
       "Our founders, with decades of combined experience in education and corporate training, recognized the need for practical, results-oriented programs that focus on real-world application rather than just theoretical knowledge. This philosophy continues to guide everything we do.",
       "Over the years, we've had the privilege of training over 10,000 students from diverse backgrounds, helping them achieve their dreams of career advancement, academic success, and personal growth. Our commitment to quality education and individual attention has remained unwavering.",
     ],
+    amenities: {
+      title: "Amenities",
+      description:
+        "We are functioning at a spacious premises in posh area of Satellite with all the amenities to facilitate our students with the best environment to sharpen their communication skills and gain self confidence along with positive personality traits.",
+      amenitiesList: [
+        "Precious AC class rooms with comfortable sitting arrangement",
+        "Hall with stage, mic and projector",
+        "Course material with detailed explanation and practice material",
+        "Recorded videos of all the lectures if student misses any lecture",
+        "Library with numerous reading materials along with take home facility",
+        "Reading room where you can utilize for quality time",
+      ],
+      carouselImages: [
+        "https://images.unsplash.com/photo-1523580494863-6f3031224c94?w=1200&h=800&fit=crop",
+        "https://images.unsplash.com/photo-1552664730-d307ca884978?w=1200&h=800&fit=crop",
+        "https://images.unsplash.com/photo-1587825140708-dfaf72ae4b04?w=1200&h=800&fit=crop",
+        "https://images.unsplash.com/photo-1516321318423-f06f70d504f0?w=1200&h=800&fit=crop",
+        "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=1200&h=800&fit=crop",
+        "https://images.unsplash.com/photo-1512941691920-25bda36dc643?w=1200&h=800&fit=crop",
+        "https://images.unsplash.com/photo-1516979187457-635ffe35ff81?w=1200&h=800&fit=crop",
+        "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=1200&h=800&fit=crop",
+        "https://images.unsplash.com/photo-1497633762265-25c147778efd?w=1200&h=800&fit=crop",
+        "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=1200&h=800&fit=crop",
+      ],
+    },
+    community: {
+      title: "Serving the community for more than two decades",
+      description:
+        "Turning Point Institute is the best English speaking coaching class in Ahmedabad, situated beside Sima hall of Satellite it caters to the needs of all the people residing in Anand nagar, Prahlad nagar, shymal, jivraj park, Vejalpur, sarkhej, juhapura, Prernatirth derasar road, ramdev nagar, bodakdev cross roads, Ambawadi, Shreyas Tekra, Manek baugh, Ayojan nagar, SG road, Iscon cross roads, Himmatlal park, bodakdev, Vastrapur and more where people find English Speaking class near me. Apart from these areas Working professionals, students, housewives and also foreign study aspirants join our course from far areas like Drive in, bopal, south bopal, Shilaj, Thaltej, Science city, Chand kheda, Naroda, Narol, Bapunagar, Shahibagh, Naranpura, Paldi, Maninagar, Vatva and more as Turning Point Institute is one of the oldest and among the top ten institutes in Ahmedabad. The students join our course to get perfection in grammar as it's helpful for Govt exams, gpsc, staff selection, banking along with IELTS, SAT and PTE. Apart from this our course is extremely helpful to working professionals as it develops corporate communication skills along with email writing and client communication.",
+    },
     coreValues: [
       { title: "Excellence", description: "We strive for excellence in everything we do, ensuring the highest quality education." },
       { title: "Integrity", description: "We maintain the highest standards of integrity in our teaching methods and relationships with students." },
@@ -683,56 +1065,79 @@ export const DEFAULT_CONTENT: SiteContent = {
         role: "Software Engineer",
         content: "This institute transformed my communication skills completely. I'm now confident in presentations and team meetings. The practical approach really works!",
         rating: 5,
+        source: "google",
       },
       {
         name: "Rahul Patel",
         role: "Business Owner",
         content: "The personality development course helped me become a better leader. Highly recommend to everyone who wants to grow professionally!",
         rating: 5,
+        source: "google",
       },
       {
         name: "Anjali Desai",
         role: "HR Manager",
         content: "Excellent teaching methods and supportive instructors. Worth every penny invested in my growth. The batch size is perfect for individual attention.",
         rating: 5,
+        source: "google",
       },
       {
         name: "Vikram Singh",
         role: "Marketing Executive",
         content: "I was hesitant about my English speaking skills, but after completing the course, I feel like a different person. Thank you for building my confidence!",
         rating: 5,
+        source: "facebook",
       },
       {
         name: "Neha Gupta",
         role: "Teacher",
         content: "The founders personally conduct classes which makes a huge difference. Their experience and dedication towards students is remarkable.",
         rating: 5,
+        source: "facebook",
       },
       {
         name: "Amit Kumar",
         role: "Student",
         content: "Best institute for spoken English in the city. The interactive sessions and group discussions helped me overcome my fear of speaking.",
         rating: 5,
+        source: "facebook",
       },
       {
         name: "Pooja Mehta",
         role: "Customer Service Executive",
         content: "My workplace communication improved significantly after joining here. The business communication module was especially helpful for my career.",
         rating: 5,
+        source: "justdial",
       },
       {
         name: "Karan Shah",
         role: "Entrepreneur",
         content: "I've attended many institutes before, but this one stands out. The practical tips for personality development are applicable in real life situations.",
         rating: 4,
+        source: "justdial",
       },
       {
         name: "Sneha Joshi",
         role: "Bank Manager",
         content: "Fantastic learning experience! The interview preparation course helped me crack multiple job interviews. Highly recommended!",
         rating: 5,
+        source: "justdial",
       },
     ],
+    sections: {
+      google: {
+        title: "Google Reviews",
+        description: "Highlights from our latest Google reviews",
+      },
+      facebook: {
+        title: "Facebook Reviews",
+        description: "Stories shared by our community on Facebook",
+      },
+      justdial: {
+        title: "JustDial Reviews",
+        description: "Ratings and feedback from JustDial",
+      },
+    },
     cta: {
       title: "Want to Share Your Experience?",
       description: "We'd love to hear about your journey with us. Your feedback helps us improve and inspires others to take the first step.",
@@ -1049,6 +1454,14 @@ export const ContentProvider: React.FC<{ children: React.ReactNode }> = ({ child
     }
     return DEFAULT_CONTENT;
   });
+
+  // One-time migration for existing in-memory content so new fields
+  // (like home.achievementsSection and home.facultyHighlight) are
+  // always present even if localStorage was created before they existed.
+  useEffect(() => {
+    setContentState(prev => migrateContent(prev));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     try {

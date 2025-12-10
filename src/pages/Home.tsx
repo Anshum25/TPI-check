@@ -6,6 +6,7 @@ import Hero from "@/components/Hero";
 import Differentiators from "@/components/Differentiators";
 import JoinUsSection from "@/components/JoinUsSection";
 import ActivityVideos from "@/components/ActivityVideos";
+import ActivityImages from "@/components/ActivityImages";
 import FacultyHighlight from "@/components/FacultyHighlight";
 import CourseDetails from "@/components/CourseDetails";
 import MethodologySection from "@/components/MethodologySection";
@@ -58,34 +59,20 @@ const Home = () => {
         <FacultyHighlight />
 
         {/* Achievements Section */}
-        <section className="py-10 md:py-14">
-          <div className="container mx-auto px-4">
-            <div className="text-center mb-8">
-              <h2 className="text-2xl md:text-3xl font-bold mb-2 text-foreground">What You'll Achieve</h2>
-              <p className="text-muted-foreground max-w-2xl mx-auto">
-                Master English through our proven methodology
-              </p>
-            </div>
+        {home.achievementsSection && (
+          <section className="py-10 md:py-14">
+            <div className="container mx-auto px-4">
+              <div className="text-center mb-8">
+                <h2 className="text-2xl md:text-3xl font-bold mb-2 text-foreground">
+                  {home.achievementsSection.title}
+                </h2>
+                <p className="text-muted-foreground max-w-2xl mx-auto">
+                  {home.achievementsSection.subtitle}
+                </p>
+              </div>
 
-            <div className="max-w-4xl mx-auto bg-card/80 border border-border/60 rounded-2xl shadow-soft px-6 py-4 md:px-8 md:py-6 space-y-4">
-              {[
-                {
-                  title: "Achieve Clarity",
-                  description: "from Basic to most Advance sentence structures"
-                },
-                {
-                  title: "Achieve Fluency",
-                  description: "with complete understanding of grammar concepts and flow of language"
-                },
-                {
-                  title: "Achieve Confidence",
-                  description: "through numerous stage activities and public speaking sessions"
-                },
-                {
-                  title: "Achieve Perfection",
-                  description: "by mastering all aspects of the language"
-                }
-              ].map((item, index) => (
+              <div className="max-w-4xl mx-auto bg-card/80 border border-border/60 rounded-2xl shadow-soft px-6 py-4 md:px-8 md:py-6 space-y-4">
+                {home.achievementsSection.items.map((item, index) => (
                 <div
                   key={index}
                   className={`flex items-start gap-4 py-3 border-b last:border-b pl-5 border-l-4 ${index === 1 || index === 3 ? 'border-accent' : 'border-primary'
@@ -100,10 +87,11 @@ const Home = () => {
                     <p className="text-muted-foreground text-sm md:text-[15px]">{item.description}</p>
                   </div>
                 </div>
-              ))}
+                ))}
+              </div>
             </div>
-          </div>
-        </section>
+          </section>
+        )}
 
 
 
@@ -114,9 +102,11 @@ const Home = () => {
               {/* Left Content */}
               <div className="space-y-6">
                 <div>
-                  <span className="inline-block px-3 py-1 bg-primary/10 text-primary text-xs font-semibold uppercase tracking-wider rounded-full mb-4">
-                    Our Methodology
-                  </span>
+                  {home.methodologyBadge && (
+                    <span className="inline-block px-3 py-1 bg-primary/10 text-primary text-xs font-semibold uppercase tracking-wider rounded-full mb-4">
+                      {home.methodologyBadge}
+                    </span>
+                  )}
                   <h2 className="text-3xl md:text-4xl font-bold text-foreground leading-tight">
                     {home.heroTitle}
                   </h2>
@@ -124,12 +114,14 @@ const Home = () => {
                 <p className="text-lg text-muted-foreground leading-relaxed">
                   {home.heroSubtitle}
                 </p>
-                <div className="pt-6 border-t border-border">
-                  <p className="text-sm font-semibold text-primary mb-3 uppercase tracking-wider">Key Point</p>
-                  <p className="text-foreground font-semibold text-lg">
-                    Direct mentorship from the institute founders with proven teaching methods
-                  </p>
-                </div>
+                {home.methodologyKeyPoint && (
+                  <div className="pt-6 border-t border-border">
+                    <p className="text-sm font-semibold text-primary mb-3 uppercase tracking-wider">Key Point</p>
+                    <p className="text-foreground font-semibold text-lg">
+                      {home.methodologyKeyPoint}
+                    </p>
+                  </div>
+                )}
               </div>
 
               {/* Right - Video */}
@@ -157,6 +149,7 @@ const Home = () => {
         </section>
 
         <ActivityVideos />
+        <ActivityImages />
 
         {/* Courses Section */}
         {/* <section className="py-20">
