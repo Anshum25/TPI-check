@@ -69,9 +69,8 @@ const MethodologySection = () => {
                   </div>
 
                   <ChevronDown
-                    className={`w-5 h-5 text-muted-foreground flex-shrink-0 transition-transform duration-500 ease-in-out ${
-                      expandedIndex === index ? "rotate-180" : ""
-                    }`}
+                    className={`w-5 h-5 text-muted-foreground flex-shrink-0 transition-transform duration-500 ease-in-out ${expandedIndex === index ? "rotate-180" : ""
+                      }`}
                     aria-hidden
                   />
                 </button>

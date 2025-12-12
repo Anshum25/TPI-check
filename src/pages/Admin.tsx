@@ -2448,9 +2448,11 @@ const Admin = () => {
   );
 
   const renderFooterEditor = () => (
-    <>
+    <div className="overflow-x-auto overflow-y-hidden scroll-smooth" style={{ scrollbarWidth: 'auto', scrollbarColor: '#64748b #e2e8f0' }}>
+      <div className="flex gap-8 pb-4" style={{ minWidth: '2500px', width: 'max-content' }}>
     <Card
-      className="shadow-soft"
+      className="shadow-soft flex-shrink-0"
+      style={{ width: '450px', minWidth: '450px' }}
       onMouseEnter={() => setActiveSubSection('footer-institute')}
       onFocus={() => setActiveSubSection('footer-institute')}
     >
@@ -2492,7 +2494,8 @@ const Admin = () => {
    
 
     <Card
-      className="shadow-soft"
+      className="shadow-soft flex-shrink-0"
+      style={{ width: '400px', minWidth: '400px' }}
       onMouseEnter={() => setActiveSubSection('footer-quick-links')}
       onFocus={() => setActiveSubSection('footer-quick-links')}
     >
@@ -2544,7 +2547,8 @@ const Admin = () => {
     </Card>
 
     <Card
-      className="shadow-soft"
+      className="shadow-soft flex-shrink-0"
+      style={{ width: '400px', minWidth: '400px' }}
       onMouseEnter={() => setActiveSubSection('footer-what-we-do')}
       onFocus={() => setActiveSubSection('footer-what-we-do')}
     >
@@ -2578,7 +2582,8 @@ const Admin = () => {
     </Card>
 
     <Card
-      className="shadow-soft"
+      className="shadow-soft flex-shrink-0"
+      style={{ width: '450px', minWidth: '450px' }}
       onMouseEnter={() => setActiveSubSection('footer-contact')}
       onFocus={() => setActiveSubSection('footer-contact')}
     >
@@ -2641,7 +2646,8 @@ const Admin = () => {
     </Card>
 
     <Card
-      className="shadow-soft"
+      className="shadow-soft flex-shrink-0"
+      style={{ width: '350px', minWidth: '350px' }}
       onMouseEnter={() => setActiveSubSection('footer-copyright')}
       onFocus={() => setActiveSubSection('footer-copyright')}
     >
@@ -2665,7 +2671,8 @@ const Admin = () => {
                                 </div>
                             </CardContent>
                         </Card>
-    </>
+      </div>
+    </div>
   );
 
   const renderAboutEditor = () => (

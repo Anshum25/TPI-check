@@ -474,8 +474,8 @@ const LivePreview = ({ selectedSectionId, activeSubSection }: LivePreviewProps) 
           const { footer } = content;
           const footerAbout = content.about;
           return (
-            <div ref={previewRef} className="h-full w-full bg-background overflow-y-auto overflow-x-hidden">
-              <div className="w-full max-w-full min-w-0 flex flex-col min-h-full">
+            <div ref={previewRef} className="h-full w-full bg-background overflow-y-auto overflow-x-auto">
+              <div className="w-full flex flex-col min-h-full" style={{ minWidth: '1200px' }}>
                 <footer ref={footerRef} className="relative mt-20 text-primary-foreground bg-gradient-to-b from-slate-800 via-slate-800 to-slate-900">
                   <div
                     className="absolute inset-0 pointer-events-none"
@@ -485,10 +485,10 @@ const LivePreview = ({ selectedSectionId, activeSubSection }: LivePreviewProps) 
                     }}
                     aria-hidden
                   />
-                  <div className="relative container mx-auto px-2 sm:px-4 py-6 sm:py-12">
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-10 md:gap-12 items-start">
+                  <div className="relative px-2 sm:px-4 py-6 sm:py-12" style={{ minWidth: '1200px', width: 'max-content' }}>
+                    <div className="flex gap-6 sm:gap-10 md:gap-12 items-start" style={{ minWidth: '1200px' }}>
                       {/* Brand + about */}
-                      <div>
+                      <div style={{ width: '300px', minWidth: '300px' }}>
                         <div className="flex items-center mb-3 sm:mb-4">
                           <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-full gradient-hero flex items-center justify-center flex-shrink-0">
                             <span className="text-sm sm:text-xl font-bold text-primary-foreground">TP</span>
@@ -523,7 +523,7 @@ const LivePreview = ({ selectedSectionId, activeSubSection }: LivePreviewProps) 
                       </div>
 
                       {/* Quick Links */}
-                      <div className="lg:pl-8 xl:pl-12">
+                      <div style={{ width: '250px', minWidth: '250px' }}>
                         <h3 className="font-bold mb-3 sm:mb-4 text-accent text-sm sm:text-base">Quick Links</h3>
                         <ul className="space-y-1 sm:space-y-2 text-xs sm:text-sm">
                           {footer.quickLinks.map((link, index) => (
@@ -537,7 +537,7 @@ const LivePreview = ({ selectedSectionId, activeSubSection }: LivePreviewProps) 
                       </div>
 
                       {/* What We Do */}
-                      <div>
+                      <div style={{ width: '250px', minWidth: '250px' }}>
                         <h3 className="font-bold mb-3 sm:mb-4 text-accent text-sm sm:text-base">What We Do</h3>
                         <ul className="space-y-1 sm:space-y-2 text-xs sm:text-sm">
                           {(footer.whatWeDo && footer.whatWeDo.length
@@ -550,7 +550,7 @@ const LivePreview = ({ selectedSectionId, activeSubSection }: LivePreviewProps) 
                       </div>
 
                       {/* Contact Info */}
-                      <div>
+                      <div style={{ width: '300px', minWidth: '300px' }}>
                         <h3 className="font-bold mb-3 sm:mb-4 text-accent text-sm sm:text-base">Contact Info</h3>
                         <ul className="space-y-2 sm:space-y-3 text-xs sm:text-sm">
                           <li className="flex items-start space-x-2">
@@ -1276,16 +1276,16 @@ const LivePreview = ({ selectedSectionId, activeSubSection }: LivePreviewProps) 
 
                               <div className="space-y-3">
                                 <Label>Preferable call time</Label>
-                                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                                  <label className="flex items-center space-x-2 border rounded-md p-3">
+                                <div className="flex flex-wrap gap-3">
+                                  <label className="flex items-center space-x-2 border rounded-md p-3 flex-1 min-w-[120px] cursor-pointer hover:bg-gray-50 transition-colors">
                                     <Checkbox checked={false} onCheckedChange={() => {}} />
                                     <span className="text-sm">Morning</span>
                                   </label>
-                                  <label className="flex items-center space-x-2 border rounded-md p-3">
+                                  <label className="flex items-center space-x-2 border rounded-md p-3 flex-1 min-w-[120px] cursor-pointer hover:bg-gray-50 transition-colors">
                                     <Checkbox checked={false} onCheckedChange={() => {}} />
                                     <span className="text-sm">Afternoon</span>
                                   </label>
-                                  <label className="flex items-center space-x-2 border rounded-md p-3">
+                                  <label className="flex items-center space-x-2 border rounded-md p-3 flex-1 min-w-[120px] cursor-pointer hover:bg-gray-50 transition-colors">
                                     <Checkbox checked={false} onCheckedChange={() => {}} />
                                     <span className="text-sm">Evening</span>
                                   </label>
