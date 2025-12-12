@@ -26,6 +26,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Target, Users, Award, BookOpen, Phone, Menu, Facebook, Twitter, Instagram, Linkedin, Mail, MapPin, Clock, Calendar, CheckCircle, TrendingUp, Heart, Star, Image as ImageIcon, HelpCircle, Briefcase } from "lucide-react";
+import tpLogo from "@/assets/cropped-cropped-cropped-Blue-Dark-Minimalist-Initial-T-Letter-Logo-512-x-512-px-1-removebg-preview.png";
 import RequestCallbackDialog from "@/components/RequestCallbackDialog";
 import heroClassroom from "@/assets/hero-classroom.jpg";
 import speakingConfidence from "@/assets/speaking-confidence.jpg";
@@ -490,10 +491,19 @@ const LivePreview = ({ selectedSectionId, activeSubSection }: LivePreviewProps) 
                       {/* Brand + about */}
                       <div style={{ width: '300px', minWidth: '300px' }}>
                         <div className="flex items-center mb-3 sm:mb-4">
-                          <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-full gradient-hero flex items-center justify-center flex-shrink-0">
-                            <span className="text-sm sm:text-xl font-bold text-primary-foreground">TP</span>
+                          <img
+                            src={tpLogo}
+                            alt="Turning Point Institute Logo"
+                            className="h-8 w-8 sm:h-10 sm:w-10 object-contain flex-shrink-0"
+                          />
+                          <div className="ml-2 min-w-0">
+                            <span className="block font-bold text-sm sm:text-base lg:text-lg leading-tight truncate uppercase">
+                              {footer.instituteName || "TURNING POINT INSTITUTE"}
+                            </span>
+                            <span className="block text-[10px] sm:text-[11px] tracking-[0.18em] text-primary-foreground/80 uppercase truncate">
+                              {footer.subHeader || "THE ONE TO TURN TO"}
+                            </span>
                           </div>
-                          <span className="ml-2 font-bold text-sm sm:text-base lg:text-lg truncate">{footer.instituteName}</span>
                         </div>
                         <p className="text-xs sm:text-sm text-primary-foreground/80 mb-3 sm:mb-5 max-w-md">
                           {footer.tagline}

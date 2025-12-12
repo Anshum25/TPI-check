@@ -134,6 +134,7 @@ export type SiteContent = {
   };
   footer: {
     instituteName: string;
+    subHeader: string;
     tagline: string;
     socialMedia: {
       facebook: string;
@@ -616,7 +617,8 @@ export const DEFAULT_CONTENT: SiteContent = {
     ],
   },
   footer: {
-    instituteName: "Excellence Institute",
+    instituteName: "TURNING POINT INSTITUTE",
+    subHeader: "THE ONE TO TURN TO",
     tagline: "Transforming lives through quality education and personality development since 1999.",
     socialMedia: {
       facebook: "#",

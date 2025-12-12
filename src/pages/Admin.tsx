@@ -2458,7 +2458,7 @@ const Admin = () => {
     >
                             <CardHeader>
         <CardTitle>Footer - Institute Info</CardTitle>
-        <CardDescription>Main footer institute name and tagline.</CardDescription>
+        <CardDescription>Main footer institute name, sub header line, and tagline.</CardDescription>
                             </CardHeader>
                             <CardContent className="space-y-4">
                                 <div className="space-y-2">
@@ -2474,6 +2474,20 @@ const Admin = () => {
                                         }
                                     />
                                 </div>
+        <div className="space-y-2">
+          <Label htmlFor="footerSubHeader">Sub Header (small line under the name)</Label>
+          <Textarea
+            id="footerSubHeader"
+            value={content.footer.subHeader}
+            onChange={(e) =>
+              setContent((prev) => ({
+                ...prev,
+                footer: { ...prev.footer, subHeader: e.target.value },
+              }))
+            }
+            rows={2}
+          />
+        </div>
         <div className="space-y-2">
           <Label htmlFor="footerTagline">Tagline</Label>
           <Textarea
@@ -2807,22 +2821,6 @@ const Admin = () => {
         </CardContent>
       </Card>
 
-      {renderCardListEditor("Core Values", content.about.coreValues, (next) =>
-        setContent((prev) => ({
-          ...prev,
-          about: { ...prev.about, coreValues: next },
-        })),
-        'about-core-values'
-      )}
-
-      {renderCardListEditor("Why We're Different", content.about.differentiators, (next) =>
-        setContent((prev) => ({
-          ...prev,
-          about: { ...prev.about, differentiators: next },
-        })),
-        'about-differentiators'
-      )}
-
       <Card 
         className="shadow-soft"
         onMouseEnter={() => setActiveSubSection('about-amenities')}
@@ -2994,7 +2992,7 @@ const Admin = () => {
         </CardContent>
       </Card>
 
-      <Card 
+        <Card 
         className="shadow-soft"
         onMouseEnter={() => setActiveSubSection('about-community')}
         onFocus={() => setActiveSubSection('about-community')}
@@ -3037,8 +3035,27 @@ const Admin = () => {
           </div>
         </CardContent>
       </Card>
+
+      {renderCardListEditor("Core Values", content.about.coreValues, (next) =>
+        setContent((prev) => ({
+          ...prev,
+          about: { ...prev.about, coreValues: next },
+        })),
+        'about-core-values'
+      )}
+
+      {renderCardListEditor("Why We're Different", content.about.differentiators, (next) =>
+        setContent((prev) => ({
+          ...prev,
+          about: { ...prev.about, differentiators: next },
+        })),
+        'about-differentiators'
+      )}
+
     </>
   );
+
+  
 
   const renderCardListEditor = (
     title: string,
@@ -3096,19 +3113,7 @@ const Admin = () => {
     }));
   };
 
-  const handleAddAboutStory = () => {
-    setContent((prev) => ({
-      ...prev,
-      about: { ...prev.about, story: [...prev.about.story, ""] },
-    }));
-  };
 
-  const handleRemoveAboutStory = (index: number) => {
-    setContent((prev) => ({
-      ...prev,
-      about: { ...prev.about, story: prev.about.story.filter((_, i) => i !== index) },
-    }));
-  };
 
   const renderCoursesEditor = () => (
     <>
@@ -4753,10 +4758,7 @@ const Admin = () => {
                     </Button>
                   </div>
                 ))}
-                <Button variant="outline" className="flex items-center gap-2" onClick={() => handleFacultyMemberStringItemAdd(index, "specialization")}>
-                  <Plus className="h-4 w-4" />
-                  Add Specialization
-                </Button>
+               
               </div>
 
               <div className="space-y-2">
