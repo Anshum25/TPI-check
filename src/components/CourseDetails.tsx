@@ -58,6 +58,19 @@ const CourseDetails = () => {
               ))}
             </div>
 
+            {/* CTA Section - Mobile only (below Batch Schedule) */}
+            <div className="order-3 md:hidden">
+              <div className="pt-8 border-t border-border/40">
+                <p className="text-muted-foreground text-sm mb-4">{co?.ctaText || 'Ready to start your transformation journey?'}</p>
+                <Button asChild className="w-full gradient-accent">
+                  <Link to={co?.ctaLink || "/contact"}>
+                    {co?.ctaButton || 'Contact Us'}
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </Link>
+                </Button>
+              </div>
+            </div>
+
             {/* Right - Key Details (on desktop) / First (on mobile) */}
             <div className="order-1 md:order-2 space-y-6">
               <div className="flex items-start gap-4">
@@ -85,7 +98,7 @@ const CourseDetails = () => {
               </div>
 
               {/* CTA Section */}
-              <div className="mt-auto pt-8 border-t border-border/40">
+              <div className="hidden md:block mt-auto pt-8 border-t border-border/40">
                 <p className="text-muted-foreground text-sm mb-4">{co?.ctaText || 'Ready to start your transformation journey?'}</p>
                 <Button asChild className="w-full gradient-accent">
                   <Link to={co?.ctaLink || "/contact"}>

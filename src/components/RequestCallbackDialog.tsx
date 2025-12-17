@@ -42,7 +42,7 @@ const RequestCallbackDialog = ({ open, onOpenChange }: Props) => {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-lg max-w-[92vw] min-h-[520px] overflow-visible">
+      <DialogContent className="sm:max-w-lg max-w-[92vw] sm:min-h-[520px] max-h-[90vh] sm:max-h-none overflow-y-auto sm:overflow-visible">
         <DialogHeader>
           <DialogTitle>Request a call back</DialogTitle>
           <DialogDescription>Fill in your details and pick a suitable time.</DialogDescription>

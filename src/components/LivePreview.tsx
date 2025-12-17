@@ -147,6 +147,22 @@ const LivePreview = ({ selectedSectionId, activeSubSection }: LivePreviewProps) 
     };
   }, []);
 
+  useEffect(() => {
+    const style = document.createElement("style");
+    style.textContent = `
+      .live-preview .preview-hero-carousel > div { height: 280px !important; }
+      @media (min-width: 768px) {
+        .live-preview .preview-hero-carousel > div { height: 420px !important; }
+      }
+    `;
+    document.head.appendChild(style);
+    return () => {
+      if (document.head.contains(style)) {
+        document.head.removeChild(style);
+      }
+    };
+  }, []);
+
   // Scroll preview to active subsection
   useEffect(() => {
     if (!activeSubSection) return;
@@ -276,10 +292,12 @@ const LivePreview = ({ selectedSectionId, activeSubSection }: LivePreviewProps) 
       switch (selectedSectionId) {
         case "home":
           return (
-            <div ref={previewRef} className="h-full w-full bg-background overflow-y-auto overflow-x-auto">
+            <div ref={previewRef} className="live-preview h-full w-full bg-background overflow-y-auto overflow-x-auto">
               <div className="w-full max-w-full min-w-0">
                 <div ref={heroCarouselRef}>
-                  <Hero />
+                  <div className="preview-hero-carousel">
+                    <Hero />
+                  </div>
                 </div>
                 <div ref={featuresRef}>
                   <Differentiators />
@@ -1453,7 +1471,7 @@ const LivePreview = ({ selectedSectionId, activeSubSection }: LivePreviewProps) 
 
                 <section ref={facultyPromiseRef} className="py-20">
                   <div className="container mx-auto px-4">
-                    <div className="max-w-4xl mx-auto bg-primary/5 border-l-4 border-primary p-8 rounded-lg">
+                    <div className="max-w-4xl mx-auto bg-gradient-to-r from-sky-50 via-white to-rose-50 border border-border/60 p-8 rounded-2xl shadow-soft">
                       <h2 className="text-2xl font-bold mb-4">{faculty.promise.title}</h2>
                       <div className="space-y-4 text-muted-foreground">
                         {faculty.promise.paragraphs.map((paragraph, index) => (
