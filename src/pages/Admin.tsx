@@ -2448,15 +2448,17 @@ const Admin = () => {
   );
 
   const renderFooterEditor = () => (
-    <>
+    <div className="overflow-x-auto overflow-y-hidden scroll-smooth" style={{ scrollbarWidth: 'auto', scrollbarColor: '#64748b #e2e8f0' }}>
+      <div className="flex gap-8 pb-4" style={{ minWidth: '2500px', width: 'max-content' }}>
     <Card
-      className="shadow-soft"
+      className="shadow-soft flex-shrink-0"
+      style={{ width: '450px', minWidth: '450px' }}
       onMouseEnter={() => setActiveSubSection('footer-institute')}
       onFocus={() => setActiveSubSection('footer-institute')}
     >
                             <CardHeader>
         <CardTitle>Footer - Institute Info</CardTitle>
-        <CardDescription>Main footer institute name and tagline.</CardDescription>
+        <CardDescription>Main footer institute name, sub header line, and tagline.</CardDescription>
                             </CardHeader>
                             <CardContent className="space-y-4">
                                 <div className="space-y-2">
@@ -2472,6 +2474,20 @@ const Admin = () => {
                                         }
                                     />
                                 </div>
+        <div className="space-y-2">
+          <Label htmlFor="footerSubHeader">Sub Header (small line under the name)</Label>
+          <Textarea
+            id="footerSubHeader"
+            value={content.footer.subHeader}
+            onChange={(e) =>
+              setContent((prev) => ({
+                ...prev,
+                footer: { ...prev.footer, subHeader: e.target.value },
+              }))
+            }
+            rows={2}
+          />
+        </div>
         <div className="space-y-2">
           <Label htmlFor="footerTagline">Tagline</Label>
           <Textarea
@@ -2492,7 +2508,8 @@ const Admin = () => {
    
 
     <Card
-      className="shadow-soft"
+      className="shadow-soft flex-shrink-0"
+      style={{ width: '400px', minWidth: '400px' }}
       onMouseEnter={() => setActiveSubSection('footer-quick-links')}
       onFocus={() => setActiveSubSection('footer-quick-links')}
     >
@@ -2544,7 +2561,8 @@ const Admin = () => {
     </Card>
 
     <Card
-      className="shadow-soft"
+      className="shadow-soft flex-shrink-0"
+      style={{ width: '400px', minWidth: '400px' }}
       onMouseEnter={() => setActiveSubSection('footer-what-we-do')}
       onFocus={() => setActiveSubSection('footer-what-we-do')}
     >
@@ -2578,7 +2596,8 @@ const Admin = () => {
     </Card>
 
     <Card
-      className="shadow-soft"
+      className="shadow-soft flex-shrink-0"
+      style={{ width: '450px', minWidth: '450px' }}
       onMouseEnter={() => setActiveSubSection('footer-contact')}
       onFocus={() => setActiveSubSection('footer-contact')}
     >
@@ -2641,7 +2660,8 @@ const Admin = () => {
     </Card>
 
     <Card
-      className="shadow-soft"
+      className="shadow-soft flex-shrink-0"
+      style={{ width: '350px', minWidth: '350px' }}
       onMouseEnter={() => setActiveSubSection('footer-copyright')}
       onFocus={() => setActiveSubSection('footer-copyright')}
     >
@@ -2665,7 +2685,8 @@ const Admin = () => {
                                 </div>
                             </CardContent>
                         </Card>
-    </>
+      </div>
+    </div>
   );
 
   const renderAboutEditor = () => (
@@ -2799,22 +2820,6 @@ const Admin = () => {
           ))}
         </CardContent>
       </Card>
-
-      {renderCardListEditor("Core Values", content.about.coreValues, (next) =>
-        setContent((prev) => ({
-          ...prev,
-          about: { ...prev.about, coreValues: next },
-        })),
-        'about-core-values'
-      )}
-
-      {renderCardListEditor("Why We're Different", content.about.differentiators, (next) =>
-        setContent((prev) => ({
-          ...prev,
-          about: { ...prev.about, differentiators: next },
-        })),
-        'about-differentiators'
-      )}
 
       <Card 
         className="shadow-soft"
@@ -2987,7 +2992,7 @@ const Admin = () => {
         </CardContent>
       </Card>
 
-      <Card 
+        <Card 
         className="shadow-soft"
         onMouseEnter={() => setActiveSubSection('about-community')}
         onFocus={() => setActiveSubSection('about-community')}
@@ -3030,8 +3035,27 @@ const Admin = () => {
           </div>
         </CardContent>
       </Card>
+
+      {renderCardListEditor("Core Values", content.about.coreValues, (next) =>
+        setContent((prev) => ({
+          ...prev,
+          about: { ...prev.about, coreValues: next },
+        })),
+        'about-core-values'
+      )}
+
+      {renderCardListEditor("Why We're Different", content.about.differentiators, (next) =>
+        setContent((prev) => ({
+          ...prev,
+          about: { ...prev.about, differentiators: next },
+        })),
+        'about-differentiators'
+      )}
+
     </>
   );
+
+  
 
   const renderCardListEditor = (
     title: string,
@@ -3089,19 +3113,7 @@ const Admin = () => {
     }));
   };
 
-  const handleAddAboutStory = () => {
-    setContent((prev) => ({
-      ...prev,
-      about: { ...prev.about, story: [...prev.about.story, ""] },
-    }));
-  };
 
-  const handleRemoveAboutStory = (index: number) => {
-    setContent((prev) => ({
-      ...prev,
-      about: { ...prev.about, story: prev.about.story.filter((_, i) => i !== index) },
-    }));
-  };
 
   const renderCoursesEditor = () => (
     <>
@@ -4746,10 +4758,7 @@ const Admin = () => {
                     </Button>
                   </div>
                 ))}
-                <Button variant="outline" className="flex items-center gap-2" onClick={() => handleFacultyMemberStringItemAdd(index, "specialization")}>
-                  <Plus className="h-4 w-4" />
-                  Add Specialization
-                </Button>
+               
               </div>
 
               <div className="space-y-2">

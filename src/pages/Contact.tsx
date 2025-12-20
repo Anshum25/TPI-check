@@ -102,22 +102,22 @@ const Contact = () => {
 
                       <div className="space-y-3">
                         <Label>Preferable call time</Label>
-                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                          <label className="flex items-center space-x-2 border rounded-md p-3">
+                        <div className="flex flex-wrap gap-3">
+                          <label className="flex items-center space-x-2 border rounded-md p-3 flex-1 min-w-[120px] cursor-pointer hover:bg-gray-50 transition-colors">
                             <Checkbox
                               checked={form.times.morning}
                               onCheckedChange={(c) => setForm((f) => ({ ...f, times: { ...f.times, morning: c === true } }))}
                             />
                             <span className="text-sm">Morning</span>
                           </label>
-                          <label className="flex items-center space-x-2 border rounded-md p-3">
+                          <label className="flex items-center space-x-2 border rounded-md p-3 flex-1 min-w-[120px] cursor-pointer hover:bg-gray-50 transition-colors">
                             <Checkbox
                               checked={form.times.afternoon}
                               onCheckedChange={(c) => setForm((f) => ({ ...f, times: { ...f.times, afternoon: c === true } }))}
                             />
                             <span className="text-sm">Afternoon</span>
                           </label>
-                          <label className="flex items-center space-x-2 border rounded-md p-3">
+                          <label className="flex items-center space-x-2 border rounded-md p-3 flex-1 min-w-[120px] cursor-pointer hover:bg-gray-50 transition-colors">
                             <Checkbox
                               checked={form.times.evening}
                               onCheckedChange={(c) => setForm((f) => ({ ...f, times: { ...f.times, evening: c === true } }))}

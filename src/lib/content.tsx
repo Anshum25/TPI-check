@@ -134,6 +134,7 @@ export type SiteContent = {
   };
   footer: {
     instituteName: string;
+    subHeader: string;
     tagline: string;
     socialMedia: {
       facebook: string;
@@ -616,7 +617,8 @@ export const DEFAULT_CONTENT: SiteContent = {
     ],
   },
   footer: {
-    instituteName: "Excellence Institute",
+    instituteName: "TURNING POINT INSTITUTE",
+    subHeader: "THE ONE TO TURN TO",
     tagline: "Transforming lives through quality education and personality development since 1999.",
     socialMedia: {
       facebook: "#",
@@ -880,147 +882,7 @@ export const DEFAULT_CONTENT: SiteContent = {
       directionsUrl: "https://www.google.com/maps/place/Turning+Point+Institute/@23.0131818,72.518835,17z/data=!3m1!4b1!4m6!3m5!1s0x395e84cf0a8203a1:0xd1a3ec8eb1a3e77e!8m2!3d23.0131818!4d72.5210237!16s%2Fg%2F1v42d5nt",
     },
   },
-  successStories: {
-    hero: {
-      title: "Success Stories",
-      subtitle: "Real transformations from our 10,000+ students trained since 1999",
-    },
-    stats: [
-      { value: "10,000+", label: "Students Trained" },
-      { value: "4.9/5", label: "Average Rating" },
-      { value: "95%", label: "Success Rate" },
-      { value: "25+", label: "Years of Excellence" },
-    ],
-    stories: [
-      {
-        name: "Priya Sharma",
-        role: "Software Engineer at Tech Corp",
-        content: "I joined as a shy Gujarati medium student. Today, I confidently lead presentations and meetings. The transformation has been incredible. Thank you Ashish sir and Pragna ma'am!",
-        rating: 5,
-        achievement: "Promoted to Team Lead",
-        source: "google",
-      },
-      {
-        name: "Rahul Patel",
-        role: "Business Owner",
-        content: "My business communication improved dramatically. I can now negotiate confidently with international clients. The personality development sessions were life-changing.",
-        rating: 5,
-        achievement: "Expanded Business Internationally",
-        source: "google",
-      },
-      {
-        name: "Anjali Desai",
-        role: "HR Manager at MNC",
-        content: "The course not only improved my English but also boosted my confidence. I can now conduct interviews, give presentations, and write professional emails effortlessly.",
-        rating: 5,
-        achievement: "Landed Dream Job",
-        source: "google",
-      },
-      {
-        name: "Karan Shah",
-        role: "MBA Student",
-        content: "From struggling with basic sentences to winning debate competitions! The interactive teaching method made learning fun. Group discussions really built my confidence.",
-        rating: 5,
-        achievement: "Won University Debate",
-        source: "google",
-      },
-      {
-        name: "Meera Joshi",
-        role: "Homemaker",
-        content: "I can now help my children with their English homework and communicate fluently with their teachers. The support from faculty was amazing throughout the journey.",
-        rating: 5,
-        achievement: "Supporting Children's Education",
-        source: "google",
-      },
-      {
-        name: "Vishal Mehta",
-        role: "Sales Manager",
-        content: "My presentation skills improved tremendously. The practical activities and stage performances removed my stage fear completely. Highly recommended for working professionals!",
-        rating: 5,
-        achievement: "Top Sales Performer",
-        source: "google",
-      },
-      {
-        name: "Neha Trivedi",
-        role: "Content Writer",
-        content: "The reading and writing modules were exceptional. I learned to write with clarity and read at double speed. This opened up new career opportunities for me.",
-        rating: 5,
-        achievement: "Published Author",
-        source: "google",
-      },
-      {
-        name: "Amit Patel",
-        role: "Entrepreneur",
-        content: "Being a Gujarati medium student, I always struggled with English. Today I conduct business meetings in English fluently. The teaching methodology is truly unique!",
-        rating: 5,
-        achievement: "Started Own Venture",
-        source: "google",
-      },
-      {
-        name: "Riya Shah",
-        role: "Bank Officer",
-        content: "The course exceeded my expectations. Grammar became so easy with their visualization technique. The personal attention from founders made all the difference.",
-        rating: 5,
-        achievement: "Cleared Bank PO Interview",
-        source: "google",
-      },
-      {
-        name: "Dhruv Desai",
-        role: "IT Professional",
-        content: "From basic English to confidently speaking in corporate meetings - this journey was amazing. The activities like role-plays and group discussions were really effective.",
-        rating: 5,
-        achievement: "Got US Assignment",
-        source: "google",
-      },
-      {
-        name: "Kavita Pandya",
-        role: "Teacher",
-        content: "I wanted to improve my English to be a better teacher. The course not only improved my language but also taught me effective communication techniques.",
-        rating: 5,
-        achievement: "Became English HOD",
-        source: "google",
-      },
-      {
-        name: "Harsh Rao",
-        role: "Engineering Student",
-        content: "The public speaking activities removed all my hesitation. Now I participate actively in college events and Model UN conferences. Thank you for the transformation!",
-        rating: 5,
-        achievement: "Won MUN Best Delegate",
-        source: "google",
-      },
-    ],
-    achievements: [
-      "Students placed in top MNCs",
-      "Alumni working in international companies",
-      "Multiple students won debate competitions",
-      "Several entrepreneurs expanded globally",
-      "Students cleared IAS/UPSC interviews",
-      "Alumni became successful teachers",
-      "Many got promotions after course",
-      "Students excelling in higher education",
-    ],
-    video: {
-      description: "Watch our students share their transformation journey",
-      linkText: "Visit Our YouTube Channel →",
-      linkUrl: "https://www.youtube.com/channel/UC224YnLHAQ7R03mwvEmpaJQ",
-      note: "See real students speaking fluently in group discussions, debates, and presentations",
-    },
-    cta: {
-      title: "Be Our Next Success Story!",
-      description:
-        "Join thousands of successful students who transformed their lives with us. Your journey to fluent English and confident personality starts here!",
-      phoneLabel: "Call: 9725500435",
-      phoneNumber: "9725500435",
-      reviewLinks: [
-        { label: "Google Reviews", url: "https://www.google.com/search?q=turning+point+institute" },
-        { label: "Facebook Reviews", url: "https://www.facebook.com/TurningPointInstitute/reviews/" },
-        {
-          label: "JustDial Reviews",
-          url: "https://www.justdial.com/Ahmedabad/Turning-Point-Institute-Near-Seema-Hall-Beside-Manglya-Party-Plot-Satellite/079PF007391_BZDET",
-        },
-      ],
-    },
-  },
+  
   gallery: {
     hero: {
       title: "Gallery",
@@ -1481,7 +1343,7 @@ const migrateContent = (stored: any): SiteContent => {
 
   // Migrate footer if it exists but is missing new fields
   if (stored.footer && typeof stored.footer === 'object') {
-    migrated.footer = {
+    const mergedFooter = {
       ...DEFAULT_CONTENT.footer,
       ...stored.footer,
       // Ensure nested objects are properly merged
@@ -1496,6 +1358,13 @@ const migrateContent = (stored: any): SiteContent => {
         ...(stored.footer.contact || {}),
       },
     };
+
+    const rawName = (stored.footer as any).instituteName as string | undefined;
+    if (!rawName || /excellence/i.test(rawName)) {
+      mergedFooter.instituteName = DEFAULT_CONTENT.footer.instituteName;
+    }
+
+    migrated.footer = mergedFooter;
   }
   
   // Migrate home carousel if it exists but is missing new fields
