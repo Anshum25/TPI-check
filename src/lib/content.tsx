@@ -898,6 +898,7 @@ export const DEFAULT_CONTENT: SiteContent = {
         content: "I joined as a shy Gujarati medium student. Today, I confidently lead presentations and meetings. The transformation has been incredible. Thank you Ashish sir and Pragna ma'am!",
         rating: 5,
         achievement: "Promoted to Team Lead",
+        source: "google",
       },
       {
         name: "Rahul Patel",
@@ -905,6 +906,7 @@ export const DEFAULT_CONTENT: SiteContent = {
         content: "My business communication improved dramatically. I can now negotiate confidently with international clients. The personality development sessions were life-changing.",
         rating: 5,
         achievement: "Expanded Business Internationally",
+        source: "google",
       },
       {
         name: "Anjali Desai",
@@ -912,6 +914,7 @@ export const DEFAULT_CONTENT: SiteContent = {
         content: "The course not only improved my English but also boosted my confidence. I can now conduct interviews, give presentations, and write professional emails effortlessly.",
         rating: 5,
         achievement: "Landed Dream Job",
+        source: "google",
       },
       {
         name: "Karan Shah",
@@ -919,6 +922,7 @@ export const DEFAULT_CONTENT: SiteContent = {
         content: "From struggling with basic sentences to winning debate competitions! The interactive teaching method made learning fun. Group discussions really built my confidence.",
         rating: 5,
         achievement: "Won University Debate",
+        source: "google",
       },
       {
         name: "Meera Joshi",
@@ -926,6 +930,7 @@ export const DEFAULT_CONTENT: SiteContent = {
         content: "I can now help my children with their English homework and communicate fluently with their teachers. The support from faculty was amazing throughout the journey.",
         rating: 5,
         achievement: "Supporting Children's Education",
+        source: "google",
       },
       {
         name: "Vishal Mehta",
@@ -933,6 +938,7 @@ export const DEFAULT_CONTENT: SiteContent = {
         content: "My presentation skills improved tremendously. The practical activities and stage performances removed my stage fear completely. Highly recommended for working professionals!",
         rating: 5,
         achievement: "Top Sales Performer",
+        source: "google",
       },
       {
         name: "Neha Trivedi",
@@ -940,6 +946,7 @@ export const DEFAULT_CONTENT: SiteContent = {
         content: "The reading and writing modules were exceptional. I learned to write with clarity and read at double speed. This opened up new career opportunities for me.",
         rating: 5,
         achievement: "Published Author",
+        source: "google",
       },
       {
         name: "Amit Patel",
@@ -947,6 +954,7 @@ export const DEFAULT_CONTENT: SiteContent = {
         content: "Being a Gujarati medium student, I always struggled with English. Today I conduct business meetings in English fluently. The teaching methodology is truly unique!",
         rating: 5,
         achievement: "Started Own Venture",
+        source: "google",
       },
       {
         name: "Riya Shah",
@@ -954,6 +962,7 @@ export const DEFAULT_CONTENT: SiteContent = {
         content: "The course exceeded my expectations. Grammar became so easy with their visualization technique. The personal attention from founders made all the difference.",
         rating: 5,
         achievement: "Cleared Bank PO Interview",
+        source: "google",
       },
       {
         name: "Dhruv Desai",
@@ -961,6 +970,7 @@ export const DEFAULT_CONTENT: SiteContent = {
         content: "From basic English to confidently speaking in corporate meetings - this journey was amazing. The activities like role-plays and group discussions were really effective.",
         rating: 5,
         achievement: "Got US Assignment",
+        source: "google",
       },
       {
         name: "Kavita Pandya",
@@ -968,6 +978,7 @@ export const DEFAULT_CONTENT: SiteContent = {
         content: "I wanted to improve my English to be a better teacher. The course not only improved my language but also taught me effective communication techniques.",
         rating: 5,
         achievement: "Became English HOD",
+        source: "google",
       },
       {
         name: "Harsh Rao",
@@ -975,6 +986,7 @@ export const DEFAULT_CONTENT: SiteContent = {
         content: "The public speaking activities removed all my hesitation. Now I participate actively in college events and Model UN conferences. Thank you for the transformation!",
         rating: 5,
         achievement: "Won MUN Best Delegate",
+        source: "google",
       },
     ],
     achievements: [
@@ -1401,6 +1413,63 @@ const migrateContent = (stored: any): SiteContent => {
   // Ensure About hero title uses the updated institute name even if older content is cached
   if (migrated.about && migrated.about.hero) {
     migrated.about.hero.title = DEFAULT_CONTENT.about.hero.title;
+  }
+
+  if (!stored?.admissions || typeof stored.admissions !== "object") {
+    migrated.admissions = DEFAULT_CONTENT.admissions;
+  } else {
+    migrated.admissions = {
+      ...DEFAULT_CONTENT.admissions,
+      ...stored.admissions,
+      hero: {
+        ...DEFAULT_CONTENT.admissions.hero,
+        ...(stored.admissions.hero || {}),
+      },
+      contactCtas: {
+        ...DEFAULT_CONTENT.admissions.contactCtas,
+        ...(stored.admissions.contactCtas || {}),
+      },
+      steps: Array.isArray(stored.admissions.steps) ? stored.admissions.steps : DEFAULT_CONTENT.admissions.steps,
+      courseDetails: Array.isArray(stored.admissions.courseDetails)
+        ? stored.admissions.courseDetails
+        : DEFAULT_CONTENT.admissions.courseDetails,
+      targetGroups: Array.isArray(stored.admissions.targetGroups)
+        ? stored.admissions.targetGroups
+        : DEFAULT_CONTENT.admissions.targetGroups,
+      whyChoose: Array.isArray(stored.admissions.whyChoose) ? stored.admissions.whyChoose : DEFAULT_CONTENT.admissions.whyChoose,
+      cta: {
+        ...DEFAULT_CONTENT.admissions.cta,
+        ...(stored.admissions.cta || {}),
+      },
+    };
+  }
+
+  if (!stored?.reviews || typeof stored.reviews !== "object") {
+    migrated.reviews = DEFAULT_CONTENT.reviews;
+  } else {
+    migrated.reviews = {
+      ...DEFAULT_CONTENT.reviews,
+      ...stored.reviews,
+      hero: {
+        ...DEFAULT_CONTENT.reviews.hero,
+        ...(stored.reviews.hero || {}),
+      },
+      ratingSummary: {
+        ...DEFAULT_CONTENT.reviews.ratingSummary,
+        ...(stored.reviews.ratingSummary || {}),
+      },
+      testimonials: Array.isArray(stored.reviews.testimonials)
+        ? stored.reviews.testimonials
+        : DEFAULT_CONTENT.reviews.testimonials,
+      sections: {
+        ...(DEFAULT_CONTENT.reviews.sections || {}),
+        ...(stored.reviews.sections || {}),
+      },
+      cta: {
+        ...DEFAULT_CONTENT.reviews.cta,
+        ...(stored.reviews.cta || {}),
+      },
+    };
   }
 
   // Remove deprecated Success Stories nav item if present in cached content
