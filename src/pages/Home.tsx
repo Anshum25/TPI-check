@@ -15,12 +15,13 @@ import HomeReviewsSection from "@/components/HomeReviewsSection";
 import TestimonialCard from "@/components/TestimonialCard";
 import { Button } from "@/components/ui/button";
 import { Target, Users, Award, BookOpen } from "lucide-react";
-import { useContent } from "@/lib/content";
+import { DEFAULT_CONTENT, useContent } from "@/lib/content";
 
 const Home = () => {
   const location = useLocation();
   const { content } = useContent();
-  const { home, admissions } = content;
+  const home = content.home ?? DEFAULT_CONTENT.home;
+  const admissions = content.admissions ?? DEFAULT_CONTENT.admissions;
 
   const featureIcons = [
     <Target key="icon-0" className="h-6 w-6" />,

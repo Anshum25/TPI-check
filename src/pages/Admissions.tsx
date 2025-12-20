@@ -3,7 +3,7 @@ import Footer from "@/components/Footer";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { CheckCircle } from "lucide-react";
-import { useContent } from "@/lib/content";
+import { DEFAULT_CONTENT, useContent } from "@/lib/content";
 import CourseDetails from "@/components/CourseDetails";
 
 const Admissions = () => {
@@ -65,7 +65,7 @@ export default Admissions;
 
 const useAdmissionsContent = () => {
   const { content } = useContent();
-  return content.admissions;
+  return content.admissions ?? DEFAULT_CONTENT.admissions;
 };
 
 const HeroSection = () => {
