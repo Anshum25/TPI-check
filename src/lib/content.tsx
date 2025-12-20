@@ -1415,6 +1415,49 @@ const migrateContent = (stored: any): SiteContent => {
     migrated.about.hero.title = DEFAULT_CONTENT.about.hero.title;
   }
 
+  if (!stored?.home || typeof stored.home !== "object") {
+    migrated.home = DEFAULT_CONTENT.home;
+  } else {
+    migrated.home = {
+      ...DEFAULT_CONTENT.home,
+      ...stored.home,
+      heroCarousel: stored.home.heroCarousel || DEFAULT_CONTENT.home.heroCarousel,
+    };
+  }
+
+  if (!stored?.successStories || typeof stored.successStories !== "object") {
+    migrated.successStories = DEFAULT_CONTENT.successStories;
+  } else {
+    migrated.successStories = {
+      ...DEFAULT_CONTENT.successStories,
+      ...stored.successStories,
+      hero: {
+        ...DEFAULT_CONTENT.successStories.hero,
+        ...(stored.successStories.hero || {}),
+      },
+      stats: Array.isArray(stored.successStories.stats)
+        ? stored.successStories.stats
+        : DEFAULT_CONTENT.successStories.stats,
+      stories: Array.isArray(stored.successStories.stories)
+        ? stored.successStories.stories
+        : DEFAULT_CONTENT.successStories.stories,
+      achievements: Array.isArray(stored.successStories.achievements)
+        ? stored.successStories.achievements
+        : DEFAULT_CONTENT.successStories.achievements,
+      video: {
+        ...DEFAULT_CONTENT.successStories.video,
+        ...(stored.successStories.video || {}),
+      },
+      cta: {
+        ...DEFAULT_CONTENT.successStories.cta,
+        ...(stored.successStories.cta || {}),
+        reviewLinks: Array.isArray(stored.successStories.cta?.reviewLinks)
+          ? stored.successStories.cta.reviewLinks
+          : DEFAULT_CONTENT.successStories.cta.reviewLinks,
+      },
+    };
+  }
+
   if (!stored?.admissions || typeof stored.admissions !== "object") {
     migrated.admissions = DEFAULT_CONTENT.admissions;
   } else {
@@ -1499,13 +1542,7 @@ const migrateContent = (stored: any): SiteContent => {
   }
   
   // Migrate home carousel if it exists but is missing new fields
-  if (stored.home && typeof stored.home === 'object') {
-    migrated.home = {
-      ...DEFAULT_CONTENT.home,
-      ...stored.home,
-      heroCarousel: stored.home.heroCarousel || DEFAULT_CONTENT.home.heroCarousel,
-    };
-  }
+  // NOTE: handled above with a safer merge that also protects against null/invalid cached values.
   
   return migrated as SiteContent;
 };

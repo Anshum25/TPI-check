@@ -1,12 +1,13 @@
-import { useContent } from "@/lib/content";
+import { DEFAULT_CONTENT, useContent } from "@/lib/content";
 import googleLogo from "@/assets/google.svg";
 import facebookLogo from "@/assets/facebook.svg";
 import justdialLogo from "@/assets/justdial.svg";
 
 const HomeReviewsSection = () => {
   const { content } = useContent();
-  const { successStories, home } = content;
-  const links = successStories.cta.reviewLinks || [];
+  const successStories = content.successStories ?? DEFAULT_CONTENT.successStories;
+  const home = content.home ?? DEFAULT_CONTENT.home;
+  const links = successStories?.cta?.reviewLinks || [];
   const homeReviews = home?.homeReviews;
 
   if (!links.length) return null;

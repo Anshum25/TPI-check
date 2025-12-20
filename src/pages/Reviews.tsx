@@ -2,7 +2,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import TestimonialCard from "@/components/TestimonialCard";
 import { Button } from "@/components/ui/button";
-import { useContent } from "@/lib/content";
+import { DEFAULT_CONTENT, useContent } from "@/lib/content";
 import googleLogo from "@/assets/google.svg";
 import facebookLogo from "@/assets/facebook.svg";
 import justdialLogo from "@/assets/justdial.svg";
@@ -10,9 +10,9 @@ import justdialLogo from "@/assets/justdial.svg";
 const Reviews = () => {
   const { content } = useContent();
   const reviewLinks = content?.successStories?.cta?.reviewLinks || [];
-  const { reviews } = content;
+  const reviews = content.reviews ?? DEFAULT_CONTENT.reviews;
 
-  const testimonials = reviews.testimonials;
+  const testimonials = reviews.testimonials ?? [];
 
   // Group testimonials by source (google / facebook / justdial) with sensible fallbacks
   const googleTestimonials = (() => {
