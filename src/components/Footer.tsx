@@ -26,7 +26,14 @@ const Footer = () => {
                 alt="Turning Point Institute Logo"
                 className="h-10 w-10 object-contain"
               />
-              <span className="ml-2 font-bold text-lg">Turning Point Institute</span>
+              <div className="ml-2">
+                <span className="block font-bold text-lg leading-tight uppercase">
+                  {content.footer.instituteName || "TURNING POINT INSTITUTE"}
+                </span>
+                <span className="block text-[11px] tracking-[0.18em] text-primary-foreground/80 uppercase">
+                  THE ONE TO TURN TO
+                </span>
+              </div>
             </div>
             <p className="text-sm text-primary-foreground/80 mb-5 max-w-md">
               {content.footer.tagline}

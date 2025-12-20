@@ -42,7 +42,7 @@ const RequestCallbackDialog = ({ open, onOpenChange }: Props) => {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-lg max-w-[92vw] min-h-[520px] overflow-visible">
+      <DialogContent className="sm:max-w-lg max-w-[92vw] sm:min-h-[520px] max-h-[90vh] sm:max-h-none overflow-y-auto sm:overflow-visible">
         <DialogHeader>
           <DialogTitle>Request a call back</DialogTitle>
           <DialogDescription>Fill in your details and pick a suitable time.</DialogDescription>
@@ -93,22 +93,22 @@ const RequestCallbackDialog = ({ open, onOpenChange }: Props) => {
 
               <div className="space-y-3">
                 <Label>Preferable call time</Label>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                  <label className="flex items-center space-x-2 border rounded-md p-3">
+                <div className="flex flex-wrap gap-3">
+                  <label className="flex items-center space-x-2 border rounded-md p-3 flex-1 min-w-[120px] cursor-pointer hover:bg-gray-50 transition-colors">
                     <Checkbox
                       checked={form.times.morning}
                       onCheckedChange={(c) => setForm((f) => ({ ...f, times: { ...f.times, morning: c === true } }))}
                     />
                     <span className="text-sm">Morning</span>
                   </label>
-                  <label className="flex items-center space-x-2 border rounded-md p-3">
+                  <label className="flex items-center space-x-2 border rounded-md p-3 flex-1 min-w-[120px] cursor-pointer hover:bg-gray-50 transition-colors">
                     <Checkbox
                       checked={form.times.afternoon}
                       onCheckedChange={(c) => setForm((f) => ({ ...f, times: { ...f.times, afternoon: c === true } }))}
                     />
                     <span className="text-sm">Afternoon</span>
                   </label>
-                  <label className="flex items-center space-x-2 border rounded-md p-3">
+                  <label className="flex items-center space-x-2 border rounded-md p-3 flex-1 min-w-[120px] cursor-pointer hover:bg-gray-50 transition-colors">
                     <Checkbox
                       checked={form.times.evening}
                       onCheckedChange={(c) => setForm((f) => ({ ...f, times: { ...f.times, evening: c === true } }))}

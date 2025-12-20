@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Menu, X, Phone } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -9,6 +9,37 @@ const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [callbackOpen, setCallbackOpen] = useState(false);
   const location = useLocation();
+  const callbackTimerRef = useRef<number | null>(null);
+
+  const isAdminRoute = location.pathname.startsWith("/admin");
+
+  useEffect(() => {
+    const clearTimer = () => {
+      if (callbackTimerRef.current !== null) {
+        window.clearTimeout(callbackTimerRef.current);
+        callbackTimerRef.current = null;
+      }
+    };
+
+    if (isAdminRoute) {
+      clearTimer();
+      return;
+    }
+
+    if (callbackOpen) {
+      clearTimer();
+      return;
+    }
+
+    clearTimer();
+    callbackTimerRef.current = window.setTimeout(() => {
+      setCallbackOpen(true);
+    }, 15000);
+
+    return () => {
+      clearTimer();
+    };
+  }, [isAdminRoute, callbackOpen]);
 
   const isActive = (path: string) => location.pathname === path;
 
