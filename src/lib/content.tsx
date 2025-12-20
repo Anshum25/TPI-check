@@ -1277,6 +1277,63 @@ const migrateContent = (stored: any): SiteContent => {
     migrated.about.hero.title = DEFAULT_CONTENT.about.hero.title;
   }
 
+  if (!stored?.admissions || typeof stored.admissions !== "object") {
+    migrated.admissions = DEFAULT_CONTENT.admissions;
+  } else {
+    migrated.admissions = {
+      ...DEFAULT_CONTENT.admissions,
+      ...stored.admissions,
+      hero: {
+        ...DEFAULT_CONTENT.admissions.hero,
+        ...(stored.admissions.hero || {}),
+      },
+      contactCtas: {
+        ...DEFAULT_CONTENT.admissions.contactCtas,
+        ...(stored.admissions.contactCtas || {}),
+      },
+      steps: Array.isArray(stored.admissions.steps) ? stored.admissions.steps : DEFAULT_CONTENT.admissions.steps,
+      courseDetails: Array.isArray(stored.admissions.courseDetails)
+        ? stored.admissions.courseDetails
+        : DEFAULT_CONTENT.admissions.courseDetails,
+      targetGroups: Array.isArray(stored.admissions.targetGroups)
+        ? stored.admissions.targetGroups
+        : DEFAULT_CONTENT.admissions.targetGroups,
+      whyChoose: Array.isArray(stored.admissions.whyChoose) ? stored.admissions.whyChoose : DEFAULT_CONTENT.admissions.whyChoose,
+      cta: {
+        ...DEFAULT_CONTENT.admissions.cta,
+        ...(stored.admissions.cta || {}),
+      },
+    };
+  }
+
+  if (!stored?.reviews || typeof stored.reviews !== "object") {
+    migrated.reviews = DEFAULT_CONTENT.reviews;
+  } else {
+    migrated.reviews = {
+      ...DEFAULT_CONTENT.reviews,
+      ...stored.reviews,
+      hero: {
+        ...DEFAULT_CONTENT.reviews.hero,
+        ...(stored.reviews.hero || {}),
+      },
+      ratingSummary: {
+        ...DEFAULT_CONTENT.reviews.ratingSummary,
+        ...(stored.reviews.ratingSummary || {}),
+      },
+      testimonials: Array.isArray(stored.reviews.testimonials)
+        ? stored.reviews.testimonials
+        : DEFAULT_CONTENT.reviews.testimonials,
+      sections: {
+        ...(DEFAULT_CONTENT.reviews.sections || {}),
+        ...(stored.reviews.sections || {}),
+      },
+      cta: {
+        ...DEFAULT_CONTENT.reviews.cta,
+        ...(stored.reviews.cta || {}),
+      },
+    };
+  }
+
   // Remove deprecated Success Stories nav item if present in cached content
   if (Array.isArray(migrated.header?.nav)) {
     migrated.header.nav = migrated.header.nav.filter(
