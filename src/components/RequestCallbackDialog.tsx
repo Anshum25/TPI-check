@@ -42,29 +42,29 @@ const RequestCallbackDialog = ({ open, onOpenChange }: Props) => {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-lg max-w-[92vw] sm:min-h-[520px] max-h-[90vh] sm:max-h-none overflow-y-auto sm:overflow-visible">
+      <DialogContent className="sm:max-w-lg max-w-[92vw] sm:min-h-[520px] max-h-[calc(100svh-2rem)] sm:max-h-none overflow-hidden p-4 sm:p-6 top-4 translate-y-0 sm:top-[50%] sm:translate-y-[-50%]">
         <DialogHeader>
-          <DialogTitle>Request a call back</DialogTitle>
-          <DialogDescription>Fill in your details and pick a suitable time.</DialogDescription>
+          <DialogTitle className="text-base sm:text-lg">Request a call back</DialogTitle>
+          <DialogDescription className="text-xs sm:text-sm">Fill in your details and pick a suitable time.</DialogDescription>
         </DialogHeader>
         <Card className="shadow-none border-0">
           <CardContent className="pt-2">
-            <form onSubmit={onSubmit} className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="firstName">Name *</Label>
-                  <Input id="firstName" name="firstName" placeholder="First" value={form.firstName} onChange={onChange} required />
+            <form onSubmit={onSubmit} className="space-y-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                <div className="space-y-1">
+                  <Label className="text-xs sm:text-sm" htmlFor="firstName">Name *</Label>
+                  <Input className="h-9 text-sm" id="firstName" name="firstName" placeholder="First" value={form.firstName} onChange={onChange} required />
                 </div>
-                <div className="space-y-2">
-                  <Label className="opacity-0">Last</Label>
-                  <Input name="lastName" placeholder="Last" value={form.lastName} onChange={onChange} />
+                <div className="space-y-1">
+                  <Label className="sr-only sm:not-sr-only sm:opacity-0 text-xs sm:text-sm" htmlFor="lastName">Last</Label>
+                  <Input className="h-9 text-sm" id="lastName" name="lastName" placeholder="Last" value={form.lastName} onChange={onChange} />
                 </div>
               </div>
 
-              <div className="space-y-2">
-                <Label>Dropdown</Label>
+              <div className="space-y-1">
+                <Label className="text-xs sm:text-sm">Dropdown</Label>
                 <Select value={form.workingPerson} onValueChange={(v) => setForm((f) => ({ ...f, workingPerson: v }))}>
-                  <SelectTrigger>
+                  <SelectTrigger className="h-9 text-sm">
                     <SelectValue placeholder="Working Person" />
                   </SelectTrigger>
                   <SelectContent>
@@ -75,14 +75,15 @@ const RequestCallbackDialog = ({ open, onOpenChange }: Props) => {
                 </Select>
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="phone">Contact Number *</Label>
-                <Input id="phone" name="phone" type="tel" placeholder="Enter your number" value={form.phone} onChange={onChange} required />
+              <div className="space-y-1">
+                <Label className="text-xs sm:text-sm" htmlFor="phone">Contact Number *</Label>
+                <Input className="h-9 text-sm" id="phone" name="phone" type="tel" placeholder="Enter your number" value={form.phone} onChange={onChange} required />
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="area">Area of Residence/Work</Label>
+              <div className="space-y-1">
+                <Label className="text-xs sm:text-sm" htmlFor="area">Area of Residence/Work</Label>
                 <Input
+                  className="h-9 text-sm"
                   id="area"
                   name="area"
                   placeholder="e.g., Ahmedabad"
@@ -91,29 +92,29 @@ const RequestCallbackDialog = ({ open, onOpenChange }: Props) => {
                 />
               </div>
 
-              <div className="space-y-3">
-                <Label>Preferable call time</Label>
-                <div className="flex flex-wrap gap-3">
-                  <label className="flex items-center space-x-2 border rounded-md p-3 flex-1 min-w-[120px] cursor-pointer hover:bg-gray-50 transition-colors">
+              <div className="space-y-2">
+                <Label className="text-xs sm:text-sm">Preferable call time</Label>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                  <label className="flex items-center space-x-2 border rounded-md p-2 cursor-pointer hover:bg-gray-50 transition-colors">
                     <Checkbox
                       checked={form.times.morning}
                       onCheckedChange={(c) => setForm((f) => ({ ...f, times: { ...f.times, morning: c === true } }))}
                     />
-                    <span className="text-sm">Morning</span>
+                    <span className="text-xs sm:text-sm">Morning</span>
                   </label>
-                  <label className="flex items-center space-x-2 border rounded-md p-3 flex-1 min-w-[120px] cursor-pointer hover:bg-gray-50 transition-colors">
+                  <label className="flex items-center space-x-2 border rounded-md p-2 cursor-pointer hover:bg-gray-50 transition-colors">
                     <Checkbox
                       checked={form.times.afternoon}
                       onCheckedChange={(c) => setForm((f) => ({ ...f, times: { ...f.times, afternoon: c === true } }))}
                     />
-                    <span className="text-sm">Afternoon</span>
+                    <span className="text-xs sm:text-sm">Afternoon</span>
                   </label>
-                  <label className="flex items-center space-x-2 border rounded-md p-3 flex-1 min-w-[120px] cursor-pointer hover:bg-gray-50 transition-colors">
+                  <label className="col-span-2 sm:col-span-1 flex items-center space-x-2 border rounded-md p-2 cursor-pointer hover:bg-gray-50 transition-colors">
                     <Checkbox
                       checked={form.times.evening}
                       onCheckedChange={(c) => setForm((f) => ({ ...f, times: { ...f.times, evening: c === true } }))}
                     />
-                    <span className="text-sm">Evening</span>
+                    <span className="text-xs sm:text-sm">Evening</span>
                   </label>
                 </div>
               </div>
