@@ -37,8 +37,62 @@ const Home = () => {
       <main className="flex-1">
         <Hero />
         <Differentiators />
-        <JoinUsSection />
+        <JoinUsSection showJourney={false} />
         <CourseDetails />
+
+        {/* Learn English + Director's Desk */}
+        <section className="py-20 md:py-24 relative">
+          <div className="container mx-auto px-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-16 items-center">
+              {/* Left Content */}
+              <div className="space-y-6">
+                <div>
+                  {home.methodologyBadge && (
+                    <span className="inline-block px-3 py-1 bg-primary/10 text-primary text-xs font-semibold uppercase tracking-wider rounded-full mb-4">
+                      {home.methodologyBadge}
+                    </span>
+                  )}
+                  <h2 className="text-3xl md:text-4xl font-bold text-foreground leading-tight">
+                    {home.heroTitle}
+                  </h2>
+                </div>
+                <p className="text-lg text-muted-foreground leading-relaxed">
+                  {home.heroSubtitle}
+                </p>
+                {home.methodologyKeyPoint && (
+                  <div className="pt-6 border-t border-border">
+                    <p className="text-sm font-semibold text-primary mb-3 uppercase tracking-wider">Key Point</p>
+                    <p className="text-foreground font-semibold text-lg">
+                      {home.methodologyKeyPoint}
+                    </p>
+                  </div>
+                )}
+              </div>
+
+              {/* Right - Video */}
+              <div className="relative">
+                <div className="absolute -top-6 -right-6 w-24 h-24 bg-accent/10 rounded-3xl blur-2xl" />
+                <div className="absolute -bottom-10 -left-10 w-32 h-32 bg-primary/10 rounded-3xl blur-3xl" />
+
+                <div className="relative bg-white dark:bg-slate-950 rounded-2xl shadow-medium overflow-hidden border border-border/50 hover:shadow-lg transition-shadow duration-300">
+                  <div className="absolute top-4 right-4 z-10 bg-background/80 backdrop-blur px-3 py-1 rounded-full">
+                    <p className="text-xs font-semibold text-foreground uppercase tracking-wider">Director's Desk</p>
+                  </div>
+                  <div className="aspect-video w-full bg-muted">
+                    <iframe
+                      src={home.directorVideoUrl}
+                      title="Director's desk video"
+                      className="w-full h-full"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                      allowFullScreen
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
         {/* "You belong here" paragraph - Shown on mobile only after CourseDetails */}
         <section className="block md:hidden pt-10 pb-2">
           <div className="container mx-auto px-4">
@@ -93,61 +147,6 @@ const Home = () => {
             </div>
           </section>
         )}
-
-
-
-        {/* Learn English + Director's Desk */}
-        <section className="py-20 md:py-24 relative">
-          <div className="container mx-auto px-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-16 items-center">
-              {/* Left Content */}
-              <div className="space-y-6">
-                <div>
-                  {home.methodologyBadge && (
-                    <span className="inline-block px-3 py-1 bg-primary/10 text-primary text-xs font-semibold uppercase tracking-wider rounded-full mb-4">
-                      {home.methodologyBadge}
-                    </span>
-                  )}
-                  <h2 className="text-3xl md:text-4xl font-bold text-foreground leading-tight">
-                    {home.heroTitle}
-                  </h2>
-                </div>
-                <p className="text-lg text-muted-foreground leading-relaxed">
-                  {home.heroSubtitle}
-                </p>
-                {home.methodologyKeyPoint && (
-                  <div className="pt-6 border-t border-border">
-                    <p className="text-sm font-semibold text-primary mb-3 uppercase tracking-wider">Key Point</p>
-                    <p className="text-foreground font-semibold text-lg">
-                      {home.methodologyKeyPoint}
-                    </p>
-                  </div>
-                )}
-              </div>
-
-              {/* Right - Video */}
-              <div className="relative">
-                <div className="absolute -top-6 -right-6 w-24 h-24 bg-accent/10 rounded-3xl blur-2xl" />
-                <div className="absolute -bottom-10 -left-10 w-32 h-32 bg-primary/10 rounded-3xl blur-3xl" />
-
-                <div className="relative bg-white dark:bg-slate-950 rounded-2xl shadow-medium overflow-hidden border border-border/50 hover:shadow-lg transition-shadow duration-300">
-                  <div className="absolute top-4 right-4 z-10 bg-background/80 backdrop-blur px-3 py-1 rounded-full">
-                    <p className="text-xs font-semibold text-foreground uppercase tracking-wider">Director's Desk</p>
-                  </div>
-                  <div className="aspect-video w-full bg-muted">
-                    <iframe
-                      src={home.directorVideoUrl}
-                      title="Director's desk video"
-                      className="w-full h-full"
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                      allowFullScreen
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
 
         <ActivityVideos />
         <ActivityImages />
@@ -243,6 +242,14 @@ const Home = () => {
             </div>
           </div>
         </section>
+
+        <a
+          href={`tel:${admissions.cta.phoneNumber}`}
+          className="md:hidden fixed bottom-6 right-4 z-50 h-14 w-14 rounded-full gradient-accent shadow-lg flex items-center justify-center"
+          aria-label="Call"
+        >
+          <i aria-hidden="true" className="fas fa-phone-volume text-white text-xl" />
+        </a>
       </main>
       <Footer />
     </div>

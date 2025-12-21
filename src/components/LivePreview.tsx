@@ -292,7 +292,7 @@ const LivePreview = ({ selectedSectionId, activeSubSection }: LivePreviewProps) 
       switch (selectedSectionId) {
         case "home":
           return (
-            <div ref={previewRef} className="live-preview h-full w-full bg-background overflow-y-auto overflow-x-auto">
+            <div ref={previewRef} className="live-preview relative h-full w-full bg-background overflow-y-auto overflow-x-auto">
               <div className="w-full max-w-full min-w-0">
                 <div ref={heroCarouselRef}>
                   <div className="preview-hero-carousel">
@@ -303,52 +303,12 @@ const LivePreview = ({ selectedSectionId, activeSubSection }: LivePreviewProps) 
                   <Differentiators />
                 </div>
                 <div ref={heroVideoRef}>
-                  <JoinUsSection />
+                  <JoinUsSection showJourney={false} />
                 </div>
                 <div ref={testimonialsRef}>
                   <CourseDetails />
                 </div>
-                <MethodologySection />
-                <div ref={gainFromCourseRef}>
-                  <GainFromCourse />
-                </div>
-                <div ref={facultyHighlightRef}>
-                  <FacultyHighlight />
-                </div>
-                {home.achievementsSection && (
-                  <div ref={homeAchievementsRef}>
-                    <section className="py-10 md:py-14">
-                      <div className="container mx-auto px-4">
-                        <div className="text-center mb-8">
-                          <h2 className="text-2xl md:text-3xl font-bold mb-2 text-foreground">
-                            {home.achievementsSection.title}
-                          </h2>
-                          <p className="text-muted-foreground max-w-2xl mx-auto">
-                            {home.achievementsSection.subtitle}
-                          </p>
-                        </div>
 
-                        <div className="max-w-4xl mx-auto bg-card/80 border border-border/60 rounded-2xl shadow-soft px-6 py-4 md:px-8 md:py-6 space-y-4">
-                          {home.achievementsSection.items.map((item, index) => (
-                            <div
-                              key={index}
-                              className={`flex items-start gap-4 py-3 border-b last:border-b pl-5 border-l-4 ${index === 1 || index === 3 ? 'border-accent' : 'border-primary'}`}
-                              style={{
-                                borderLeftColor: index === 1 || index === 3 ? 'hsl(0 84% 50%)' : 'hsl(217 91% 28%)',
-                                borderBottomColor: index === 1 || index === 3 ? 'hsl(0 84% 50%)' : 'hsl(217 91% 28%)',
-                              }}
-                            >
-                              <div>
-                                <h3 className="text-base md:text-lg font-bold text-primary mb-1">{item.title}</h3>
-                                <p className="text-muted-foreground text-sm md:text-[15px]">{item.description}</p>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    </section>
-                  </div>
-                )}
                 {/* Our Methodology Section with Video */}
                 <div ref={methodologyVideoRef}>
                   <section className="py-20 md:py-24 relative">
@@ -403,6 +363,47 @@ const LivePreview = ({ selectedSectionId, activeSubSection }: LivePreviewProps) 
                     </div>
                   </section>
                 </div>
+                <MethodologySection />
+                <div ref={gainFromCourseRef}>
+                  <GainFromCourse />
+                </div>
+                <div ref={facultyHighlightRef}>
+                  <FacultyHighlight />
+                </div>
+                {home.achievementsSection && (
+                  <div ref={homeAchievementsRef}>
+                    <section className="py-10 md:py-14">
+                      <div className="container mx-auto px-4">
+                        <div className="text-center mb-8">
+                          <h2 className="text-2xl md:text-3xl font-bold mb-2 text-foreground">
+                            {home.achievementsSection.title}
+                          </h2>
+                          <p className="text-muted-foreground max-w-2xl mx-auto">
+                            {home.achievementsSection.subtitle}
+                          </p>
+                        </div>
+
+                        <div className="max-w-4xl mx-auto bg-card/80 border border-border/60 rounded-2xl shadow-soft px-6 py-4 md:px-8 md:py-6 space-y-4">
+                          {home.achievementsSection.items.map((item, index) => (
+                            <div
+                              key={index}
+                              className={`flex items-start gap-4 py-3 border-b last:border-b pl-5 border-l-4 ${index === 1 || index === 3 ? 'border-accent' : 'border-primary'}`}
+                              style={{
+                                borderLeftColor: index === 1 || index === 3 ? 'hsl(0 84% 50%)' : 'hsl(217 91% 28%)',
+                                borderBottomColor: index === 1 || index === 3 ? 'hsl(0 84% 50%)' : 'hsl(217 91% 28%)',
+                              }}
+                            >
+                              <div>
+                                <h3 className="text-base md:text-lg font-bold text-primary mb-1">{item.title}</h3>
+                                <p className="text-muted-foreground text-sm md:text-[15px]">{item.description}</p>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                )}
                 {/* Student Activities */}
                 <div ref={activityVideosRef}>
                   <ActivityVideos />
@@ -431,6 +432,14 @@ const LivePreview = ({ selectedSectionId, activeSubSection }: LivePreviewProps) 
                     </div>
                   </div>
                 </section>
+
+                <a
+                  href={`tel:${content.admissions.cta.phoneNumber}`}
+                  className="md:hidden absolute bottom-6 right-4 z-50 h-14 w-14 rounded-full gradient-accent shadow-lg flex items-center justify-center"
+                  aria-label="Call"
+                >
+                  <i aria-hidden="true" className="fas fa-phone-volume text-white text-xl" />
+                </a>
               </div>
             </div>
           );

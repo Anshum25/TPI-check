@@ -34,7 +34,7 @@ const Header = () => {
     clearTimer();
     callbackTimerRef.current = window.setTimeout(() => {
       setCallbackOpen(true);
-    }, 15000);
+    }, 25000);
 
     return () => {
       clearTimer();
