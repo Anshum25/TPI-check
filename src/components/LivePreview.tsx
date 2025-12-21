@@ -438,7 +438,7 @@ const LivePreview = ({ selectedSectionId, activeSubSection }: LivePreviewProps) 
                   className="md:hidden absolute bottom-6 right-4 z-50 h-14 w-14 rounded-full gradient-accent shadow-lg flex items-center justify-center"
                   aria-label="Call"
                 >
-                  <i aria-hidden="true" className="fas fa-phone-volume text-white text-xl" />
+                  <i aria-hidden="true" className="fas fa-phone-volume inline-block text-white text-xl" style={{ transform: "scaleX(-1)" }} />
                 </a>
               </div>
             </div>
