@@ -1418,6 +1418,91 @@ const Admin = () => {
         </CardContent>
       </Card>
 
+       <Card
+        className="shadow-soft"
+        onMouseEnter={() => setActiveSubSection('methodology-video')}
+        onFocus={() => setActiveSubSection('methodology-video')}
+      >
+        <CardHeader>
+          <CardTitle>Our Methodology Section</CardTitle>
+          <CardDescription>Edit the badge, title, subtitle, key point, and YouTube video URL for the "Our Methodology" section.</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          <div className="space-y-2">
+            <Label>Badge Text</Label>
+            <Input
+              value={content.home.methodologyBadge || ''}
+              onChange={(e) => setContent(prev => ({
+                ...prev,
+                home: {
+                  ...prev.home,
+                  methodologyBadge: e.target.value,
+                },
+              }))}
+              placeholder="Our Methodology"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label>Title</Label>
+            <Input
+              value={content.home.heroTitle}
+              onChange={(e) => setContent(prev => ({
+                ...prev,
+                home: {
+                  ...prev.home,
+                  heroTitle: e.target.value,
+                },
+              }))}
+            />
+          </div>
+          <div className="space-y-2">
+            <Label>Subtitle</Label>
+            <Textarea
+              value={content.home.heroSubtitle}
+              onChange={(e) => setContent(prev => ({
+                ...prev,
+                home: {
+                  ...prev.home,
+                  heroSubtitle: e.target.value,
+                },
+              }))}
+              rows={2}
+            />
+          </div>
+          <div className="space-y-2">
+            <Label>Key Point</Label>
+            <Textarea
+              value={content.home.methodologyKeyPoint || ''}
+              onChange={(e) => setContent(prev => ({
+                ...prev,
+                home: {
+                  ...prev.home,
+                  methodologyKeyPoint: e.target.value,
+                },
+              }))}
+              rows={2}
+              placeholder="Direct mentorship from the institute founders with proven teaching methods"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label>YouTube Video URL (Embed URL)</Label>
+            <Input
+              value={content.home.directorVideoUrl}
+              onChange={(e) => setContent(prev => ({
+                ...prev,
+                home: {
+                  ...prev.home,
+                  directorVideoUrl: e.target.value,
+                },
+              }))}
+              placeholder="https://www.youtube.com/embed/VIDEO_ID"
+            />
+           
+           
+                                </div>
+                            </CardContent>
+                        </Card>
+
       <Card 
         className="shadow-soft"
         onMouseEnter={() => setActiveSubSection('methodology')}
@@ -2261,90 +2346,7 @@ const Admin = () => {
         </CardContent>
       </Card>
 
-      <Card
-        className="shadow-soft"
-        onMouseEnter={() => setActiveSubSection('methodology-video')}
-        onFocus={() => setActiveSubSection('methodology-video')}
-      >
-        <CardHeader>
-          <CardTitle>Our Methodology Section</CardTitle>
-          <CardDescription>Edit the badge, title, subtitle, key point, and YouTube video URL for the "Our Methodology" section.</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          <div className="space-y-2">
-            <Label>Badge Text</Label>
-            <Input
-              value={content.home.methodologyBadge || ''}
-              onChange={(e) => setContent(prev => ({
-                ...prev,
-                home: {
-                  ...prev.home,
-                  methodologyBadge: e.target.value,
-                },
-              }))}
-              placeholder="Our Methodology"
-            />
-          </div>
-          <div className="space-y-2">
-            <Label>Title</Label>
-            <Input
-              value={content.home.heroTitle}
-              onChange={(e) => setContent(prev => ({
-                ...prev,
-                home: {
-                  ...prev.home,
-                  heroTitle: e.target.value,
-                },
-              }))}
-            />
-          </div>
-          <div className="space-y-2">
-            <Label>Subtitle</Label>
-            <Textarea
-              value={content.home.heroSubtitle}
-              onChange={(e) => setContent(prev => ({
-                ...prev,
-                home: {
-                  ...prev.home,
-                  heroSubtitle: e.target.value,
-                },
-              }))}
-              rows={2}
-            />
-          </div>
-          <div className="space-y-2">
-            <Label>Key Point</Label>
-            <Textarea
-              value={content.home.methodologyKeyPoint || ''}
-              onChange={(e) => setContent(prev => ({
-                ...prev,
-                home: {
-                  ...prev.home,
-                  methodologyKeyPoint: e.target.value,
-                },
-              }))}
-              rows={2}
-              placeholder="Direct mentorship from the institute founders with proven teaching methods"
-            />
-          </div>
-          <div className="space-y-2">
-            <Label>YouTube Video URL (Embed URL)</Label>
-            <Input
-              value={content.home.directorVideoUrl}
-              onChange={(e) => setContent(prev => ({
-                ...prev,
-                home: {
-                  ...prev.home,
-                  directorVideoUrl: e.target.value,
-                },
-              }))}
-              placeholder="https://www.youtube.com/embed/VIDEO_ID"
-            />
-           
-           
-                                </div>
-                            </CardContent>
-                        </Card>
+     
     </>
   );
 

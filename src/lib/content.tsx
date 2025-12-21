@@ -397,8 +397,7 @@ export const DEFAULT_CONTENT: SiteContent = {
           icon: "award",
           title: "An Institute Exclusively for",
           items: [
-            { title: "Spoken English" },
-            { title: "Personality Development" },
+            { title: "Spoken English and Personality Development" },
           ],
           footerText:
             "Specialized training designed specifically for these core areas of transformation",
@@ -882,7 +881,80 @@ export const DEFAULT_CONTENT: SiteContent = {
       directionsUrl: "https://www.google.com/maps/place/Turning+Point+Institute/@23.0131818,72.518835,17z/data=!3m1!4b1!4m6!3m5!1s0x395e84cf0a8203a1:0xd1a3ec8eb1a3e77e!8m2!3d23.0131818!4d72.5210237!16s%2Fg%2F1v42d5nt",
     },
   },
-  
+
+  successStories: {
+    hero: {
+      title: "Success Stories",
+      subtitle: "Real transformations from our students",
+    },
+    stats: [
+      { value: "10,000+", label: "Students Trained" },
+      { value: "1999", label: "Established" },
+      { value: "4.9/5", label: "Average Rating" },
+    ],
+    stories: [
+      {
+        name: "Priya Sharma",
+        role: "Software Engineer",
+        content:
+          "This institute transformed my communication skills completely. I'm now confident in presentations and team meetings.",
+        rating: 5,
+        achievement: "More confidence in presentations",
+        source: "google",
+      },
+      {
+        name: "Rahul Patel",
+        role: "Business Owner",
+        content:
+          "The course helped me become a better leader and communicator. The founders' guidance is truly valuable.",
+        rating: 5,
+        achievement: "Better leadership and communication",
+        source: "facebook",
+      },
+      {
+        name: "Anjali Desai",
+        role: "HR Manager",
+        content:
+          "Excellent teaching methods and supportive instructors. Worth every penny invested in my growth.",
+        rating: 5,
+        achievement: "Improved professional communication",
+        source: "justdial",
+      },
+    ],
+    achievements: [
+      "Improved fluency and grammar clarity",
+      "More confident stage performance",
+      "Better interviews and workplace communication",
+      "Stronger body language and personality",
+    ],
+    video: {
+      description: "Watch our students speak with confidence and share their learning experience.",
+      linkText: "Watch student activities",
+      linkUrl: "https://www.youtube.com/embed/sLMm9trcZYc",
+      note: "Videos showcase speaking activities conducted during the course",
+    },
+    cta: {
+      title: "Read More Reviews",
+      description: "Check authentic student reviews on popular platforms.",
+      phoneLabel: "Call: 9725500435",
+      phoneNumber: "9725500435",
+      reviewLinks: [
+        {
+          label: "Google Reviews",
+          url: "https://www.google.com/search?q=turning+point+institute#lrd=0x395e84cf0a8203a1:0xd1a3ec8eb1a3e77e,1,,,,",
+        },
+        {
+          label: "Facebook Reviews",
+          url: "https://www.facebook.com/",
+        },
+        {
+          label: "JustDial Reviews",
+          url: "https://www.justdial.com/",
+        },
+      ],
+    },
+  },
+
   gallery: {
     hero: {
       title: "Gallery",
@@ -1285,6 +1357,33 @@ const migrateContent = (stored: any): SiteContent => {
       ...stored.home,
       heroCarousel: stored.home.heroCarousel || DEFAULT_CONTENT.home.heroCarousel,
     };
+  }
+
+  if (migrated.home?.differentiators?.cards?.length) {
+    const cards = migrated.home.differentiators.cards;
+    const first = cards[0];
+    const titles = (first?.items || []).map((it) => (it?.title || "").trim());
+
+    if (
+      first?.title === "An Institute Exclusively for" &&
+      titles.length === 2 &&
+      titles[0] === "Spoken English" &&
+      titles[1] === "Personality Development"
+    ) {
+      migrated.home = {
+        ...migrated.home,
+        differentiators: {
+          ...migrated.home.differentiators,
+          cards: [
+            {
+              ...first,
+              items: [{ title: "Spoken English and Personality Development" }],
+            },
+            ...cards.slice(1),
+          ],
+        },
+      };
+    }
   }
 
   if (!stored?.successStories || typeof stored.successStories !== "object") {

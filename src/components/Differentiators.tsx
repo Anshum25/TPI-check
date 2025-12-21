@@ -29,11 +29,7 @@ const Differentiators = () => {
               <div className="space-y-3 ml-0">
                 <div className="flex items-center gap-3">
                   <div className="w-2 h-2 rounded-full bg-accent flex-shrink-0" />
-                  <p className="text-lg font-semibold text-foreground">Spoken English</p>
-                </div>
-                <div className="flex items-center gap-3">
-                  <div className="w-2 h-2 rounded-full bg-accent flex-shrink-0" />
-                  <p className="text-lg font-semibold text-foreground">Personality Development</p>
+                  <p className="text-lg font-semibold text-foreground">Spoken English and Personality Development</p>
                 </div>
               </div>
               <p className="mt-6 text-muted-foreground">Specialized training designed specifically for these core areas of transformation</p>
