@@ -68,6 +68,12 @@ type MethodologySection = {
   objectivesTitle?: string;
 };
 
+type InformationBanner = {
+  isVisible: boolean;
+  content: string;
+  imageUrl?: string;
+};
+
 export type SiteContent = {
   home: {
     heroTitle: string;
@@ -125,6 +131,7 @@ export type SiteContent = {
       title: string;
       subtitle: string;
     };
+    informationBanner?: InformationBanner;
     ctaTitle: string;
     ctaText: string;
   };
@@ -598,6 +605,11 @@ export const DEFAULT_CONTENT: SiteContent = {
     homeReviews: {
       title: "Review from our achievers",
       subtitle: "Read authentic reviews from students who transformed their English and personality with us.",
+    },
+    informationBanner: {
+      isVisible: false,
+      content: "",
+      imageUrl: undefined,
     },
     ctaTitle: "Ready to Transform Your Future?",
     ctaText: "Join thousands of successful students and start your journey towards excellence today",

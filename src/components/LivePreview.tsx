@@ -9,6 +9,7 @@ import Differentiators from "@/components/Differentiators";
 import JoinUsSection from "@/components/JoinUsSection";
 import CourseDetails from "@/components/CourseDetails";
 import MethodologySection from "@/components/MethodologySection";
+import InformationBanner from "@/components/InformationBanner";
 import GainFromCourse from "@/components/GainFromCourse";
 import FacultyHighlight from "@/components/FacultyHighlight";
 import ActivityVideos from "@/components/ActivityVideos";
@@ -58,6 +59,7 @@ const LivePreview = ({ selectedSectionId, activeSubSection }: LivePreviewProps) 
   const facultyHighlightRef = useRef<HTMLDivElement>(null);
   const homeAchievementsRef = useRef<HTMLDivElement>(null);
   const methodologyVideoRef = useRef<HTMLDivElement>(null);
+  const informationBannerRef = useRef<HTMLDivElement>(null);
   const gainFromCourseRef = useRef<HTMLDivElement>(null);
   const activityVideosRef = useRef<HTMLDivElement>(null);
   const activityImagesRef = useRef<HTMLDivElement>(null);
@@ -181,6 +183,7 @@ const LivePreview = ({ selectedSectionId, activeSubSection }: LivePreviewProps) 
       'faculty-highlight': facultyHighlightRef,
       'home-achievements': homeAchievementsRef,
       'methodology-video': methodologyVideoRef,
+      'information-banner': informationBannerRef,
       'gain-from-course': gainFromCourseRef,
       'activity-videos': activityVideosRef,
       'activity-images': activityImagesRef,
@@ -364,6 +367,9 @@ const LivePreview = ({ selectedSectionId, activeSubSection }: LivePreviewProps) 
                   </section>
                 </div>
                 <MethodologySection />
+                <div ref={informationBannerRef}>
+                  <InformationBanner />
+                </div>
                 <div ref={gainFromCourseRef}>
                   <GainFromCourse />
                 </div>

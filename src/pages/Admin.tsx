@@ -2346,6 +2346,218 @@ const Admin = () => {
         </CardContent>
       </Card>
 
+      {/* Information Banner Management */}
+      <Card 
+        className="shadow-soft"
+        onMouseEnter={() => setActiveSubSection('information-banner')}
+        onFocus={() => setActiveSubSection('information-banner')}
+      >
+        <CardHeader>
+          <CardTitle>Information Banner</CardTitle>
+          <CardDescription>Manage the announcement banner displayed between methodology and gain sections.</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="space-y-4">
+            {/* Visibility Toggle */}
+            <div className="flex items-center justify-between p-4 rounded-lg border">
+              <div>
+                <Label className="text-sm font-medium">Banner Visibility</Label>
+                <p className="text-xs text-muted-foreground">Show or hide the banner on the home page</p>
+              </div>
+              <Button
+                type="button"
+                variant={content.home.informationBanner?.isVisible ? "default" : "outline"}
+                size="sm"
+                onClick={() => {
+                  setContent((prev) => ({
+                    ...prev,
+                    home: {
+                      ...prev.home,
+                      informationBanner: {
+                        ...(prev.home.informationBanner || { isVisible: false, content: "", imageUrl: undefined }),
+                        isVisible: !prev.home.informationBanner?.isVisible,
+                      },
+                    },
+                  }));
+                }}
+                aria-label={`Turn banner ${content.home.informationBanner?.isVisible ? 'off' : 'on'}`}
+                aria-pressed={content.home.informationBanner?.isVisible}
+              >
+                {content.home.informationBanner?.isVisible ? "ON" : "OFF"}
+              </Button>
+            </div>
+
+            {/* Banner Content */}
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <Label htmlFor="banner-content">Banner Content</Label>
+                <span 
+                  className="text-xs text-muted-foreground"
+                  aria-live="polite"
+                  aria-label={`Character count: ${(content.home.informationBanner?.content || "").length} of 500`}
+                >
+                  {(content.home.informationBanner?.content || "").length}/500 characters
+                </span>
+              </div>
+              <Textarea
+                id="banner-content"
+                placeholder="Enter your announcement, event details, or important information..."
+                value={content.home.informationBanner?.content || ""}
+                onChange={(e) => {
+                  const newContent = e.target.value;
+                  if (newContent.length > 500) {
+                    toast({ 
+                      title: "Content too long", 
+                      description: "Banner content should be 500 characters or less for optimal display.", 
+                      variant: "destructive" as any 
+                    });
+                    return;
+                  }
+                  setContent((prev) => ({
+                    ...prev,
+                    home: {
+                      ...prev.home,
+                      informationBanner: {
+                        ...(prev.home.informationBanner || { isVisible: false, content: "", imageUrl: undefined }),
+                        content: newContent,
+                      },
+                    },
+                  }));
+                }}
+                rows={3}
+                maxLength={500}
+                aria-describedby="banner-content-help"
+              />
+              <div id="banner-content-help" className="text-xs text-muted-foreground">
+                This content will be displayed prominently on the home page between sections.
+              </div>
+              {(content.home.informationBanner?.content || "").length > 400 && (
+                <p className="text-xs text-amber-600" role="alert">
+                  ⚠️ Consider keeping content concise for better readability
+                </p>
+              )}
+            </div>
+
+            {/* Image Upload */}
+            <div className="space-y-2">
+              <Label htmlFor="banner-image-upload">Banner Image (Optional)</Label>
+              {content.home.informationBanner?.imageUrl && (
+                <div className="relative mb-2">
+                  <img
+                    src={content.home.informationBanner.imageUrl}
+                    alt="Banner preview - will be displayed alongside the banner content"
+                    className="w-full h-32 object-cover rounded-md border"
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).style.display = 'none';
+                    }}
+                  />
+                  <Button
+                    type="button"
+                    size="icon"
+                    variant="destructive"
+                    className="absolute top-2 right-2 h-6 w-6"
+                    onClick={() => {
+                      setContent((prev) => ({
+                        ...prev,
+                        home: {
+                          ...prev.home,
+                          informationBanner: {
+                            ...(prev.home.informationBanner || { isVisible: false, content: "", imageUrl: undefined }),
+                            imageUrl: undefined,
+                          },
+                        },
+                      }));
+                    }}
+                    aria-label="Remove banner image"
+                  >
+                    <X className="h-3 w-3" />
+                  </Button>
+                </div>
+              )}
+              <div className="flex gap-2">
+                <Input
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  id="banner-image-upload"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) {
+                      // Validate file type
+                      const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+                      if (!validTypes.includes(file.type)) {
+                        toast({ 
+                          title: "Invalid file type", 
+                          description: "Please upload a valid image file (JPG, PNG, GIF, or WebP).", 
+                          variant: "destructive" as any 
+                        });
+                        return;
+                      }
+
+                      // Validate file size (5MB limit)
+                      const maxSize = 5 * 1024 * 1024; // 5MB in bytes
+                      if (file.size > maxSize) {
+                        toast({ 
+                          title: "File too large", 
+                          description: "Please upload an image smaller than 5MB.", 
+                          variant: "destructive" as any 
+                        });
+                        return;
+                      }
+
+                      const reader = new FileReader();
+                      reader.onloadend = () => {
+                        const base64String = reader.result as string;
+                        setContent((prev) => ({
+                          ...prev,
+                          home: {
+                            ...prev.home,
+                            informationBanner: {
+                              ...(prev.home.informationBanner || { isVisible: false, content: "", imageUrl: undefined }),
+                              imageUrl: base64String,
+                            },
+                          },
+                        }));
+                        toast({ 
+                          title: "Image uploaded", 
+                          description: "Banner image has been successfully uploaded." 
+                        });
+                      };
+                      reader.onerror = () => {
+                        toast({ 
+                          title: "Upload failed", 
+                          description: "Failed to read the image file. Please try again.", 
+                          variant: "destructive" as any 
+                        });
+                      };
+                      reader.readAsDataURL(file);
+                    }
+                    // Reset input
+                    e.target.value = '';
+                  }}
+                  aria-describedby="image-upload-help"
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="flex items-center gap-2"
+                  onClick={() => {
+                    document.getElementById('banner-image-upload')?.click();
+                  }}
+                  aria-label="Upload banner image"
+                >
+                  <Upload className="h-4 w-4" />
+                  Upload Image
+                </Button>
+              </div>
+              <div id="image-upload-help" className="text-xs text-muted-foreground">
+                Supported formats: JPG, PNG, GIF, WebP. Maximum size: 5MB. Image will be displayed on the left side of the banner on desktop.
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
      
     </>
   );
