@@ -618,7 +618,7 @@ export const DEFAULT_CONTENT: SiteContent = {
       imageUrl: undefined,
     },
     marquee: {
-      isVisible: false,
+      isVisible: true,
       text: "Transform your English speaking skills with our proven methodology • Join 10,000+ successful students • Expert training from institute founders • Get certified and confident in English communication",
     },
     ctaTitle: "Ready to Transform Your Future?",
