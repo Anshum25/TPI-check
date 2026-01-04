@@ -2558,7 +2558,86 @@ const Admin = () => {
         </CardContent>
       </Card>
 
-     
+      {/* Marquee Section */}
+      <Card
+        className="shadow-soft"
+        onMouseEnter={() => setActiveSubSection('marquee')}
+        onFocus={() => setActiveSubSection('marquee')}
+      >
+        <CardHeader>
+          <CardTitle>Marquee Banner</CardTitle>
+          <CardDescription>Endless scrolling text banner displayed below the course section</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {/* Visibility Toggle */}
+          <div className="flex items-center justify-between p-4 rounded-lg border">
+            <div>
+              <Label className="text-sm font-medium">Marquee Visibility</Label>
+              <p className="text-xs text-muted-foreground">Show or hide the marquee banner on the home page</p>
+            </div>
+            <Button
+              type="button"
+              variant={content.home.marquee?.isVisible ? "default" : "outline"}
+              size="sm"
+              onClick={() => {
+                setContent((prev) => ({
+                  ...prev,
+                  home: {
+                    ...prev.home,
+                    marquee: {
+                      ...(prev.home.marquee || { isVisible: false, text: "" }),
+                      isVisible: !prev.home.marquee?.isVisible,
+                    },
+                  },
+                }));
+              }}
+              aria-label={`Turn marquee ${content.home.marquee?.isVisible ? 'off' : 'on'}`}
+              aria-pressed={content.home.marquee?.isVisible}
+            >
+              {content.home.marquee?.isVisible ? "ON" : "OFF"}
+            </Button>
+          </div>
+
+          {/* Marquee Text */}
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <Label htmlFor="marquee-text">Marquee Text</Label>
+              <span
+                className="text-xs text-muted-foreground"
+                aria-live="polite"
+                aria-label={`Character count: ${(content.home.marquee?.text || "").length}`}
+              >
+                {(content.home.marquee?.text || "").length} characters
+              </span>
+            </div>
+            <Textarea
+              id="marquee-text"
+              placeholder="Enter the text that will scroll continuously in the marquee... Use bullet points (•) to separate sections"
+              value={content.home.marquee?.text || ""}
+              onChange={(e) => {
+                const newText = e.target.value;
+                setContent((prev) => ({
+                  ...prev,
+                  home: {
+                    ...prev.home,
+                    marquee: {
+                      ...(prev.home.marquee || { isVisible: false, text: "" }),
+                      text: newText,
+                    },
+                  },
+                }));
+              }}
+              rows={3}
+              aria-describedby="marquee-text-help"
+            />
+            <div id="marquee-text-help" className="text-xs text-muted-foreground">
+              This text will scroll continuously across the page. Use bullet points (•) to separate different messages for visual clarity.
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+
     </>
   );
 
