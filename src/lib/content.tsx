@@ -500,6 +500,11 @@ export const DEFAULT_CONTENT: SiteContent = {
         title: "Personal Support",
         subtitle: "No Matter What !! We Are There You Will Achieve Your Goal !",
         description: "When you join our institute you become part of Turning Point Family. We make sure that each and every student gets the desired result. We are continuously monitoring the performance of all the students through various parameters and if required we provide personal support to the weak students. If you miss any lecture also our team is at your help to cover up what you had missed. The goal for which you have joined must be achieved. The only condition for our support is that you have to regular and do the work regularly which is of around 30 minutes.",
+        images: [
+          { src: "/src/assets/hero-classroom.jpg", alt: "Personal Support Image 1" },
+          { src: "/src/assets/student-success.jpg", alt: "Personal Support Image 2" },
+          { src: "/src/assets/speaking-confidence.jpg", alt: "Personal Support Image 3" },
+        ],
       },
     ],
     gainHeading: "What You Will Gain",
