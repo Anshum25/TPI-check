@@ -490,6 +490,11 @@ export const DEFAULT_CONTENT: SiteContent = {
       {
         title: "Reading and Writing",
         description: "Growing in white collar profession is not possible without excellent reading and writing skills. Specially designed modules for reading and writing will enable you to read and write as effectively as in your mother tongue. With the help of reading techniques taught by us and absolute clarity in sentence formations, you will be able to read with perfect understanding and at double speed. You will be able to make written communication very effectively and the course will enable you to present your ideas in the way you want. Whether you would like to make it precise or elaborate or enthusiastic, you will have the tools to do it. This will enhance your performance specially working at corporate level.",
+        images: [
+          { src: "/src/assets/student-success.jpg", alt: "Reading and Writing Image 1" },
+          { src: "/src/assets/speaking-confidence.jpg", alt: "Reading and Writing Image 2" },
+          { src: "/src/assets/hero-classroom.jpg", alt: "Reading and Writing Image 3" },
+        ],
       },
       {
         title: "Personal Support",
