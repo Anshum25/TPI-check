@@ -37,7 +37,7 @@ const SiteContentManager = ({
   }, []);
 
   return (
-    <div className="flex-1 flex flex-col border-r overflow-hidden h-full min-w-0 flex-shrink-0">
+    <div className="flex-1 flex flex-col overflow-hidden h-full min-w-0 flex-shrink-0">
 
       {/* <section className="flex flex-wrap items-center justify-between gap-4 border-b px-6 py-4 flex-shrink-0">
         <div>
@@ -57,7 +57,7 @@ const SiteContentManager = ({
 
       <div 
         ref={contentRef} 
-        className="flex-1 space-y-6 overflow-y-auto overflow-x-hidden px-6 py-6 content-manager-hide-scrollbar"
+        className="flex-1 space-y-6 overflow-y-auto overflow-x-hidden px-4 py-6 content-manager-hide-scrollbar"
         style={{ 
           height: 0, // Force flex-1 to work properly
           scrollbarWidth: 'none',

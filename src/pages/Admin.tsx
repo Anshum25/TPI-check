@@ -59,6 +59,7 @@ import {
   Lock,
   Eye,
   EyeOff,
+  LogOut,
 } from "lucide-react";
 
 export type AdminSection = {
@@ -134,20 +135,6 @@ const adminSections: AdminSection[] = [
     ],
   },
   {
-    id: "success",
-    label: "Success Stories",
-    description: "Long-form testimonials, stats, and achievements.",
-    icon: Star,
-    type: "static",
-    route: "/success-stories",
-    filePath: "src/pages/SuccessStories.tsx",
-    summary: [
-      "Hero plus stats grid reinforcing results (students, rating, success rate, years).",
-      "Large testimonial grid with achievement badges sourced from `TestimonialCard`.",
-      "Achievements list, video testimonial prompt, and link to YouTube channel.",
-    ],
-  },
-  {
     id: "gallery",
     label: "Gallery",
     description: "Image tabs with lightbox experience.",
@@ -211,19 +198,6 @@ const adminSections: AdminSection[] = [
     type: "static",
     route: "/admin",
   },
-  {
-    id: "not-found",
-    label: "404 Page",
-    description: "Fallback screen for unknown routes.",
-    icon: OctagonAlert,
-    type: "static",
-    route: "/404",
-    filePath: "src/pages/NotFound.tsx",
-    summary: [
-      "Minimal centered layout with 404 headline and return-to-home link.",
-      "Logs the broken path in the console for debugging.",
-    ],
-  },
 ];
 
 // Image mapping for default images (for preview in admin)
@@ -240,10 +214,10 @@ const resolveGalleryImageSrc = (src: string) => {
 };
 
 const Admin = () => {
-  const { content, setContent, resetContent, exportJSON, importJSON } = useContent();
+    const { content, setContent, resetContent, exportJSON, importJSON } = useContent();
   const { toast } = useToast();
-  const [jsonValue, setJsonValue] = useState("");
-  const [importError, setImportError] = useState<string | null>(null);
+    const [jsonValue, setJsonValue] = useState("");
+    const [importError, setImportError] = useState<string | null>(null);
   const [activeSection, setActiveSection] = useState<AdminSection["id"]>("home");
   const [activeSubSection, setActiveSubSection] = useState<string | null>(null);
   const [isAuthed, setIsAuthed] = useState(false);
@@ -256,8 +230,6 @@ const Admin = () => {
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [hasExistingPassword, setHasExistingPassword] = useState(false);
-  const courseDetailIconOptions = ["clock", "calendar", "map", "award", "users"] as const;
-
   const selectedSection = adminSections.find((section) => section.id === activeSection) ?? adminSections[0];
 
   // Hide webkit scrollbar for sidebar
@@ -431,15 +403,15 @@ const Admin = () => {
 
   const handleEditAction = () => {
     if (!selectedSection) return;
-    if (typeof window !== "undefined") {
+      if (typeof window !== "undefined") {
       if (selectedSection.id === "footer") {
         window.open(`/${"?scroll=footer"}`, "_blank", "noopener,noreferrer");
         return;
       }
       if (selectedSection.id === "header") {
         window.open(`/`, "_blank", "noopener,noreferrer");
-        return;
-      }
+      return;
+    }
       window.open(selectedSection.route, "_blank", "noopener,noreferrer");
     }
   };
@@ -522,16 +494,16 @@ const Admin = () => {
         >
           Save Changes
         </Button>
-        <Button
-            variant="outline"
-            className="flex items-center gap-2"
+                        <Button
+                            variant="outline"
+                            className="flex items-center gap-2"
           asChild
         >
           <a href={section.route} target="_blank" rel="noopener noreferrer">
             <ExternalLink className="h-4 w-4" />
             Open live page
           </a>
-        </Button>
+                        </Button>
       </CardFooter>
     </Card>
   );
@@ -544,11 +516,11 @@ const Admin = () => {
         onMouseEnter={() => setActiveSubSection('hero-carousel')}
         onFocus={() => setActiveSubSection('hero-carousel')}
       >
-        <CardHeader>
+                            <CardHeader>
           <CardTitle>Hero Carousel</CardTitle>
           <CardDescription>Slides displayed in the hero carousel at the top of the home page.</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
+                            </CardHeader>
+                            <CardContent className="space-y-4">
           <div className="space-y-4">
             {content.home.heroCarousel.slides.map((slide, index) => (
               <div key={index} className="space-y-3 rounded-lg border p-4">
@@ -569,7 +541,7 @@ const Admin = () => {
                     <Trash2 className="h-4 w-4" />
                   </Button>
                 </div>
-                <div className="space-y-2">
+                                <div className="space-y-2">
                   <Label>Image</Label>
                   {slide.imageUrl && (
                     <div className="relative mb-2">
@@ -608,7 +580,7 @@ const Admin = () => {
                     </div>
                   )}
                   <div className="flex gap-2">
-                    <Input
+                                    <Input
                       type="file"
                       accept="image/*"
                       className="hidden"
@@ -766,101 +738,373 @@ const Admin = () => {
       </Card>
       <Card 
         className="shadow-soft"
-        onMouseEnter={() => setActiveSubSection('hero-video')}
-        onFocus={() => setActiveSubSection('hero-video')}
-      >
-                            <CardHeader>
-                                <CardTitle>Home Hero &amp; Video</CardTitle>
-                                <CardDescription>
-            Main heading and subheading used in the Home "Learn English" section and director&apos;s desk video.
-                                </CardDescription>
-                            </CardHeader>
-                            <CardContent className="space-y-4">
-                                <div className="space-y-2">
-                                    <Label htmlFor="heroTitle">Hero Title</Label>
-                                    <Input
-                                        id="heroTitle"
-                                        value={content.home.heroTitle}
-                                        onChange={(e) =>
-                                            setContent((prev) => ({
-                                                ...prev,
-                                                home: { ...prev.home, heroTitle: e.target.value },
-                                            }))
-                                        }
-                                    />
-                                </div>
-                                <div className="space-y-2">
-                                    <Label htmlFor="heroSubtitle">Hero Subtitle</Label>
-                                    <Input
-                                        id="heroSubtitle"
-                                        value={content.home.heroSubtitle}
-                                        onChange={(e) =>
-                                            setContent((prev) => ({
-                                                ...prev,
-                                                home: { ...prev.home, heroSubtitle: e.target.value },
-                                            }))
-                                        }
-                                    />
-                                </div>
-                                <div className="space-y-2">
-                                    <Label htmlFor="directorVideoUrl">Director&apos;s Desk Video URL</Label>
-                                    <Input
-                                        id="directorVideoUrl"
-                                        value={content.home.directorVideoUrl}
-                                        onChange={(e) =>
-                                            setContent((prev) => ({
-                                                ...prev,
-                                                home: { ...prev.home, directorVideoUrl: e.target.value },
-                                            }))
-                                        }
-                                        placeholder="https://www.youtube.com/embed/..."
-                                    />
-                                </div>
-                            </CardContent>
-                        </Card>
-
-
-
-      <Card 
-        className="shadow-soft"
         onMouseEnter={() => setActiveSubSection('features')}
         onFocus={() => setActiveSubSection('features')}
       >
-                            <CardHeader>
-                                <CardTitle>Features</CardTitle>
-          <CardDescription>Cards shown in the "Why Choose Us?" section on the home page.</CardDescription>
-                            </CardHeader>
-                            <CardContent className="space-y-4">
-                                <div className="space-y-4">
-                                    {content.home.features.map((feature, index) => (
-              <div key={index} className="space-y-3 rounded-lg border p-4">
-                                            <div className="flex items-center justify-between gap-2">
-                  <Label className="text-xs uppercase tracking-wide text-muted-foreground">Feature {index + 1}</Label>
-                  <Button type="button" size="icon" variant="ghost" onClick={() => removeFeature(index)}>
-                                                    <Trash2 className="h-4 w-4" />
-                                                </Button>
-                                            </div>
-                                            <div className="space-y-2">
-                                                <Label>Title</Label>
-                  <Input value={feature.title} onChange={(e) => handleFeatureChange(index, "title", e.target.value)} />
-                                            </div>
-                                            <div className="space-y-2">
-                                                <Label>Description</Label>
-                                                <Textarea
-                                                    value={feature.description}
-                    onChange={(e) => handleFeatureChange(index, "description", e.target.value)}
-                                                    rows={3}
-                                                />
-                                            </div>
-                                        </div>
-                                    ))}
+        <CardHeader>
+          <CardTitle>Institute Highlights</CardTitle>
+          <CardDescription>Manage the two highlight cards shown under the hero on the Home page.</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          <div className="space-y-6">
+            {content.home.differentiators?.cards.map((card, cIdx) => (
+              <div key={cIdx} className="space-y-4 rounded-lg border p-4">
+                <div className="flex items-center justify-between gap-2">
+                  <Label className="text-xs uppercase tracking-wide text-muted-foreground">Card {cIdx + 1}</Label>
+                  <Button
+                    type="button"
+                    size="icon"
+                    variant="ghost"
+                    onClick={() => {
+                      setContent((prev) => ({
+                        ...prev,
+                        home: {
+                          ...prev.home,
+                          differentiators: {
+                            cards: (prev.home.differentiators?.cards || []).filter((_, i) => i !== cIdx),
+                          },
+                        },
+                      }));
+                    }}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
+                <div className="grid gap-4 md:grid-cols-2">
+                  <div className="space-y-2 md:col-span-1">
+                    <Label>Title</Label>
+                    <Input
+                      value={card.title}
+                                        onChange={(e) =>
+                                            setContent((prev) => ({
+                                                ...prev,
+                          home: {
+                            ...prev.home,
+                            differentiators: {
+                              cards: (prev.home.differentiators?.cards || []).map((c, i) => (i === cIdx ? { ...c, title: e.target.value } : c)),
+                            },
+                          },
+                                            }))
+                                        }
+                                    />
                                 </div>
-          <Button type="button" variant="outline" className="flex items-center gap-2" onClick={addFeature}>
-                                    <Plus className="h-4 w-4" />
-                                    Add Feature
-                                </Button>
+                </div>
+
+                <div className="space-y-3">
+                  <Label className="text-xs uppercase tracking-wide text-muted-foreground">Items</Label>
+                  {(card.items || []).map((it, iIdx) => (
+                    <div
+                      key={iIdx}
+                    >
+                                <div className="space-y-2">
+                        <Label>Item Title</Label>
+                                    <Input
+                          value={it.title}
+                                        onChange={(e) =>
+                                            setContent((prev) => ({
+                                                ...prev,
+                              home: {
+                                ...prev.home,
+                                differentiators: {
+                                  cards: (prev.home.differentiators?.cards || []).map((c, x) =>
+                                    x === cIdx
+                                      ? {
+                                          ...c,
+                                          items: (c.items || []).map((y, yi) => (yi === iIdx ? { ...y, title: e.target.value } : y)),
+                                        }
+                                      : c,
+                                  ),
+                                },
+                              },
+                                            }))
+                                        }
+                                    />
+                                </div>
+                      {cIdx !== 0 && (
+                        <div className="space-y-2 md:col-span-2">
+                          <Label>Item Description (optional)</Label>
+                                    <Input
+                            value={it.description || ""}
+                                        onChange={(e) =>
+                                            setContent((prev) => ({
+                                                ...prev,
+                                home: {
+                                  ...prev.home,
+                                  differentiators: {
+                                    cards: (prev.home.differentiators?.cards || []).map((c, x) =>
+                                      x === cIdx
+                                        ? {
+                                            ...c,
+                                            items: (c.items || []).map((y, yi) => (yi === iIdx ? { ...y, description: e.target.value } : y)),
+                                          }
+                                        : c,
+                                    ),
+                                  },
+                                },
+                                            }))
+                                        }
+                                    />
+                                </div>
+                      )}
+                      <div className="flex justify-end md:col-start-3 md:row-start-1 self-start">
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          onClick={() =>
+                            setContent((prev) => ({
+                              ...prev,
+                              home: {
+                                ...prev.home,
+                                differentiators: {
+                                  cards: (prev.home.differentiators?.cards || []).map((c, x) =>
+                                    x === cIdx ? { ...c, items: (c.items || []).filter((_, yi) => yi !== iIdx) } : c,
+                                  ),
+                                },
+                              },
+                            }))
+                          }
+                        >
+                          Remove Item
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                  {/* Add Item button removed as per requirements */}
+                </div>
+
+                {cIdx === 0 && (
+                  <div className="space-y-2">
+                    <Label>Footer Text</Label>
+                    <Textarea
+                      value={card.footerText || ""}
+                      onChange={(e) =>
+                        setContent((prev) => ({
+                          ...prev,
+                          home: {
+                            ...prev.home,
+                            differentiators: {
+                              cards: (prev.home.differentiators?.cards || []).map((c, i) => (i === cIdx ? { ...c, footerText: e.target.value } : c)),
+                            },
+                          },
+                        }))
+                      }
+                      rows={2}
+                    />
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+          {/* Add Card button intentionally removed as per requirements */}
                             </CardContent>
                         </Card>
+      <Card 
+        className="shadow-soft"
+        onMouseEnter={() => setActiveSubSection('hero-video')}
+        onFocus={() => setActiveSubSection('hero-video')}
+      >
+        <CardHeader>
+          <CardTitle>Start Your Journey (Join Us)</CardTitle>
+          <CardDescription>Control the Home Join Us texts: header, steps, reasons, highlight cards, and bottom message.</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          <div className="grid gap-4 md:grid-cols-3">
+            <div className="space-y-2">
+              <Label>Kicker</Label>
+              <Input
+                value={content.home.joinUs?.kicker || ""}
+                onChange={(e) => setContent((prev) => ({
+                  ...prev,
+                  home: { ...prev.home, joinUs: { ...(prev.home.joinUs||{}), kicker: e.target.value } },
+                }))}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>Title (before highlight)</Label>
+              <Input
+                value={content.home.joinUs?.titleBefore || ""}
+                onChange={(e) => setContent((prev) => ({
+                  ...prev,
+                  home: { ...prev.home, joinUs: { ...(prev.home.joinUs||{}), titleBefore: e.target.value } },
+                }))}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>Title Highlight</Label>
+              <Input
+                value={content.home.joinUs?.titleHighlight || ""}
+                onChange={(e) => setContent((prev) => ({
+                  ...prev,
+                  home: { ...prev.home, joinUs: { ...(prev.home.joinUs||{}), titleHighlight: e.target.value } },
+                }))}
+              />
+            </div>
+          </div>
+          <div className="space-y-2">
+            <Label>Title After</Label>
+            <Input
+              value={content.home.joinUs?.titleAfter || ""}
+              onChange={(e) => setContent((prev) => ({
+                ...prev,
+                home: { ...prev.home, joinUs: { ...(prev.home.joinUs||{}), titleAfter: e.target.value } },
+              }))}
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label>Subtitle</Label>
+            <Textarea
+              value={content.home.joinUs?.subtitle || ""}
+              onChange={(e) => setContent((prev) => ({
+                ...prev,
+                home: { ...prev.home, joinUs: { ...(prev.home.joinUs||{}), subtitle: e.target.value } },
+              }))}
+              rows={2}
+            />
+          </div>
+
+          <div className="space-y-3">
+            <Label className="text-xs uppercase tracking-wide text-muted-foreground">Steps</Label>
+            <div className="grid gap-3 md:grid-cols-3">
+              {(content.home.joinUs?.steps || [{label:"Basics"},{label:"Intermediate"},{label:"Fluent"}]).map((s, i) => (
+                <div key={i} className="space-y-2">
+                  <Label>Step {i+1} Label</Label>
+                  <Input
+                    value={s.label}
+                    onChange={(e) => setContent((prev) => ({
+                      ...prev,
+                      home: {
+                        ...prev.home,
+                        joinUs: { ...(prev.home.joinUs||{}), steps: (prev.home.joinUs?.steps||[{label:"Basics"},{label:"Intermediate"},{label:"Fluent"}]).map((x, xi)=> xi===i? {...x, label: e.target.value}: x) },
+                      },
+                    }))}
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="space-y-3">
+            <Label className="text-xs uppercase tracking-wide text-muted-foreground">Reasons (Left)</Label>
+            <div className="space-y-2">
+              <Label>Reasons Heading</Label>
+              <Input
+                value={content.home.joinUs?.reasonsHeading || ""}
+                onChange={(e) => setContent((prev) => ({
+                  ...prev,
+                  home: { ...prev.home, joinUs: { ...(prev.home.joinUs||{}), reasonsHeading: e.target.value } },
+                }))}
+              />
+            </div>
+            {(content.home.joinUs?.reasons || []).map((r, i) => (
+              <div key={i} className="grid gap-3 md:grid-cols-2 p-3 border rounded">
+                <div className="space-y-2">
+                  <Label>Reason {i+1} Title</Label>
+                  <Input
+                    value={r.title}
+                    onChange={(e) => setContent((prev)=>({
+                      ...prev,
+                      home: { ...prev.home, joinUs: { ...(prev.home.joinUs||{}), reasons: (prev.home.joinUs?.reasons||[]).map((x,xi)=> xi===i? {...x, title: e.target.value}: x) } },
+                    }))}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>Reason {i+1} Description</Label>
+                  <Textarea
+                    value={r.description}
+                    onChange={(e) => setContent((prev)=>({
+                      ...prev,
+                      home: { ...prev.home, joinUs: { ...(prev.home.joinUs||{}), reasons: (prev.home.joinUs?.reasons||[]).map((x,xi)=> xi===i? {...x, description: e.target.value}: x) } },
+                    }))}
+                    rows={2}
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="grid gap-4 md:grid-cols-3">
+            <div className="space-y-2">
+              <Label>Stat Metric</Label>
+              <Input
+                value={content.home.joinUs?.statCard.metric || ""}
+                onChange={(e)=> setContent((prev)=> ({
+                  ...prev,
+                  home: { ...prev.home, joinUs: { ...(prev.home.joinUs||{}), statCard: { ...(prev.home.joinUs?.statCard||{ metric:"", heading:"", description:""}), metric: e.target.value } } },
+                }))}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>Stat Heading</Label>
+              <Input
+                value={content.home.joinUs?.statCard.heading || ""}
+                onChange={(e)=> setContent((prev)=> ({
+                  ...prev,
+                  home: { ...prev.home, joinUs: { ...(prev.home.joinUs||{}), statCard: { ...(prev.home.joinUs?.statCard||{ metric:"", heading:"", description:""}), heading: e.target.value } } },
+                }))}
+              />
+            </div>
+            <div className="space-y-2 md:col-span-1">
+              <Label>Stat Description</Label>
+              <Textarea
+                value={content.home.joinUs?.statCard.description || ""}
+                onChange={(e)=> setContent((prev)=> ({
+                  ...prev,
+                  home: { ...prev.home, joinUs: { ...(prev.home.joinUs||{}), statCard: { ...(prev.home.joinUs?.statCard||{ metric:"", heading:"", description:""}), description: e.target.value } } },
+                }))}
+                rows={2}
+              />
+            </div>
+          </div>
+
+          <div className="grid gap-4 md:grid-cols-2">
+            <div className="space-y-2">
+              <Label>Info Card Title</Label>
+              <Input
+                value={content.home.joinUs?.infoCard.title || ""}
+                onChange={(e)=> setContent((prev)=> ({
+                  ...prev,
+                  home: { ...prev.home, joinUs: { ...(prev.home.joinUs||{}), infoCard: { ...(prev.home.joinUs?.infoCard||{ title:"", description:""}), title: e.target.value } } },
+                }))}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>Info Card Description</Label>
+              <Textarea
+                value={content.home.joinUs?.infoCard.description || ""}
+                onChange={(e)=> setContent((prev)=> ({
+                  ...prev,
+                  home: { ...prev.home, joinUs: { ...(prev.home.joinUs||{}), infoCard: { ...(prev.home.joinUs?.infoCard||{ title:"", description:""}), description: e.target.value } } },
+                }))}
+                rows={2}
+              />
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label>Bottom Title</Label>
+            <Input
+              value={content.home.joinUs?.bottom.title || ""}
+              onChange={(e)=> setContent((prev)=> ({
+                ...prev,
+                home: { ...prev.home, joinUs: { ...(prev.home.joinUs||{}), bottom: { ...(prev.home.joinUs?.bottom||{ title:"", description:""}), title: e.target.value } } },
+              }))}
+            />
+          </div>
+          <div className="space-y-2">
+            <Label>Bottom Description</Label>
+            <Textarea
+              value={content.home.joinUs?.bottom.description || ""}
+              onChange={(e)=> setContent((prev)=> ({
+                ...prev,
+                home: { ...prev.home, joinUs: { ...(prev.home.joinUs||{}), bottom: { ...(prev.home.joinUs?.bottom||{ title:"", description:""}), description: e.target.value } } },
+              }))}
+              rows={3}
+            />
+          </div>
+        </CardContent>
+      </Card>
 
       <Card 
         className="shadow-soft"
@@ -868,98 +1112,1481 @@ const Admin = () => {
         onFocus={() => setActiveSubSection('testimonials')}
       >
                             <CardHeader>
-                                <CardTitle>Testimonials</CardTitle>
-          <CardDescription>Items shown in the home page "Student Success Stories" section.</CardDescription>
+          <CardTitle>Course Overview</CardTitle>
+          <CardDescription>Edit the batch schedule, key details, and CTA shown in the Course section.</CardDescription>
                             </CardHeader>
-                            <CardContent className="space-y-4">
-                                <div className="space-y-4">
-                                    {content.home.testimonials.map((testimonial, index) => (
-              <div key={index} className="space-y-3 rounded-lg border p-4">
-                                            <div className="flex items-center justify-between gap-2">
-                  <Label className="text-xs uppercase tracking-wide text-muted-foreground">Testimonial {index + 1}</Label>
-                  <Button type="button" size="icon" variant="ghost" onClick={() => removeTestimonial(index)}>
-                                                    <Trash2 className="h-4 w-4" />
-                                                </Button>
-                                            </div>
-                                            <div className="grid gap-3 md:grid-cols-2">
-                                                <div className="space-y-2">
-                                                    <Label>Name</Label>
-                    <Input value={testimonial.name} onChange={(e) => handleTestimonialChange(index, "name", e.target.value)} />
-                                                </div>
-                                                <div className="space-y-2">
-                                                    <Label>Role</Label>
-                    <Input value={testimonial.role} onChange={(e) => handleTestimonialChange(index, "role", e.target.value)} />
-                                                </div>
-                                            </div>
-                                            <div className="space-y-2">
-                                                <Label>Content</Label>
-                                                <Textarea
-                                                    value={testimonial.content}
-                    onChange={(e) => handleTestimonialChange(index, "content", e.target.value)}
-                                                    rows={3}
-                                                />
-                                            </div>
-                                            <div className="space-y-2">
-                                                <Label>Rating (1-5)</Label>
-                                                <Input
-                                                    type="number"
-                                                    min={1}
-                                                    max={5}
-                                                    value={testimonial.rating ?? ""}
-                    onChange={(e) => handleTestimonialChange(index, "rating", e.target.value)}
-                                                />
-                                            </div>
-                                        </div>
-                                    ))}
+        <CardContent className="space-y-6">
+          <div className="grid gap-4 md:grid-cols-4">
+            <div className="space-y-2">
+              <Label>Kicker</Label>
+              <Input
+                value={content.home.courseOverview?.kicker || ""}
+                onChange={(e)=> setContent(prev=> ({
+                  ...prev,
+                  home: { ...prev.home, courseOverview: { ...(prev.home.courseOverview||{}), kicker: e.target.value } },
+                }))}
+              />
+            </div>
+            <div className="space-y-2 md:col-span-3">
+              <Label>Title </Label>
+              <Input
+                value={content.home.courseOverview?.title || ""}
+                onChange={(e)=> setContent(prev=> ({
+                  ...prev,
+                  home: { ...prev.home, courseOverview: { ...(prev.home.courseOverview||{}), title: e.target.value } },
+                }))}
+              />
+            </div>
+          </div>
+
+          <div className="space-y-3">
+            <Label className="text-xs uppercase tracking-wide text-muted-foreground">Schedule - Morning</Label>
+            <div className="grid gap-3 md:grid-cols-4">
+              <div className="space-y-2 md:col-span-4">
+                <Label>Heading</Label>
+                <Input
+                  value={content.home.courseOverview?.schedule?.[0]?.heading || ""}
+                  onChange={(e)=> setContent(prev=> ({
+                    ...prev,
+                    home: { ...prev.home, courseOverview: { ...(prev.home.courseOverview||{}), schedule: [
+                      { ...(prev.home.courseOverview?.schedule?.[0]||{ heading:"", color:"primary", items:[] }), heading: e.target.value },
+                      ...(prev.home.courseOverview?.schedule?.slice(1) || [{ heading:"", color:"accent", items:[] }]),
+                    ] } },
+                  }))}
+                />
+              </div>
+
+              {(content.home.courseOverview?.schedule?.[0]?.items || []).map((item, ii)=> (
+                <div key={ii} className="md:col-span-4">
+                  <div className="grid gap-3 md:grid-cols-2">
+                    <div className="space-y-2">
+                      <Label>Item {ii+1} Label</Label>
+                      <Input
+                        value={item.label || ""}
+                        onChange={(e)=> {
+                          setContent(prev => {
+                            const prevSchedule = prev.home.courseOverview?.schedule || [
+                              { heading:"", color:"primary", items:[] as {label:string; time:string}[] },
+                              { heading:"", color:"accent", items:[] as {label:string; time:string}[] },
+                            ];
+                            const morning = prevSchedule[0] || { heading:"", color:"primary", items:[] as {label:string; time:string}[] };
+                            const evening = prevSchedule[1] || { heading:"", color:"accent", items:[] as {label:string; time:string}[] };
+                            const updatedMorningItems = (morning.items || []).map((it, j) =>
+                              j === ii ? { ...it, label: e.target.value } : it,
+                            );
+                            return {
+                              ...prev,
+                              home: {
+                                ...prev.home,
+                                courseOverview: {
+                                  ...(prev.home.courseOverview || {}),
+                                  schedule: [
+                                    { ...morning, items: updatedMorningItems },
+                                    evening,
+                                  ],
+                                },
+                              },
+                            };
+                          });
+                        }}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Item {ii+1} Time</Label>
+                      <Input
+                        value={item.time || ""}
+                        onChange={(e)=> {
+                          setContent(prev => {
+                            const prevSchedule = prev.home.courseOverview?.schedule || [
+                              { heading:"", color:"primary", items:[] as {label:string; time:string}[] },
+                              { heading:"", color:"accent", items:[] as {label:string; time:string}[] },
+                            ];
+                            const morning = prevSchedule[0] || { heading:"", color:"primary", items:[] as {label:string; time:string}[] };
+                            const evening = prevSchedule[1] || { heading:"", color:"accent", items:[] as {label:string; time:string}[] };
+                            const updatedMorningItems = (morning.items || []).map((it, j) =>
+                              j === ii ? { ...it, time: e.target.value } : it,
+                            );
+                            return {
+                              ...prev,
+                              home: {
+                                ...prev.home,
+                                courseOverview: {
+                                  ...(prev.home.courseOverview || {}),
+                                  schedule: [
+                                    { ...morning, items: updatedMorningItems },
+                                    evening,
+                                  ],
+                                },
+                              },
+                            };
+                          });
+                        }}
+                      />
+                    </div>
+                  </div>
+                </div>
+              ))}
+
+              <div className="md:col-span-4 flex justify-start">
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="flex items-center gap-2"
+                  onClick={() => {
+                    setContent(prev => {
+                      const prevSchedule = prev.home.courseOverview?.schedule || [
+                        { heading:"Morning", color:"primary", items:[] as {label:string; time:string}[] },
+                        { heading:"Evening", color:"accent", items:[] as {label:string; time:string}[] },
+                      ];
+                      const morning = prevSchedule[0] || { heading:"Morning", color:"primary", items:[] as {label:string; time:string}[] };
+                      const evening = prevSchedule[1] || { heading:"Evening", color:"accent", items:[] as {label:string; time:string}[] };
+                      const nextIndex = (morning.items?.length || 0) + 1;
+                      const updatedMorningItems = [...(morning.items || []), { label: `Batch ${nextIndex}`, time: "" }];
+                      return {
+                        ...prev,
+                        home: {
+                          ...prev.home,
+                          courseOverview: {
+                            ...(prev.home.courseOverview || {}),
+                            schedule: [
+                              { ...morning, items: updatedMorningItems },
+                              evening,
+                            ],
+                          },
+                        },
+                      };
+                    });
+                  }}
+                >
+                  <Plus className="h-4 w-4" />
+                  Add Morning Batch
+                </Button>
+              </div>
+            </div>
+          </div>
+
+          <div className="space-y-3">
+            <Label className="text-xs uppercase tracking-wide text-muted-foreground">Schedule - Evening</Label>
+            <div className="grid gap-3 md:grid-cols-4">
+              <div className="space-y-2 md:col-span-4">
+                <Label>Heading</Label>
+                <Input
+                  value={content.home.courseOverview?.schedule?.[1]?.heading || ""}
+                  onChange={(e)=> setContent(prev=> ({
+                    ...prev,
+                    home: { ...prev.home, courseOverview: { ...(prev.home.courseOverview||{}), schedule: [
+                      ...(prev.home.courseOverview?.schedule?.slice(0,1) || [{ heading:"", color:"primary", items:[] }]),
+                      { ...(prev.home.courseOverview?.schedule?.[1]||{ heading:"", color:"accent", items:[] }), heading: e.target.value },
+                    ] } },
+                  }))}
+                />
+              </div>
+
+              {(content.home.courseOverview?.schedule?.[1]?.items || []).map((item, ii)=> (
+                <div key={ii} className="md:col-span-4">
+                  <div className="grid gap-3 md:grid-cols-2">
+                    <div className="space-y-2">
+                      <Label>Item {ii+1} Label</Label>
+                      <Input
+                        value={item.label || ""}
+                        onChange={(e)=> {
+                          setContent(prev => {
+                            const prevSchedule = prev.home.courseOverview?.schedule || [
+                              { heading:"", color:"primary", items:[] as {label:string; time:string}[] },
+                              { heading:"", color:"accent", items:[] as {label:string; time:string}[] },
+                            ];
+                            const morning = prevSchedule[0] || { heading:"", color:"primary", items:[] as {label:string; time:string}[] };
+                            const evening = prevSchedule[1] || { heading:"", color:"accent", items:[] as {label:string; time:string}[] };
+                            const updatedEveningItems = (evening.items || []).map((it, j) =>
+                              j === ii ? { ...it, label: e.target.value } : it,
+                            );
+                            return {
+                              ...prev,
+                              home: {
+                                ...prev.home,
+                                courseOverview: {
+                                  ...(prev.home.courseOverview || {}),
+                                  schedule: [
+                                    morning,
+                                    { ...evening, items: updatedEveningItems },
+                                  ],
+                                },
+                              },
+                            };
+                          });
+                        }}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Item {ii+1} Time</Label>
+                      <Input
+                        value={item.time || ""}
+                        onChange={(e)=> {
+                          setContent(prev => {
+                            const prevSchedule = prev.home.courseOverview?.schedule || [
+                              { heading:"", color:"primary", items:[] as {label:string; time:string}[] },
+                              { heading:"", color:"accent", items:[] as {label:string; time:string}[] },
+                            ];
+                            const morning = prevSchedule[0] || { heading:"", color:"primary", items:[] as {label:string; time:string}[] };
+                            const evening = prevSchedule[1] || { heading:"", color:"accent", items:[] as {label:string; time:string}[] };
+                            const updatedEveningItems = (evening.items || []).map((it, j) =>
+                              j === ii ? { ...it, time: e.target.value } : it,
+                            );
+                            return {
+                              ...prev,
+                              home: {
+                                ...prev.home,
+                                courseOverview: {
+                                  ...(prev.home.courseOverview || {}),
+                                  schedule: [
+                                    morning,
+                                    { ...evening, items: updatedEveningItems },
+                                  ],
+                                },
+                              },
+                            };
+                          });
+                        }}
+                      />
+                    </div>
+                  </div>
+                </div>
+              ))}
+
+              <div className="md:col-span-4 flex justify-start">
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="flex items-center gap-2"
+                  onClick={() => {
+                    setContent(prev => {
+                      const prevSchedule = prev.home.courseOverview?.schedule || [
+                        { heading:"Morning", color:"primary", items:[] as {label:string; time:string}[] },
+                        { heading:"Evening", color:"accent", items:[] as {label:string; time:string}[] },
+                      ];
+                      const morning = prevSchedule[0] || { heading:"Morning", color:"primary", items:[] as {label:string; time:string}[] };
+                      const evening = prevSchedule[1] || { heading:"Evening", color:"accent", items:[] as {label:string; time:string}[] };
+                      const nextIndex = (evening.items?.length || 0) + 1;
+                      const updatedEveningItems = [...(evening.items || []), { label: `Batch ${nextIndex + (morning.items?.length || 0)}`, time: "" }];
+                      return {
+                        ...prev,
+                        home: {
+                          ...prev.home,
+                          courseOverview: {
+                            ...(prev.home.courseOverview || {}),
+                            schedule: [
+                              morning,
+                              { ...evening, items: updatedEveningItems },
+                            ],
+                          },
+                        },
+                      };
+                    });
+                  }}
+                >
+                  <Plus className="h-4 w-4" />
+                  Add Evening Batch
+                </Button>
+              </div>
+            </div>
+          </div>
+
+          
+          <div className="grid gap-4 md:grid-cols-3">
+            <div className="space-y-2">
+              <Label>CTA Text</Label>
+              <Input
+                value={content.home.courseOverview?.ctaText || ""}
+                onChange={(e)=> setContent(prev=> ({
+                  ...prev,
+                  home: { ...prev.home, courseOverview: { ...(prev.home.courseOverview||{}), ctaText: e.target.value } },
+                }))}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>CTA Button</Label>
+              <Input
+                value={content.home.courseOverview?.ctaButton || ""}
+                onChange={(e)=> setContent(prev=> ({
+                  ...prev,
+                  home: { ...prev.home, courseOverview: { ...(prev.home.courseOverview||{}), ctaButton: e.target.value } },
+                }))}
+              />
+            </div>
+          
+          </div>
+        </CardContent>
+      </Card>
+
+       <Card
+        className="shadow-soft"
+        onMouseEnter={() => setActiveSubSection('methodology-video')}
+        onFocus={() => setActiveSubSection('methodology-video')}
+      >
+        <CardHeader>
+          <CardTitle>Our Methodology Section</CardTitle>
+          <CardDescription>Edit the badge, title, subtitle, key point, and YouTube video URL for the "Our Methodology" section.</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          <div className="space-y-2">
+            <Label>Badge Text</Label>
+            <Input
+              value={content.home.methodologyBadge || ''}
+              onChange={(e) => setContent(prev => ({
+                ...prev,
+                home: {
+                  ...prev.home,
+                  methodologyBadge: e.target.value,
+                },
+              }))}
+              placeholder="Our Methodology"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label>Title</Label>
+            <Input
+              value={content.home.heroTitle}
+              onChange={(e) => setContent(prev => ({
+                ...prev,
+                home: {
+                  ...prev.home,
+                  heroTitle: e.target.value,
+                },
+              }))}
+            />
+          </div>
+          <div className="space-y-2">
+            <Label>Subtitle</Label>
+            <Textarea
+              value={content.home.heroSubtitle}
+              onChange={(e) => setContent(prev => ({
+                ...prev,
+                home: {
+                  ...prev.home,
+                  heroSubtitle: e.target.value,
+                },
+              }))}
+              rows={2}
+            />
+          </div>
+          <div className="space-y-2">
+            <Label>Key Point</Label>
+            <Textarea
+              value={content.home.methodologyKeyPoint || ''}
+              onChange={(e) => setContent(prev => ({
+                ...prev,
+                home: {
+                  ...prev.home,
+                  methodologyKeyPoint: e.target.value,
+                },
+              }))}
+              rows={2}
+              placeholder="Direct mentorship from the institute founders with proven teaching methods"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label>YouTube Video URL (Embed URL)</Label>
+            <Input
+              value={content.home.directorVideoUrl}
+              onChange={(e) => setContent(prev => ({
+                ...prev,
+                home: {
+                  ...prev.home,
+                  directorVideoUrl: e.target.value,
+                },
+              }))}
+              placeholder="https://www.youtube.com/embed/VIDEO_ID"
+            />
+           
+           
                                 </div>
-          <Button type="button" variant="outline" className="flex items-center gap-2" onClick={addTestimonial}>
-                                    <Plus className="h-4 w-4" />
-                                    Add Testimonial
-                                </Button>
                             </CardContent>
                         </Card>
 
       <Card 
         className="shadow-soft"
-        onMouseEnter={() => setActiveSubSection('cta')}
-        onFocus={() => setActiveSubSection('cta')}
+        onMouseEnter={() => setActiveSubSection('methodology')}
+        onFocus={() => setActiveSubSection('methodology')}
+      >
+        <CardHeader>
+          <CardTitle>Methodology (Home)</CardTitle>
+          <CardDescription>Edit all texts in the Teaching Methodology section.</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          <div className="grid gap-3 md:grid-cols-2">
+            <div className="space-y-2">
+              <Label>Heading (small)</Label>
+              <Input
+                value={content.home.methodologyHeading}
+                onChange={(e) => setContent(prev => ({
+                  ...prev,
+                  home: { ...prev.home, methodologyHeading: e.target.value },
+                }))}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>Title</Label>
+              <Input
+                value={content.home.methodologyTitle}
+                onChange={(e) => setContent(prev => ({
+                  ...prev,
+                  home: { ...prev.home, methodologyTitle: e.target.value },
+                }))}
+              />
+            </div>
+          </div>
+                                <div className="space-y-4">
+            {content.home.methodologySections.map((section, index) => (
+              <div key={index} className="space-y-4 rounded-lg border p-4">
+                <div className="flex items-center justify-between">
+                  <Label className="text-xs uppercase tracking-wide text-muted-foreground">Section {index + 1}</Label>
+                  <Button
+                    type="button"
+                    size="icon"
+                    variant="ghost"
+                    onClick={() =>
+                      setContent(prev => ({
+                        ...prev,
+                        home: {
+                          ...prev.home,
+                          methodologySections: prev.home.methodologySections.filter((_, i) => i !== index),
+                        },
+                      }))
+                    }
+                  >
+                                                    <Trash2 className="h-4 w-4" />
+                                                </Button>
+                                            </div>
+
+                <div className="grid gap-3 md:grid-cols-2">
+                                            <div className="space-y-2">
+                                                <Label>Title</Label>
+                    <Input
+                      value={section.title}
+                      onChange={(e) =>
+                        setContent(prev => ({
+                          ...prev,
+                          home: {
+                            ...prev.home,
+                            methodologySections: prev.home.methodologySections.map((s, i) =>
+                              i === index ? { ...s, title: e.target.value } : s
+                            ),
+                          },
+                        }))
+                      }
+                    />
+                                            </div>
+                </div>
+
+                                            <div className="space-y-2">
+                                                <Label>Description</Label>
+                                                <Textarea
+                    rows={4}
+                    value={section.description || section.intro || ''}
+                    onChange={(e) =>
+                      setContent(prev => ({
+                        ...prev,
+                        home: {
+                          ...prev.home,
+                          methodologySections: prev.home.methodologySections.map((s, i) =>
+                            i === index ? { ...s, description: e.target.value } : s
+                          ),
+                        },
+                      }))
+                    }
+                                                />
+                                            </div>
+
+                {index === 1 && (
+                  <div className="space-y-2">
+                    <Label>Objectives Title (Section 2)</Label>
+                    <Input
+                      value={section.objectivesTitle || ''}
+                      onChange={(e) =>
+                        setContent(prev => ({
+                          ...prev,
+                          home: {
+                            ...prev.home,
+                            methodologySections: prev.home.methodologySections.map((s, i) =>
+                              i === index ? { ...s, objectivesTitle: e.target.value } : s
+                            ),
+                          },
+                        }))
+                      }
+                    />
+                  </div>
+                )}
+
+                {index === 1 && (
+                  <div className="space-y-2">
+                    <Label>Objectives (Section 2)</Label>
+                    <div className="space-y-2">
+                      {(section.objectives || []).map((obj, oi) => (
+                        <div key={oi} className="flex items-center gap-2">
+                          <Input
+                            className="flex-1"
+                            value={obj}
+                            onChange={(e) =>
+                              setContent(prev => ({
+                                ...prev,
+                                home: {
+                                  ...prev.home,
+                                  methodologySections: prev.home.methodologySections.map((s, i) =>
+                                    i === index ? { ...s, objectives: (s.objectives || []).map((o, j) => (j === oi ? e.target.value : o)) } : s
+                                  ),
+                                },
+                              }))
+                            }
+                          />
+                          <Button
+                            type="button"
+                            size="icon"
+                            variant="ghost"
+                            onClick={() =>
+                              setContent(prev => ({
+                                ...prev,
+                                home: {
+                                  ...prev.home,
+                                  methodologySections: prev.home.methodologySections.map((s, i) =>
+                                    i === index ? { ...s, objectives: (s.objectives || []).filter((_, j) => j !== oi) } : s
+                                  ),
+                                },
+                              }))
+                            }
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                                        </div>
+                                    ))}
+                                </div>
+                    
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+
+                            </CardContent>
+                        </Card>
+
+      <Card
+        className="shadow-soft"
+        onMouseEnter={() => setActiveSubSection('gain-from-course')}
+        onFocus={() => setActiveSubSection('gain-from-course')}
       >
                             <CardHeader>
-                                <CardTitle>Call to Action</CardTitle>
-          <CardDescription>Text shown in the "Ready to Transform Your Future?" section at the bottom of the home page.</CardDescription>
+          <CardTitle>What You Will Gain</CardTitle>
+          <CardDescription>Edit the heading, title, and accordion content for the "What you would gain from the course!" section.</CardDescription>
+                            </CardHeader>
+        <CardContent className="space-y-6">
+                                            <div className="grid gap-3 md:grid-cols-2">
+                                                <div className="space-y-2">
+              <Label>Heading (small)</Label>
+              <Input
+                value={content.home.gainHeading}
+                onChange={(e) => setContent(prev => ({
+                  ...prev,
+                  home: {
+                    ...prev.home,
+                    gainHeading: e.target.value,
+                  },
+                }))}
+              />
+                                                </div>
+                                                <div className="space-y-2">
+              <Label>Title</Label>
+              <Input
+                value={content.home.gainTitle}
+                onChange={(e) => setContent(prev => ({
+                  ...prev,
+                  home: {
+                    ...prev.home,
+                    gainTitle: e.target.value,
+                  },
+                }))}
+              />
+                                                </div>
+          </div>
+
+          <div className="space-y-4">
+            <Label className="text-base font-semibold">Accordion Groups</Label>
+            {(content.home.gainGroups || []).map((group, index) => (
+              <div key={index} className="space-y-4 rounded-lg border p-4">
+                <div className="flex items-center justify-between">
+                  <Label className="text-xs uppercase tracking-wide text-muted-foreground">Group {index + 1}</Label>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => setContent(prev => ({
+                      ...prev,
+                      home: {
+                        ...prev.home,
+                        gainGroups: (prev.home.gainGroups || []).filter((_, i) => i !== index),
+                      },
+                    }))}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                                            </div>
+                                            <div className="space-y-2">
+                  <Label>Title</Label>
+                  <Input
+                    value={group.title}
+                    onChange={(e) => setContent(prev => ({
+                      ...prev,
+                      home: {
+                        ...prev.home,
+                        gainGroups: (prev.home.gainGroups || []).map((g, i) =>
+                          i === index ? { ...g, title: e.target.value } : g
+                        ),
+                      },
+                    }))}
+                                                />
+                                            </div>
+                                            <div className="space-y-2">
+                  <Label>Subtitle</Label>
+                  <Textarea
+                    value={group.subtitle}
+                    onChange={(e) => setContent(prev => ({
+                      ...prev,
+                      home: {
+                        ...prev.home,
+                        gainGroups: (prev.home.gainGroups || []).map((g, i) =>
+                          i === index ? { ...g, subtitle: e.target.value } : g
+                        ),
+                      },
+                    }))}
+                    rows={2}
+                  />
+                </div>
+                <div className="space-y-3">
+                  <Label>Items</Label>
+                  {group.items.map((item, itemIndex) => (
+                    <div key={itemIndex} className="space-y-2 rounded border p-3">
+                      <div className="flex items-center justify-between">
+                        <Label className="text-xs text-muted-foreground">Item {itemIndex + 1}</Label>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => setContent(prev => ({
+                            ...prev,
+                            home: {
+                              ...prev.home,
+                              gainGroups: (prev.home.gainGroups || []).map((g, i) =>
+                                i === index ? { ...g, items: g.items.filter((_, j) => j !== itemIndex) } : g
+                              ),
+                            },
+                          }))}
+                        >
+                          <Trash2 className="h-3 w-3" />
+                        </Button>
+                      </div>
+                                                <Input
+                        placeholder="Item Title"
+                        value={item.title}
+                        onChange={(e) => setContent(prev => ({
+                          ...prev,
+                          home: {
+                            ...prev.home,
+                            gainGroups: (prev.home.gainGroups || []).map((g, i) =>
+                              i === index ? {
+                                ...g,
+                                items: g.items.map((it, j) =>
+                                  j === itemIndex ? { ...it, title: e.target.value } : it
+                                ),
+                              } : g
+                            ),
+                          },
+                        }))}
+                      />
+                      <Textarea
+                        placeholder="Item Description"
+                        value={item.description}
+                        onChange={(e) => setContent(prev => ({
+                          ...prev,
+                          home: {
+                            ...prev.home,
+                            gainGroups: (prev.home.gainGroups || []).map((g, i) =>
+                              i === index ? {
+                                ...g,
+                                items: g.items.map((it, j) =>
+                                  j === itemIndex ? { ...it, description: e.target.value } : it
+                                ),
+                              } : g
+                            ),
+                          },
+                        }))}
+                        rows={2}
+                                                />
+                    </div>
+                  ))}
+                 
+                                            </div>
+                                        </div>
+                                    ))}
+           
+                                </div>
+
+         
+                            </CardContent>
+                        </Card>
+
+      <Card
+        className="shadow-soft"
+        onMouseEnter={() => setActiveSubSection("faculty-highlight")}
+        onFocus={() => setActiveSubSection("faculty-highlight")}
+      >
+                            <CardHeader>
+          <CardTitle>Core Faculty Section</CardTitle>
+          <CardDescription>
+            Edit the badge, heading and description shown above the three owner cards on the Home page.
+          </CardDescription>
                             </CardHeader>
                             <CardContent className="space-y-4">
                                 <div className="space-y-2">
-                                    <Label htmlFor="ctaTitle">CTA Title</Label>
+            <Label>Badge Label</Label>
                                     <Input
-                                        id="ctaTitle"
-                                        value={content.home.ctaTitle}
+              value={content.home.facultyHighlight?.badgeLabel || ""}
                                         onChange={(e) =>
                                             setContent((prev) => ({
                                                 ...prev,
-                                                home: { ...prev.home, ctaTitle: e.target.value },
+                  home: {
+                    ...prev.home,
+                    facultyHighlight: {
+                      ...(prev.home.facultyHighlight || {
+                        badgeLabel: "",
+                        title: "",
+                        description: "",
+                      }),
+                      badgeLabel: e.target.value,
+                    },
+                  },
                                             }))
                                         }
                                     />
+            
                                 </div>
+
                                 <div className="space-y-2">
-                                    <Label htmlFor="ctaText">CTA Text</Label>
-                                    <Textarea
-                                        id="ctaText"
-                                        value={content.home.ctaText}
+            <Label>Title</Label>
+            <Input
+              value={content.home.facultyHighlight?.title || ""}
                                         onChange={(e) =>
                                             setContent((prev) => ({
                                                 ...prev,
-                                                home: { ...prev.home, ctaText: e.target.value },
+                  home: {
+                    ...prev.home,
+                    facultyHighlight: {
+                      ...(prev.home.facultyHighlight || {
+                        badgeLabel: "",
+                        title: "",
+                        description: "",
+                      }),
+                      title: e.target.value,
+                    },
+                  },
                                             }))
                                         }
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label>Description</Label>
+            <Textarea
                                         rows={3}
-                                    />
-                                </div>
-                            </CardContent>
-                        </Card>
+              value={content.home.facultyHighlight?.description || ""}
+              onChange={(e) =>
+                setContent((prev) => ({
+                  ...prev,
+                  home: {
+                    ...prev.home,
+                    facultyHighlight: {
+                      ...(prev.home.facultyHighlight || {
+                        badgeLabel: "",
+                        title: "",
+                        description: "",
+                      }),
+                      description: e.target.value,
+                    },
+                  },
+                }))
+              }
+            />
+             <div className="rounded-lg border border-border/50 bg-secondary/30 p-4">
+            <p className="text-sm text-muted-foreground">
+              <strong>Note:</strong> The Cards are editable in the <strong>Faculty</strong> page.
+            </p>
+          </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card
+        className="shadow-soft"
+        onMouseEnter={() => setActiveSubSection('home-achievements')}
+        onFocus={() => setActiveSubSection('home-achievements')}
+      >
+        <CardHeader>
+          <CardTitle>What You'll Achieve</CardTitle>
+          <CardDescription>Edit the heading and each achievement row in the "What You'll Achieve" section.</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          <div className="grid gap-3 md:grid-cols-2">
+            <div className="space-y-2">
+              <Label>Title</Label>
+              <Input
+                value={content.home.achievementsSection?.title || ''}
+                onChange={(e) => setContent(prev => ({
+                  ...prev,
+                  home: {
+                    ...prev.home,
+                    achievementsSection: {
+                      ...(prev.home.achievementsSection || { title: '', subtitle: '', items: [] }),
+                      title: e.target.value,
+                    },
+                  },
+                }))}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>Subtitle</Label>
+              <Input
+                value={content.home.achievementsSection?.subtitle || ''}
+                onChange={(e) => setContent(prev => ({
+                  ...prev,
+                  home: {
+                    ...prev.home,
+                    achievementsSection: {
+                      ...(prev.home.achievementsSection || { title: '', subtitle: '', items: [] }),
+                      subtitle: e.target.value,
+                    },
+                  },
+                }))}
+              />
+            </div>
+          </div>
+
+          <div className="space-y-4">
+            {(content.home.achievementsSection?.items || []).map((item, index) => (
+              <div key={index} className="space-y-3 rounded-lg border p-4">
+                <div className="flex items-center justify-between">
+                  <Label className="text-xs uppercase tracking-wide text-muted-foreground">Row {index + 1}</Label>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => handleRemoveAchievementItem(index)}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
+                <div className="space-y-2">
+                  <Label>Title</Label>
+                  <Input
+                    value={item.title}
+                    onChange={(e) => setContent(prev => ({
+                      ...prev,
+                      home: {
+                        ...prev.home,
+                        achievementsSection: {
+                          ...(prev.home.achievementsSection || { title: '', subtitle: '', items: [] }),
+                          items: (prev.home.achievementsSection?.items || []).map((it, i) =>
+                            i === index ? { ...it, title: e.target.value } : it,
+                          ),
+                        },
+                      },
+                    }))}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>Description</Label>
+                  <Textarea
+                    rows={2}
+                    value={item.description}
+                    onChange={(e) => setContent(prev => ({
+                      ...prev,
+                      home: {
+                        ...prev.home,
+                        achievementsSection: {
+                          ...(prev.home.achievementsSection || { title: '', subtitle: '', items: [] }),
+                          items: (prev.home.achievementsSection?.items || []).map((it, i) =>
+                            i === index ? { ...it, description: e.target.value } : it,
+                          ),
+                        },
+                      },
+                    }))}
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+          
+        </CardContent>
+      </Card>
+
+      <Card
+        className="shadow-soft"
+        onMouseEnter={() => setActiveSubSection('activity-videos')}
+        onFocus={() => setActiveSubSection('activity-videos')}
+      >
+        <CardHeader>
+          <CardTitle>Student Activities</CardTitle>
+          <CardDescription>Edit the title, subtitle, and video content for the "Student Activities" section.</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          <div className="grid gap-3 md:grid-cols-2">
+            <div className="space-y-2">
+              <Label>Title</Label>
+              <Input
+                value={content.home.activityVideos?.title || ''}
+                onChange={(e) => setContent(prev => ({
+                  ...prev,
+                  home: {
+                    ...prev.home,
+                    activityVideos: {
+                      ...(prev.home.activityVideos || { title: '', subtitle: '', videos: [] }),
+                      title: e.target.value,
+                    },
+                  },
+                }))}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>Subtitle</Label>
+              <Input
+                value={content.home.activityVideos?.subtitle || ''}
+                onChange={(e) => setContent(prev => ({
+                  ...prev,
+                  home: {
+                    ...prev.home,
+                    activityVideos: {
+                      ...(prev.home.activityVideos || { title: '', subtitle: '', videos: [] }),
+                      subtitle: e.target.value,
+                    },
+                  },
+                }))}
+              />
+            </div>
+          </div>
+
+          <div className="space-y-4">
+            <Label className="text-base font-semibold">Videos</Label>
+            {(content.home.activityVideos?.videos || []).map((video, index) => (
+              <div key={index} className="space-y-3 rounded-lg border p-4">
+                <div className="flex items-center justify-between">
+                  <Label className="text-xs uppercase tracking-wide text-muted-foreground">Video {index + 1}</Label>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => setContent(prev => ({
+                      ...prev,
+                      home: {
+                        ...prev.home,
+                        activityVideos: {
+                          ...(prev.home.activityVideos || { title: '', subtitle: '', videos: [] }),
+                          videos: (prev.home.activityVideos?.videos || []).filter((_, i) => i !== index),
+                        },
+                      },
+                    }))}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
+                <div className="space-y-2">
+                  <Label>Title</Label>
+                  <Input
+                    value={video.title}
+                    onChange={(e) => setContent(prev => ({
+                      ...prev,
+                      home: {
+                        ...prev.home,
+                        activityVideos: {
+                          ...(prev.home.activityVideos || { title: '', subtitle: '', videos: [] }),
+                          videos: (prev.home.activityVideos?.videos || []).map((v, i) =>
+                            i === index ? { ...v, title: e.target.value } : v
+                          ),
+                        },
+                      },
+                    }))}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>YouTube Video URL (Embed URL)</Label>
+                  <Input
+                    value={video.videoUrl}
+                    onChange={(e) => setContent(prev => ({
+                      ...prev,
+                      home: {
+                        ...prev.home,
+                        activityVideos: {
+                          ...(prev.home.activityVideos || { title: '', subtitle: '', videos: [] }),
+                          videos: (prev.home.activityVideos?.videos || []).map((v, i) =>
+                            i === index ? { ...v, videoUrl: e.target.value } : v
+                          ),
+                        },
+                      },
+                    }))}
+                    placeholder="https://www.youtube.com/embed/VIDEO_ID"
+                  />
+                  
+                </div>
+              </div>
+            ))}
+           
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card
+        className="shadow-soft"
+        onMouseEnter={() => setActiveSubSection('activity-images')}
+        onFocus={() => setActiveSubSection('activity-images')}
+      >
+        <CardHeader>
+          <CardTitle>Moments that Matter</CardTitle>
+          <CardDescription>Edit the title, subtitle, and image content for the "Moments that Matter" section.</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          <div className="grid gap-3 md:grid-cols-2">
+            <div className="space-y-2">
+              <Label>Title</Label>
+              <Input
+                value={content.home.activityImages?.title || ''}
+                onChange={(e) => setContent(prev => ({
+                  ...prev,
+                  home: {
+                    ...prev.home,
+                    activityImages: {
+                      ...(prev.home.activityImages || { title: '', subtitle: '', images: [] }),
+                      title: e.target.value,
+                    },
+                  },
+                }))}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>Subtitle</Label>
+              <Input
+                value={content.home.activityImages?.subtitle || ''}
+                onChange={(e) => setContent(prev => ({
+                  ...prev,
+                  home: {
+                    ...prev.home,
+                    activityImages: {
+                      ...(prev.home.activityImages || { title: '', subtitle: '', images: [] }),
+                      subtitle: e.target.value,
+                    },
+                  },
+                }))}
+              />
+            </div>
+          </div>
+
+          <div className="space-y-4">
+            <Label className="text-base font-semibold">Images</Label>
+            {(content.home.activityImages?.images || []).map((image, index) => (
+              <div key={index} className="space-y-3 rounded-lg border p-4">
+                <div className="flex items-center justify-between">
+                  <Label className="text-xs uppercase tracking-wide text-muted-foreground">Image {index + 1}</Label>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => setContent(prev => ({
+                      ...prev,
+                      home: {
+                        ...prev.home,
+                        activityImages: {
+                          ...(prev.home.activityImages || { title: '', subtitle: '', images: [] }),
+                          images: (prev.home.activityImages?.images || []).filter((_, i) => i !== index),
+                        },
+                      },
+                    }))}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
+                <div className="space-y-2">
+                  <Label>Title</Label>
+                  <Input
+                    value={image.title}
+                    onChange={(e) => setContent(prev => ({
+                      ...prev,
+                      home: {
+                        ...prev.home,
+                        activityImages: {
+                          ...(prev.home.activityImages || { title: '', subtitle: '', images: [] }),
+                          images: (prev.home.activityImages?.images || []).map((img, i) =>
+                            i === index ? { ...img, title: e.target.value } : img
+                          ),
+                        },
+                      },
+                    }))}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>Image</Label>
+                  {image.src && (
+                    <div className="relative mb-2">
+                      <img
+                        src={image.src.startsWith('data:') || image.src.startsWith('http') ? image.src : imageMap[image.src] || image.src}
+                        alt={image.title || `Image ${index + 1}`}
+                        className="w-full h-32 object-cover rounded-md border"
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).style.display = 'none';
+                        }}
+                      />
+                      {image.src.startsWith('data:') && (
+                        <Button
+                          type="button"
+                          size="icon"
+                          variant="destructive"
+                          className="absolute top-2 right-2 h-6 w-6"
+                          onClick={() => setContent(prev => ({
+                            ...prev,
+                            home: {
+                              ...prev.home,
+                              activityImages: {
+                                ...(prev.home.activityImages || { title: '', subtitle: '', images: [] }),
+                                images: (prev.home.activityImages?.images || []).map((img, i) =>
+                                  i === index ? { ...img, src: '' } : img
+                                ),
+                              },
+                            },
+                          }))}
+                        >
+                          <X className="h-3 w-3" />
+                        </Button>
+                      )}
+                    </div>
+                  )}
+                  <Input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (!file) return;
+                      const reader = new FileReader();
+                      reader.onloadend = () => {
+                        const result = reader.result as string;
+                        setContent(prev => ({
+                          ...prev,
+                          home: {
+                            ...prev.home,
+                            activityImages: {
+                              ...(prev.home.activityImages || { title: '', subtitle: '', images: [] }),
+                              images: (prev.home.activityImages?.images || []).map((img, i) =>
+                                i === index ? { ...img, src: result } : img
+                              ),
+                            },
+                          },
+                        }));
+                      };
+                      reader.readAsDataURL(file);
+                      e.target.value = '';
+                    }}
+                  />
+                </div>
+              </div>
+            ))}
+            
+            
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card
+        className="shadow-soft"
+        onMouseEnter={() => setActiveSubSection('home-reviews')}
+        onFocus={() => setActiveSubSection('home-reviews')}
+      >
+        <CardHeader>
+          <CardTitle>Review from our achievers</CardTitle>
+          <CardDescription>Edit the title and subtitle for the "Review from our achievers" section. The review links are editable in the Success Stories section.</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          <div className="grid gap-3 md:grid-cols-2">
+            <div className="space-y-2">
+              <Label>Title</Label>
+              <Input
+                value={content.home.homeReviews?.title || ''}
+                onChange={(e) => setContent(prev => ({
+                  ...prev,
+                  home: {
+                    ...prev.home,
+                    homeReviews: {
+                      ...(prev.home.homeReviews || { title: '', subtitle: '' }),
+                      title: e.target.value,
+                    },
+                  },
+                }))}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>Subtitle</Label>
+              <Input
+                value={content.home.homeReviews?.subtitle || ''}
+                onChange={(e) => setContent(prev => ({
+                  ...prev,
+                  home: {
+                    ...prev.home,
+                    homeReviews: {
+                      ...(prev.home.homeReviews || { title: '', subtitle: '' }),
+                      subtitle: e.target.value,
+                    },
+                  },
+                }))}
+              />
+            </div>
+          </div>
+          
+        </CardContent>
+      </Card>
+
+      {/* Information Banner Management */}
+      <Card 
+        className="shadow-soft"
+        onMouseEnter={() => setActiveSubSection('information-banner')}
+        onFocus={() => setActiveSubSection('information-banner')}
+      >
+        <CardHeader>
+          <CardTitle>Information Banner</CardTitle>
+          <CardDescription>Manage the announcement banner displayed between methodology and gain sections.</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="space-y-4">
+            {/* Visibility Toggle */}
+            <div className="flex items-center justify-between p-4 rounded-lg border">
+              <div>
+                <Label className="text-sm font-medium">Banner Visibility</Label>
+                <p className="text-xs text-muted-foreground">Show or hide the banner on the home page</p>
+              </div>
+              <Button
+                type="button"
+                variant={content.home.informationBanner?.isVisible ? "default" : "outline"}
+                size="sm"
+                onClick={() => {
+                  setContent((prev) => ({
+                    ...prev,
+                    home: {
+                      ...prev.home,
+                      informationBanner: {
+                        ...(prev.home.informationBanner || { isVisible: false, content: "", imageUrl: undefined }),
+                        isVisible: !prev.home.informationBanner?.isVisible,
+                      },
+                    },
+                  }));
+                }}
+                aria-label={`Turn banner ${content.home.informationBanner?.isVisible ? 'off' : 'on'}`}
+                aria-pressed={content.home.informationBanner?.isVisible}
+              >
+                {content.home.informationBanner?.isVisible ? "ON" : "OFF"}
+              </Button>
+            </div>
+
+            {/* Banner Content */}
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <Label htmlFor="banner-content">Banner Content</Label>
+                <span 
+                  className="text-xs text-muted-foreground"
+                  aria-live="polite"
+                  aria-label={`Character count: ${(content.home.informationBanner?.content || "").length} of 500`}
+                >
+                  {(content.home.informationBanner?.content || "").length}/500 characters
+                </span>
+              </div>
+              <Textarea
+                id="banner-content"
+                placeholder="Enter your announcement, event details, or important information..."
+                value={content.home.informationBanner?.content || ""}
+                onChange={(e) => {
+                  const newContent = e.target.value;
+                  if (newContent.length > 500) {
+                    toast({ 
+                      title: "Content too long", 
+                      description: "Banner content should be 500 characters or less for optimal display.", 
+                      variant: "destructive" as any 
+                    });
+                    return;
+                  }
+                  setContent((prev) => ({
+                    ...prev,
+                    home: {
+                      ...prev.home,
+                      informationBanner: {
+                        ...(prev.home.informationBanner || { isVisible: false, content: "", imageUrl: undefined }),
+                        content: newContent,
+                      },
+                    },
+                  }));
+                }}
+                rows={3}
+                maxLength={500}
+                aria-describedby="banner-content-help"
+              />
+              <div id="banner-content-help" className="text-xs text-muted-foreground">
+                This content will be displayed prominently on the home page between sections.
+              </div>
+              {(content.home.informationBanner?.content || "").length > 400 && (
+                <p className="text-xs text-amber-600" role="alert">
+                  ⚠️ Consider keeping content concise for better readability
+                </p>
+              )}
+            </div>
+
+            {/* Image Upload */}
+            <div className="space-y-2">
+              <Label htmlFor="banner-image-upload">Banner Image (Optional)</Label>
+              {content.home.informationBanner?.imageUrl && (
+                <div className="relative mb-2">
+                  <img
+                    src={content.home.informationBanner.imageUrl}
+                    alt="Banner preview - will be displayed alongside the banner content"
+                    className="w-full h-32 object-cover rounded-md border"
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).style.display = 'none';
+                    }}
+                  />
+                  <Button
+                    type="button"
+                    size="icon"
+                    variant="destructive"
+                    className="absolute top-2 right-2 h-6 w-6"
+                    onClick={() => {
+                      setContent((prev) => ({
+                        ...prev,
+                        home: {
+                          ...prev.home,
+                          informationBanner: {
+                            ...(prev.home.informationBanner || { isVisible: false, content: "", imageUrl: undefined }),
+                            imageUrl: undefined,
+                          },
+                        },
+                      }));
+                    }}
+                    aria-label="Remove banner image"
+                  >
+                    <X className="h-3 w-3" />
+                  </Button>
+                </div>
+              )}
+              <div className="flex gap-2">
+                <Input
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  id="banner-image-upload"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) {
+                      // Validate file type
+                      const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+                      if (!validTypes.includes(file.type)) {
+                        toast({ 
+                          title: "Invalid file type", 
+                          description: "Please upload a valid image file (JPG, PNG, GIF, or WebP).", 
+                          variant: "destructive" as any 
+                        });
+                        return;
+                      }
+
+                      // Validate file size (5MB limit)
+                      const maxSize = 5 * 1024 * 1024; // 5MB in bytes
+                      if (file.size > maxSize) {
+                        toast({ 
+                          title: "File too large", 
+                          description: "Please upload an image smaller than 5MB.", 
+                          variant: "destructive" as any 
+                        });
+                        return;
+                      }
+
+                      const reader = new FileReader();
+                      reader.onloadend = () => {
+                        const base64String = reader.result as string;
+                        setContent((prev) => ({
+                          ...prev,
+                          home: {
+                            ...prev.home,
+                            informationBanner: {
+                              ...(prev.home.informationBanner || { isVisible: false, content: "", imageUrl: undefined }),
+                              imageUrl: base64String,
+                            },
+                          },
+                        }));
+                        toast({ 
+                          title: "Image uploaded", 
+                          description: "Banner image has been successfully uploaded." 
+                        });
+                      };
+                      reader.onerror = () => {
+                        toast({ 
+                          title: "Upload failed", 
+                          description: "Failed to read the image file. Please try again.", 
+                          variant: "destructive" as any 
+                        });
+                      };
+                      reader.readAsDataURL(file);
+                    }
+                    // Reset input
+                    e.target.value = '';
+                  }}
+                  aria-describedby="image-upload-help"
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="flex items-center gap-2"
+                  onClick={() => {
+                    document.getElementById('banner-image-upload')?.click();
+                  }}
+                  aria-label="Upload banner image"
+                >
+                  <Upload className="h-4 w-4" />
+                  Upload Image
+                </Button>
+              </div>
+              <div id="image-upload-help" className="text-xs text-muted-foreground">
+                Supported formats: JPG, PNG, GIF, WebP. Maximum size: 5MB. Image will be displayed on the left side of the banner on desktop.
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+     
     </>
   );
+
+  const handleAddAchievementItem = () => {
+    setContent((prev) => ({
+      ...prev,
+      home: {
+        ...prev.home,
+        achievementsSection: {
+          ...(prev.home.achievementsSection || { title: '', subtitle: '', items: [] }),
+          items: [...(prev.home.achievementsSection?.items || []), { title: '', description: '' }],
+        },
+      },
+    }));
+  };
+
+  const handleRemoveAchievementItem = (index: number) => {
+    setContent((prev) => ({
+      ...prev,
+      home: {
+        ...prev.home,
+        achievementsSection: {
+          ...(prev.home.achievementsSection || { title: '', subtitle: '', items: [] }),
+          items: (prev.home.achievementsSection?.items || []).filter((_, i) => i !== index),
+        },
+      },
+    }));
+  };
 
   const renderHeaderEditor = () => (
     <>
@@ -1035,204 +2662,245 @@ const Admin = () => {
   );
 
   const renderFooterEditor = () => (
-    <>
-                        <Card 
-                            className="shadow-soft"
-                            onMouseEnter={() => setActiveSubSection('footer')}
-                            onFocus={() => setActiveSubSection('footer')}
-                        >
+    <div className="overflow-x-auto overflow-y-hidden scroll-smooth" style={{ scrollbarWidth: 'auto', scrollbarColor: '#64748b #e2e8f0' }}>
+      <div className="flex gap-8 pb-4" style={{ minWidth: '2500px', width: 'max-content' }}>
+    <Card
+      className="shadow-soft flex-shrink-0"
+      style={{ width: '450px', minWidth: '450px' }}
+      onMouseEnter={() => setActiveSubSection('footer-institute')}
+      onFocus={() => setActiveSubSection('footer-institute')}
+    >
                             <CardHeader>
-          <CardTitle>Footer - Institute Info</CardTitle>
-          <CardDescription>Main footer institute name and tagline.</CardDescription>
+        <CardTitle>Footer - Institute Info</CardTitle>
+        <CardDescription>Main footer institute name, sub header line, and tagline.</CardDescription>
                             </CardHeader>
                             <CardContent className="space-y-4">
                                 <div className="space-y-2">
-            <Label htmlFor="footerInstituteName">Institute Name</Label>
-            <Input
-              id="footerInstituteName"
-              value={content.footer.instituteName}
-              onChange={(e) =>
-                setContent((prev) => ({
-                  ...prev,
-                  footer: { ...prev.footer, instituteName: e.target.value },
-                }))
-              }
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="footerTagline">Tagline</Label>
-            <Textarea
-              id="footerTagline"
-              value={content.footer.tagline}
-              onChange={(e) =>
-                setContent((prev) => ({
-                  ...prev,
-                  footer: { ...prev.footer, tagline: e.target.value },
-                }))
-              }
-              rows={2}
-            />
-          </div>
-        </CardContent>
-      </Card>
-
-      
-
-      <Card 
-        className="shadow-soft"
-        onMouseEnter={() => setActiveSubSection('footer')}
-        onFocus={() => setActiveSubSection('footer')}
-      >
-        <CardHeader>
-          <CardTitle>Courses List</CardTitle>
-          <CardDescription>Course names displayed in the footer.</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="space-y-4">
-            {content.footer.courses.map((course, index) => (
-              <div key={index} className="flex items-center gap-2">
-                <Input
-                  value={course}
-                  onChange={(e) => {
-                    setContent((prev) => ({
-                      ...prev,
-                      footer: {
-                        ...prev.footer,
-                        courses: prev.footer.courses.map((c, i) => (i === index ? e.target.value : c)),
-                      },
-                    }));
-                  }}
-                />
-                <Button
-                  type="button"
-                  size="icon"
-                  variant="ghost"
-                  onClick={() => {
-                    setContent((prev) => ({
-                      ...prev,
-                      footer: {
-                        ...prev.footer,
-                        courses: prev.footer.courses.filter((_, i) => i !== index),
-                      },
-                    }));
-                  }}
-                >
-                  <Trash2 className="h-4 w-4" />
-                </Button>
-              </div>
-            ))}
-          </div>
-          <Button
-            type="button"
-            variant="outline"
-            className="flex items-center gap-2"
-            onClick={() => {
-              setContent((prev) => ({
-                ...prev,
-                footer: {
-                  ...prev.footer,
-                  courses: [...prev.footer.courses, ""],
-                },
-              }));
-            }}
-          >
-            <Plus className="h-4 w-4" />
-            Add Course
-          </Button>
-        </CardContent>
-      </Card>
-
-      <Card 
-        className="shadow-soft"
-        onMouseEnter={() => setActiveSubSection('footer')}
-        onFocus={() => setActiveSubSection('footer')}
-      >
-        <CardHeader>
-          <CardTitle>Contact Information</CardTitle>
-          <CardDescription>Contact details displayed in the footer.</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="footerAddress">Address</Label>
-            <Textarea
-              id="footerAddress"
-              value={content.footer.contact.address}
-              onChange={(e) =>
-                setContent((prev) => ({
-                  ...prev,
-                  footer: {
-                    ...prev.footer,
-                    contact: { ...prev.footer.contact, address: e.target.value },
-                  },
-                }))
-              }
-              rows={2}
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="footerPhone">Phone</Label>
-            <Input
-              id="footerPhone"
-              value={content.footer.contact.phone}
-              onChange={(e) =>
-                setContent((prev) => ({
-                  ...prev,
-                  footer: {
-                    ...prev.footer,
-                    contact: { ...prev.footer.contact, phone: e.target.value },
-                  },
-                }))
-              }
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="footerEmail">Email</Label>
-            <Input
-              id="footerEmail"
-              type="email"
-              value={content.footer.contact.email}
-              onChange={(e) =>
-                setContent((prev) => ({
-                  ...prev,
-                  footer: {
-                    ...prev.footer,
-                    contact: { ...prev.footer.contact, email: e.target.value },
-                  },
-                }))
-              }
-            />
-          </div>
-        </CardContent>
-      </Card>
-
-                        <Card 
-                            className="shadow-soft"
-                            onMouseEnter={() => setActiveSubSection('footer')}
-                            onFocus={() => setActiveSubSection('footer')}
-                        >
-                            <CardHeader>
-                                <CardTitle>Copyright</CardTitle>
-          <CardDescription>Copyright text displayed at the bottom of the footer.</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="footerCopy">Copyright Text</Label>
+          <Label htmlFor="footerInstituteName">Institute Name</Label>
                                     <Input
-                                        id="footerCopy"
-                                        value={content.footer.copyright}
+            id="footerInstituteName"
+            value={content.footer.instituteName}
                                         onChange={(e) =>
                                             setContent((prev) => ({
                                                 ...prev,
-                                                footer: { ...prev.footer, copyright: e.target.value },
+                footer: { ...prev.footer, instituteName: e.target.value },
                                             }))
                                         }
                                     />
                                 </div>
+        <div className="space-y-2">
+          <Label htmlFor="footerSubHeader">Sub Header (small line under the name)</Label>
+          <Textarea
+            id="footerSubHeader"
+            value={content.footer.subHeader}
+            onChange={(e) =>
+              setContent((prev) => ({
+                ...prev,
+                footer: { ...prev.footer, subHeader: e.target.value },
+              }))
+            }
+            rows={2}
+          />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="footerTagline">Tagline</Label>
+          <Textarea
+            id="footerTagline"
+            value={content.footer.tagline}
+            onChange={(e) =>
+              setContent((prev) => ({
+                ...prev,
+                footer: { ...prev.footer, tagline: e.target.value },
+              }))
+            }
+            rows={2}
+          />
+        </div>
                             </CardContent>
                         </Card>
 
-                        
-    </>
+   
+
+    <Card
+      className="shadow-soft flex-shrink-0"
+      style={{ width: '400px', minWidth: '400px' }}
+      onMouseEnter={() => setActiveSubSection('footer-quick-links')}
+      onFocus={() => setActiveSubSection('footer-quick-links')}
+    >
+                            <CardHeader>
+        <CardTitle>Quick Links</CardTitle>
+        <CardDescription>Navigation link labels displayed in the footer.</CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <div className="space-y-4">
+          {content.footer.quickLinks.map((link, index) => (
+            <div key={index} className="flex items-center gap-2">
+              <Input
+                className="flex-1"
+                placeholder="Label"
+                value={link.label}
+                onChange={(e) => {
+                  setContent((prev) => ({
+                    ...prev,
+                    footer: {
+                      ...prev.footer,
+                      quickLinks: prev.footer.quickLinks.map((l, i) =>
+                        i === index ? { ...l, label: e.target.value } : l
+                      ),
+                    },
+                  }));
+                }}
+              />
+              <Button
+                type="button"
+                size="icon"
+                variant="ghost"
+                onClick={() => {
+                  setContent((prev) => ({
+                    ...prev,
+                    footer: {
+                      ...prev.footer,
+                      quickLinks: prev.footer.quickLinks.filter((_, i) => i !== index),
+                    },
+                  }));
+                }}
+              >
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            </div>
+          ))}
+        </div>
+       
+      </CardContent>
+    </Card>
+
+    <Card
+      className="shadow-soft flex-shrink-0"
+      style={{ width: '400px', minWidth: '400px' }}
+      onMouseEnter={() => setActiveSubSection('footer-what-we-do')}
+      onFocus={() => setActiveSubSection('footer-what-we-do')}
+    >
+      <CardHeader>
+        <CardTitle>What We Do</CardTitle>
+        <CardDescription>Items shown under the “What We Do” column in the footer.</CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <div className="space-y-3">
+          {(content.footer.whatWeDo || []).map((item, index) => (
+            <div key={index} className="flex items-center gap-2">
+              <Input
+                className="flex-1"
+                value={item}
+                onChange={(e) =>
+                  setContent((prev) => ({
+                    ...prev,
+                    footer: {
+                      ...prev.footer,
+                      whatWeDo: (prev.footer.whatWeDo || []).map((w, i) => (i === index ? e.target.value : w)),
+                    },
+                  }))
+                }
+              />
+              
+            </div>
+          ))}
+        </div>
+       
+      </CardContent>
+    </Card>
+
+    <Card
+      className="shadow-soft flex-shrink-0"
+      style={{ width: '450px', minWidth: '450px' }}
+      onMouseEnter={() => setActiveSubSection('footer-contact')}
+      onFocus={() => setActiveSubSection('footer-contact')}
+    >
+      <CardHeader>
+        <CardTitle>Contact Information</CardTitle>
+        <CardDescription>Contact details displayed in the footer.</CardDescription>
+                            </CardHeader>
+                            <CardContent className="space-y-4">
+                                <div className="space-y-2">
+          <Label htmlFor="footerAddress">Address</Label>
+                                    <Textarea
+            id="footerAddress"
+            value={content.footer.contact.address}
+            onChange={(e) =>
+              setContent((prev) => ({
+                ...prev,
+                footer: {
+                  ...prev.footer,
+                  contact: { ...prev.footer.contact, address: e.target.value },
+                },
+              }))
+            }
+            rows={2}
+          />
+                                </div>
+        <div className="space-y-2">
+          <Label htmlFor="footerPhone">Phone</Label>
+          <Input
+            id="footerPhone"
+            value={content.footer.contact.phone}
+            onChange={(e) =>
+              setContent((prev) => ({
+                ...prev,
+                footer: {
+                  ...prev.footer,
+                  contact: { ...prev.footer.contact, phone: e.target.value },
+                },
+              }))
+            }
+          />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="footerEmail">Email</Label>
+          <Input
+            id="footerEmail"
+            type="email"
+            value={content.footer.contact.email}
+            onChange={(e) =>
+              setContent((prev) => ({
+                ...prev,
+                footer: {
+                  ...prev.footer,
+                  contact: { ...prev.footer.contact, email: e.target.value },
+                },
+              }))
+            }
+          />
+        </div>
+      </CardContent>
+    </Card>
+
+    <Card
+      className="shadow-soft flex-shrink-0"
+      style={{ width: '350px', minWidth: '350px' }}
+      onMouseEnter={() => setActiveSubSection('footer-copyright')}
+      onFocus={() => setActiveSubSection('footer-copyright')}
+    >
+      <CardHeader>
+        <CardTitle>Copyright</CardTitle>
+        <CardDescription>Copyright text displayed at the bottom of the footer.</CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <div className="space-y-2">
+          <Label htmlFor="footerCopy">Copyright Text</Label>
+          <Input
+            id="footerCopy"
+            value={content.footer.copyright}
+            onChange={(e) =>
+              setContent((prev) => ({
+                ...prev,
+                footer: { ...prev.footer, copyright: e.target.value },
+              }))
+            }
+          />
+                                </div>
+                            </CardContent>
+                        </Card>
+      </div>
+    </div>
   );
 
   const renderAboutEditor = () => (
@@ -1273,38 +2941,72 @@ const Admin = () => {
 
       <Card 
         className="shadow-soft"
-        onMouseEnter={() => setActiveSubSection('about-stats')}
-        onFocus={() => setActiveSubSection('about-stats')}
+        onMouseEnter={() => setActiveSubSection('about-highlight')}
+        onFocus={() => setActiveSubSection('about-highlight')}
       >
         <CardHeader>
-          <CardTitle>Stats</CardTitle>
-          <CardDescription>Metrics displayed under the about hero.</CardDescription>
+          <CardTitle>About Highlight</CardTitle>
+          <CardDescription>Edit the heading and paragraphs in the highlight section.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          {content.about.stats.map((stat, index) => (
-            <div key={index} className="rounded-lg border p-4 space-y-2">
-              <div className="flex items-center justify-between">
-                <Label>Stat {index + 1}</Label>
-                <Button variant="ghost" size="icon" onClick={() => handleRemoveAboutStat(index)}>
-                  <Trash2 className="h-4 w-4" />
-                </Button>
+          <div className="space-y-2">
+            <Label>Heading (Primary)</Label>
+            <Input
+              value={content.about.highlight?.headingPrimary || ""}
+              onChange={(e) =>
+                setContent((prev) => ({
+                  ...prev,
+                  about: {
+                    ...prev.about,
+                    highlight: { ...(prev.about.highlight || { headingPrimary: "", headingSecondary: "", paragraphs: [] }), headingPrimary: e.target.value },
+                  },
+                }))
+              }
+            />
+          </div>
+          <div className="space-y-2">
+            <Label>Heading (Secondary)</Label>
+            <Input
+              value={content.about.highlight?.headingSecondary || ""}
+              onChange={(e) =>
+                setContent((prev) => ({
+                  ...prev,
+                  about: {
+                    ...prev.about,
+                    highlight: { ...(prev.about.highlight || { headingPrimary: "", headingSecondary: "", paragraphs: [] }), headingSecondary: e.target.value },
+                  },
+                }))
+              }
+            />
+          </div>
+          <div className="space-y-3">
+            <Label>Paragraphs</Label>
+            {(content.about.highlight?.paragraphs || []).map((p, index) => (
+              <div key={index} className="space-y-2 rounded border p-3">
+                <div className="flex items-center justify-between">
+                  <Label className="text-xs text-muted-foreground">Paragraph {index + 1}</Label>
+                </div>
+                <Textarea
+                  rows={3}
+                  value={p}
+                  onChange={(e) =>
+                    setContent((prev) => ({
+                      ...prev,
+                      about: {
+                        ...prev.about,
+                        highlight: {
+                          ...(prev.about.highlight || { headingPrimary: "", headingSecondary: "", paragraphs: [] }),
+                          paragraphs: (prev.about.highlight?.paragraphs || []).map((val, i) =>
+                            i === index ? e.target.value : val,
+                          ),
+                        },
+                      },
+                    }))
+                  }
+                />
               </div>
-              <Input
-                placeholder="Value"
-                value={stat.value}
-                onChange={(e) => handleAboutStatChange(index, "value", e.target.value)}
-              />
-              <Input
-                placeholder="Label"
-                value={stat.label}
-                onChange={(e) => handleAboutStatChange(index, "label", e.target.value)}
-              />
-            </div>
-          ))}
-          <Button variant="outline" className="flex items-center gap-2" onClick={handleAddAboutStat}>
-            <Plus className="h-4 w-4" />
-            Add Stat
-          </Button>
+            ))}
+          </div>
         </CardContent>
       </Card>
 
@@ -1322,9 +3024,6 @@ const Admin = () => {
             <div key={index} className="space-y-2">
               <div className="flex items-center justify-between">
                 <Label>Paragraph {index + 1}</Label>
-                <Button variant="ghost" size="icon" onClick={() => handleRemoveAboutStory(index)}>
-                  <Trash2 className="h-4 w-4" />
-                </Button>
               </div>
               <Textarea
                 rows={3}
@@ -1333,10 +3032,221 @@ const Admin = () => {
               />
             </div>
           ))}
-          <Button variant="outline" className="flex items-center gap-2" onClick={handleAddAboutStory}>
-            <Plus className="h-4 w-4" />
-            Add Paragraph
-          </Button>
+        </CardContent>
+      </Card>
+
+      <Card 
+        className="shadow-soft"
+        onMouseEnter={() => setActiveSubSection('about-amenities')}
+        onFocus={() => setActiveSubSection('about-amenities')}
+      >
+        <CardHeader>
+          <CardTitle>Amenities</CardTitle>
+          <CardDescription>Edit the amenities title, description, list, and images.</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          <div className="grid gap-3 md:grid-cols-2">
+            <div className="space-y-2">
+              <Label>Title</Label>
+              <Input
+                value={content.about.amenities?.title || ""}
+                onChange={(e) =>
+                  setContent((prev) => ({
+                    ...prev,
+                    about: {
+                      ...prev.about,
+                      amenities: { ...(prev.about.amenities || { title: "", description: "", amenitiesList: [], carouselImages: [] }), title: e.target.value },
+                    },
+                  }))
+                }
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>Description</Label>
+              <Textarea
+                rows={3}
+                value={content.about.amenities?.description || ""}
+                onChange={(e) =>
+                  setContent((prev) => ({
+                    ...prev,
+                    about: {
+                      ...prev.about,
+                      amenities: { ...(prev.about.amenities || { title: "", description: "", amenitiesList: [], carouselImages: [] }), description: e.target.value },
+                    },
+                  }))
+                }
+              />
+            </div>
+          </div>
+
+          <div className="space-y-3">
+            <Label>Amenities List</Label>
+            {(content.about.amenities?.amenitiesList || []).map((item, index) => (
+              <div key={index} className="flex items-center gap-2">
+                <Input
+                  className="flex-1"
+                  value={item}
+                  onChange={(e) =>
+                    setContent((prev) => ({
+                      ...prev,
+                      about: {
+                        ...prev.about,
+                        amenities: {
+                          ...(prev.about.amenities || { title: "", description: "", amenitiesList: [], carouselImages: [] }),
+                          amenitiesList: (prev.about.amenities?.amenitiesList || []).map((a, i) => (i === index ? e.target.value : a)),
+                        },
+                      },
+                    }))
+                  }
+                />
+                <Button
+                  type="button"
+                  size="icon"
+                  variant="ghost"
+                  onClick={() =>
+                    setContent((prev) => ({
+                      ...prev,
+                      about: {
+                        ...prev.about,
+                        amenities: {
+                          ...(prev.about.amenities || { title: "", description: "", amenitiesList: [], carouselImages: [] }),
+                          amenitiesList: (prev.about.amenities?.amenitiesList || []).filter((_, i) => i !== index),
+                        },
+                      },
+                    }))
+                  }
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </div>
+            ))}
+          </div>
+
+          <div className="space-y-3">
+            <Label>Carousel Images (upload)</Label>
+            {(content.about.amenities?.carouselImages || []).map((item, index) => (
+              <div key={index} className="flex items-center gap-3">
+                <div className="w-16 h-16 rounded overflow-hidden border bg-muted flex-shrink-0">
+                  {item ? (
+                    <img src={item} alt={`Amenity ${index + 1}`} className="w-full h-full object-cover" />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center text-xs text-muted-foreground">No image</div>
+                  )}
+                </div>
+                <div className="flex-1 flex items-center gap-2">
+                  <Input
+                    className="flex-1"
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (!file) return;
+                      const reader = new FileReader();
+                      reader.onloadend = () => {
+                        const result = reader.result as string;
+                        setContent((prev) => ({
+                          ...prev,
+                          about: {
+                            ...prev.about,
+                            amenities: {
+                              ...(prev.about.amenities || { title: "", description: "", amenitiesList: [], carouselImages: [] }),
+                              carouselImages: (prev.about.amenities?.carouselImages || []).map((a, i) =>
+                                i === index ? result : a
+                              ),
+                            },
+                          },
+                        }));
+                      };
+                      reader.readAsDataURL(file);
+                      e.target.value = "";
+                    }}
+                  />
+                  <Button
+                    type="button"
+                    size="icon"
+                    variant="ghost"
+                    onClick={() =>
+                      setContent((prev) => ({
+                        ...prev,
+                        about: {
+                          ...prev.about,
+                          amenities: {
+                            ...(prev.about.amenities || { title: "", description: "", amenitiesList: [], carouselImages: [] }),
+                            carouselImages: (prev.about.amenities?.carouselImages || []).filter((_, i) => i !== index),
+                          },
+                        },
+                      }))
+                    }
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+            ))}
+            <Button
+              variant="outline"
+              className="flex items-center gap-2"
+              onClick={() =>
+                setContent((prev) => ({
+                  ...prev,
+                  about: {
+                    ...prev.about,
+                    amenities: {
+                      ...(prev.about.amenities || { title: "", description: "", amenitiesList: [], carouselImages: [] }),
+                      carouselImages: [...(prev.about.amenities?.carouselImages || []), ""],
+                    },
+                  },
+                }))
+              }
+            >
+              <Plus className="h-4 w-4" />
+              Add Image
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+
+        <Card 
+        className="shadow-soft"
+        onMouseEnter={() => setActiveSubSection('about-community')}
+        onFocus={() => setActiveSubSection('about-community')}
+      >
+        <CardHeader>
+          <CardTitle>Serving the Community</CardTitle>
+          <CardDescription>Edit the heading and description for the community section.</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="space-y-2">
+            <Label>Heading</Label>
+            <Input
+              value={content.about.community?.title || ""}
+              onChange={(e) =>
+                setContent((prev) => ({
+                  ...prev,
+                  about: {
+                    ...prev.about,
+                    community: { ...(prev.about.community || { title: "", description: "" }), title: e.target.value },
+                  },
+                }))
+              }
+            />
+          </div>
+          <div className="space-y-2">
+            <Label>Description</Label>
+            <Textarea
+              rows={4}
+              value={content.about.community?.description || ""}
+              onChange={(e) =>
+                setContent((prev) => ({
+                  ...prev,
+                  about: {
+                    ...prev.about,
+                    community: { ...(prev.about.community || { title: "", description: "" }), description: e.target.value },
+                  },
+                }))
+              }
+            />
+          </div>
         </CardContent>
       </Card>
 
@@ -1355,8 +3265,11 @@ const Admin = () => {
         })),
         'about-differentiators'
       )}
+
     </>
   );
+
+  
 
   const renderCardListEditor = (
     title: string,
@@ -1402,37 +3315,10 @@ const Admin = () => {
             />
           </div>
         ))}
-        <Button variant="outline" className="flex items-center gap-2" onClick={() => onChange([...list, { title: "", description: "" }])}>
-          <Plus className="h-4 w-4" />
-          Add Card
-        </Button>
+        
       </CardContent>
     </Card>
   );
-
-  const handleAboutStatChange = (index: number, field: "value" | "label", value: string) => {
-    setContent((prev) => ({
-      ...prev,
-      about: {
-        ...prev.about,
-        stats: prev.about.stats.map((stat, i) => (i === index ? { ...stat, [field]: value } : stat)),
-      },
-    }));
-  };
-
-  const handleAddAboutStat = () => {
-    setContent((prev) => ({
-      ...prev,
-      about: { ...prev.about, stats: [...prev.about.stats, { value: "", label: "" }] },
-    }));
-  };
-
-  const handleRemoveAboutStat = (index: number) => {
-    setContent((prev) => ({
-      ...prev,
-      about: { ...prev.about, stats: prev.about.stats.filter((_, i) => i !== index) },
-    }));
-  };
 
   const handleAboutStoryChange = (index: number, value: string) => {
     setContent((prev) => ({
@@ -1441,19 +3327,7 @@ const Admin = () => {
     }));
   };
 
-  const handleAddAboutStory = () => {
-    setContent((prev) => ({
-      ...prev,
-      about: { ...prev.about, story: [...prev.about.story, ""] },
-    }));
-  };
 
-  const handleRemoveAboutStory = (index: number) => {
-    setContent((prev) => ({
-      ...prev,
-      about: { ...prev.about, story: prev.about.story.filter((_, i) => i !== index) },
-    }));
-  };
 
   const renderCoursesEditor = () => (
     <>
@@ -1685,31 +3559,14 @@ const Admin = () => {
           />
           <div className="grid gap-4 md:grid-cols-2">
             <Input
-              placeholder="Primary CTA Label"
+              placeholder="Call Button Text"
               value={content.admissions.contactCtas.phoneLabel}
               onChange={(e) => handleAdmissionsCtaChange("phoneLabel", e.target.value)}
             />
             <Input
-              placeholder="Primary CTA Number"
-              value={content.admissions.contactCtas.phoneNumber}
-              onChange={(e) => handleAdmissionsCtaChange("phoneNumber", e.target.value)}
-            />
-          </div>
-          <div className="grid gap-4 md:grid-cols-3">
-            <Input
-              placeholder="Secondary Text"
+              placeholder="Request Callback Button Text"
               value={content.admissions.contactCtas.secondaryText}
               onChange={(e) => handleAdmissionsCtaChange("secondaryText", e.target.value)}
-            />
-            <Input
-              placeholder="Secondary Label"
-              value={content.admissions.contactCtas.secondaryLabel}
-              onChange={(e) => handleAdmissionsCtaChange("secondaryLabel", e.target.value)}
-            />
-            <Input
-              placeholder="Secondary Link"
-              value={content.admissions.contactCtas.secondaryLink}
-              onChange={(e) => handleAdmissionsCtaChange("secondaryLink", e.target.value)}
             />
           </div>
         </CardContent>
@@ -1734,6 +3591,7 @@ const Admin = () => {
             admissions: { ...prev.admissions, steps: prev.admissions.steps.filter((_, i) => i !== index) },
           })),
         subsectionId: 'admissions-steps',
+        disableAddButton: true,
       })}
 
       <Card 
@@ -1742,70 +3600,111 @@ const Admin = () => {
         onFocus={() => setActiveSubSection('admissions-details')}
       >
         <CardHeader>
-          <CardTitle>Course Details</CardTitle>
+          <CardTitle>The Course (Preview Only)</CardTitle>
+          <CardDescription>This section is rendered from the Home page “The Course” content. Edit it in Home.</CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4">
-          {content.admissions.courseDetails.map((detail, index) => (
-            <div key={index} className="rounded border p-4 space-y-3">
-              <div className="flex items-center justify-between">
-                <Label>Detail {index + 1}</Label>
-                <Button variant="ghost" size="icon" onClick={() => handleRemoveCourseDetail(index)}>
-                  <Trash2 className="h-4 w-4" />
-                </Button>
-              </div>
-              <Input placeholder="Label" value={detail.label} onChange={(e) => handleCourseDetailChange(index, "label", e.target.value)} />
-              <Textarea rows={2} placeholder="Value" value={detail.value} onChange={(e) => handleCourseDetailChange(index, "value", e.target.value)} />
-              <div className="space-y-2">
-                <Label>Icon</Label>
-                <Select value={detail.icon} onValueChange={(value: typeof detail.icon) => handleCourseDetailChange(index, "icon", value)}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Choose icon" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {courseDetailIconOptions.map((key) => (
-                      <SelectItem key={key} value={key}>
-                        {key}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-          ))}
-          <Button variant="outline" className="flex items-center gap-2" onClick={handleAddCourseDetail}>
-            <Plus className="h-4 w-4" />
-            Add Detail
-          </Button>
+        <CardContent className="space-y-2">
+          <p className="text-sm text-muted-foreground">
+            The Course layout and data are shared with the Home page. Update it in Home &gt; The Course to see changes here.
+          </p>
         </CardContent>
       </Card>
 
-      <Card 
-        className="shadow-soft"
-        onMouseEnter={() => setActiveSubSection('admissions-target-groups')}
-        onFocus={() => setActiveSubSection('admissions-target-groups')}
-      >
-        <CardHeader>
-          <CardTitle>Target Groups</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {content.admissions.targetGroups.map((group, index) => (
-            <div key={index} className="rounded border p-4 space-y-2">
-              <div className="flex items-center justify-between">
-                <Label>Group {index + 1}</Label>
-                <Button variant="ghost" size="icon" onClick={() => handleRemoveTargetGroup(index)}>
-                  <Trash2 className="h-4 w-4" />
-                </Button>
-              </div>
-              <Input placeholder="Title" value={group.title} onChange={(e) => handleTargetGroupChange(index, e.target.value)} />
-              <Textarea rows={4} placeholder="Benefits (one per line)" value={group.benefits.join("\n")} onChange={(e) => handleTargetGroupBenefitsChange(index, e.target.value.split("\n"))} />
+      {renderListEditor("Who Should Join", content.admissions.targetGroups, {
+        fieldRender: (group, groupIndex) => (
+          <>
+            <div className="space-y-2">
+              <Label>Card Title</Label>
+              <Input
+                value={group.title}
+                onChange={(e) =>
+                  setContent((prev) => ({
+                    ...prev,
+                    admissions: {
+                      ...prev.admissions,
+                      targetGroups: prev.admissions.targetGroups.map((g, i) =>
+                        i === groupIndex ? { ...g, title: e.target.value } : g,
+                      ),
+                    },
+                  }))
+                }
+              />
             </div>
-          ))}
-          <Button variant="outline" className="flex items-center gap-2" onClick={handleAddTargetGroup}>
-            <Plus className="h-4 w-4" />
-            Add Group
-          </Button>
-        </CardContent>
-      </Card>
+            <div className="space-y-2 mt-4">
+              <Label>Benefits</Label>
+              {group.benefits.map((benefit, benefitIndex) => (
+                <div key={benefitIndex} className="flex gap-2">
+                  <Input
+                    value={benefit}
+                    onChange={(e) =>
+                      setContent((prev) => ({
+                        ...prev,
+                        admissions: {
+                          ...prev.admissions,
+                          targetGroups: prev.admissions.targetGroups.map((g, i) =>
+                            i === groupIndex
+                              ? {
+                                  ...g,
+                                  benefits: g.benefits.map((b, bi) =>
+                                    bi === benefitIndex ? e.target.value : b,
+                                  ),
+                                }
+                              : g,
+                          ),
+                        },
+                      }))
+                    }
+                  />
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    onClick={() =>
+                      setContent((prev) => ({
+                        ...prev,
+                        admissions: {
+                          ...prev.admissions,
+                          targetGroups: prev.admissions.targetGroups.map((g, i) =>
+                            i === groupIndex
+                              ? {
+                                  ...g,
+                                  benefits: g.benefits.filter((_, bi) => bi !== benefitIndex),
+                                }
+                              : g,
+                          ),
+                        },
+                      }))
+                    }
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
+              ))}
+             
+            </div>
+          </>
+        ),
+        onAdd: () =>
+          setContent((prev) => ({
+            ...prev,
+            admissions: {
+              ...prev.admissions,
+              targetGroups: [
+                ...prev.admissions.targetGroups,
+                { title: "New Group", benefits: [""] },
+              ],
+            },
+          })),
+        onRemove: (groupIndex) =>
+          setContent((prev) => ({
+            ...prev,
+            admissions: {
+              ...prev.admissions,
+              targetGroups: prev.admissions.targetGroups.filter((_, i) => i !== groupIndex),
+            },
+          })),
+        subsectionId: 'admissions-target-groups',
+      })}
 
       {renderSimpleStringList(
         "Why Choose Us",
@@ -1816,7 +3715,8 @@ const Admin = () => {
             ...prev,
             admissions: { ...prev.admissions, whyChoose: next },
           })),
-        'admissions-why-choose'
+        'admissions-why-choose',
+        true
       )}
 
       <Card 
@@ -1832,12 +3732,16 @@ const Admin = () => {
           <Textarea rows={2} placeholder="Subtitle" value={content.admissions.cta.subtitle} onChange={(e) => handleAdmissionBannerChange("subtitle", e.target.value)} />
           <Input placeholder="Tagline" value={content.admissions.cta.tagline} onChange={(e) => handleAdmissionBannerChange("tagline", e.target.value)} />
           <div className="grid gap-4 md:grid-cols-2">
-            <Input placeholder="Phone Label" value={content.admissions.cta.phoneLabel} onChange={(e) => handleAdmissionBannerChange("phoneLabel", e.target.value)} />
-            <Input placeholder="Phone Number" value={content.admissions.cta.phoneNumber} onChange={(e) => handleAdmissionBannerChange("phoneNumber", e.target.value)} />
-          </div>
-          <div className="grid gap-4 md:grid-cols-2">
-            <Input placeholder="Directions Label" value={content.admissions.cta.directionsLabel} onChange={(e) => handleAdmissionBannerChange("directionsLabel", e.target.value)} />
-            <Input placeholder="Directions URL" value={content.admissions.cta.directionsUrl} onChange={(e) => handleAdmissionBannerChange("directionsUrl", e.target.value)} />
+            <Input
+              placeholder="Call Button Text"
+              value={content.admissions.cta.phoneLabel}
+              onChange={(e) => handleAdmissionBannerChange("phoneLabel", e.target.value)}
+            />
+            <Input
+              placeholder="Directions Button Text"
+              value={content.admissions.cta.directionsLabel}
+              onChange={(e) => handleAdmissionBannerChange("directionsLabel", e.target.value)}
+            />
           </div>
         </CardContent>
       </Card>
@@ -1852,6 +3756,7 @@ const Admin = () => {
       onAdd: () => void;
       onRemove: (index: number) => void;
       subsectionId?: string;
+      disableAddButton?: boolean;
     },
   ) => (
     <Card 
@@ -1876,10 +3781,7 @@ const Admin = () => {
             {opts.fieldRender(item, index)}
           </div>
         ))}
-        <Button variant="outline" className="flex items-center gap-2" onClick={opts.onAdd}>
-          <Plus className="h-4 w-4" />
-          Add Item
-        </Button>
+        
       </CardContent>
     </Card>
   );
@@ -1890,6 +3792,7 @@ const Admin = () => {
     list: string[],
     onChange: (next: string[]) => void,
     subsectionId?: string,
+    disableAddButton?: boolean,
   ) => (
     <Card 
       className="shadow-soft"
@@ -1909,10 +3812,12 @@ const Admin = () => {
             </Button>
           </div>
         ))}
-        <Button variant="outline" className="flex items-center gap-2" onClick={() => onChange([...list, ""])}>
-          <Plus className="h-4 w-4" />
-          Add Item
-        </Button>
+        {!disableAddButton && (
+          <Button variant="outline" className="flex items-center gap-2" onClick={() => onChange([...list, ""])}>
+            <Plus className="h-4 w-4" />
+            Add Item
+          </Button>
+        )}
       </CardContent>
     </Card>
   );
@@ -1950,45 +3855,6 @@ const Admin = () => {
       admissions: {
         ...prev.admissions,
         steps: prev.admissions.steps.map((step, i) => (i === index ? { ...step, [field]: value } : step)),
-      },
-    }));
-  };
-
-  const handleCourseDetailChange = (
-    index: number,
-    field: "label" | "value" | "icon",
-    value: string,
-  ) => {
-    setContent((prev) => ({
-      ...prev,
-      admissions: {
-        ...prev.admissions,
-        courseDetails: prev.admissions.courseDetails.map((detail, i) =>
-          i === index ? { ...detail, [field]: value } : detail,
-        ),
-      },
-    }));
-  };
-
-  const handleAddCourseDetail = () => {
-    setContent((prev) => ({
-      ...prev,
-      admissions: {
-        ...prev.admissions,
-        courseDetails: [
-          ...prev.admissions.courseDetails,
-          { label: "", value: "", icon: courseDetailIconOptions[0] },
-        ],
-      },
-    }));
-  };
-
-  const handleRemoveCourseDetail = (index: number) => {
-    setContent((prev) => ({
-      ...prev,
-      admissions: {
-        ...prev.admissions,
-        courseDetails: prev.admissions.courseDetails.filter((_, i) => i !== index),
       },
     }));
   };
@@ -2037,294 +3903,7 @@ const Admin = () => {
     }));
   };
 
-  const renderSuccessStoriesEditor = () => {
-    const successStories = content.successStories ?? DEFAULT_CONTENT.successStories;
 
-    return (
-      <>
-      <Card 
-        className="shadow-soft"
-        onMouseEnter={() => setActiveSubSection('success-hero')}
-        onFocus={() => setActiveSubSection('success-hero')}
-      >
-        <CardHeader>
-          <CardTitle>Success Stories Hero</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <Input placeholder="Title" value={successStories.hero.title} onChange={(e) => handleSuccessHeroChange("title", e.target.value)} />
-          <Textarea rows={2} placeholder="Subtitle" value={successStories.hero.subtitle} onChange={(e) => handleSuccessHeroChange("subtitle", e.target.value)} />
-        </CardContent>
-      </Card>
-
-      <Card 
-        className="shadow-soft"
-        onMouseEnter={() => setActiveSubSection('success-stats')}
-        onFocus={() => setActiveSubSection('success-stats')}
-      >
-        <CardHeader>
-          <CardTitle>Stats</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {successStories.stats.map((stat, index) => (
-            <div key={index} className="rounded border p-4 space-y-2">
-              <div className="flex items-center justify-between">
-                <Label>Stat {index + 1}</Label>
-                <Button variant="ghost" size="icon" onClick={() => handleRemoveSuccessStat(index)}>
-                  <Trash2 className="h-4 w-4" />
-                </Button>
-              </div>
-              <Input placeholder="Value" value={stat.value} onChange={(e) => handleSuccessStatChange(index, "value", e.target.value)} />
-              <Input placeholder="Label" value={stat.label} onChange={(e) => handleSuccessStatChange(index, "label", e.target.value)} />
-            </div>
-          ))}
-          <Button variant="outline" className="flex items-center gap-2" onClick={handleAddSuccessStat}>
-            <Plus className="h-4 w-4" />
-            Add Stat
-          </Button>
-        </CardContent>
-      </Card>
-
-      <Card 
-        className="shadow-soft"
-        onMouseEnter={() => setActiveSubSection('success-stories')}
-        onFocus={() => setActiveSubSection('success-stories')}
-      >
-        <CardHeader>
-          <CardTitle>Testimonials</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {successStories.stories.map((story, index) => (
-            <div key={index} className="border rounded-lg p-4 space-y-2">
-              <div className="flex items-center justify-between">
-                <Label>Story {index + 1}</Label>
-                <Button variant="ghost" size="icon" onClick={() => handleRemoveSuccessStory(index)}>
-                  <Trash2 className="h-4 w-4" />
-                </Button>
-              </div>
-              <Input placeholder="Name" value={story.name} onChange={(e) => handleSuccessStoryChange(index, "name", e.target.value)} />
-              <Input placeholder="Role" value={story.role} onChange={(e) => handleSuccessStoryChange(index, "role", e.target.value)} />
-              <Textarea rows={3} placeholder="Content" value={story.content} onChange={(e) => handleSuccessStoryChange(index, "content", e.target.value)} />
-              <Input type="number" min={1} max={5} placeholder="Rating" value={story.rating} onChange={(e) => handleSuccessStoryChange(index, "rating", Number(e.target.value))} />
-              <Input placeholder="Achievement" value={story.achievement ?? ""} onChange={(e) => handleSuccessStoryChange(index, "achievement", e.target.value)} />
-            </div>
-          ))}
-          <Button variant="outline" className="flex items-center gap-2" onClick={handleAddSuccessStory}>
-            <Plus className="h-4 w-4" />
-            Add Story
-          </Button>
-        </CardContent>
-      </Card>
-
-      {renderSimpleStringList(
-        "Achievements",
-        "Bullets shown in the notable achievements list.",
-        successStories.achievements,
-        (next) =>
-          setContent((prev) => ({
-            ...prev,
-            successStories: { ...prev.successStories, achievements: next },
-          })),
-        'success-achievements'
-      )}
-
-      <Card 
-        className="shadow-soft"
-        onMouseEnter={() => setActiveSubSection('success-video')}
-        onFocus={() => setActiveSubSection('success-video')}
-      >
-        <CardHeader>
-          <CardTitle>Video Section</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-3">
-          <Textarea rows={2} placeholder="Description" value={successStories.video.description} onChange={(e) => handleSuccessVideoChange("description", e.target.value)} />
-          <div className="grid gap-4 md:grid-cols-2">
-            <Input placeholder="Link Text" value={successStories.video.linkText} onChange={(e) => handleSuccessVideoChange("linkText", e.target.value)} />
-            <Input placeholder="Link URL" value={successStories.video.linkUrl} onChange={(e) => handleSuccessVideoChange("linkUrl", e.target.value)} />
-          </div>
-          <Textarea rows={2} placeholder="Note" value={successStories.video.note} onChange={(e) => handleSuccessVideoChange("note", e.target.value)} />
-        </CardContent>
-      </Card>
-
-      <Card 
-        className="shadow-soft"
-        onMouseEnter={() => setActiveSubSection('success-cta')}
-        onFocus={() => setActiveSubSection('success-cta')}
-      >
-        <CardHeader>
-          <CardTitle>Call to Action</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-3">
-          <Input placeholder="Title" value={successStories.cta.title} onChange={(e) => handleSuccessCtaChange("title", e.target.value)} />
-          <Textarea rows={2} placeholder="Description" value={successStories.cta.description} onChange={(e) => handleSuccessCtaChange("description", e.target.value)} />
-          <div className="grid gap-4 md:grid-cols-2">
-            <Input placeholder="Phone Label" value={successStories.cta.phoneLabel} onChange={(e) => handleSuccessCtaChange("phoneLabel", e.target.value)} />
-            <Input placeholder="Phone Number" value={successStories.cta.phoneNumber} onChange={(e) => handleSuccessCtaChange("phoneNumber", e.target.value)} />
-          </div>
-          <div className="space-y-2">
-            <Label>Review Links</Label>
-            {successStories.cta.reviewLinks.map((link, index) => (
-              <div key={index} className="grid gap-3 md:grid-cols-[1fr,2fr,auto] items-center">
-                <Input placeholder="Label" value={link.label} onChange={(e) => handleSuccessReviewLinkChange(index, "label", e.target.value)} />
-                <Input placeholder="URL" value={link.url} onChange={(e) => handleSuccessReviewLinkChange(index, "url", e.target.value)} />
-                <Button variant="ghost" size="icon" onClick={() => handleRemoveSuccessReviewLink(index)}>
-                  <Trash2 className="h-4 w-4" />
-                </Button>
-              </div>
-            ))}
-            <Button variant="outline" className="flex items-center gap-2" onClick={handleAddSuccessReviewLink}>
-              <Plus className="h-4 w-4" />
-              Add Link
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
-      </>
-    );
-  };
-
-  const handleSuccessHeroChange = (field: "title" | "subtitle", value: string) => {
-    setContent((prev) => ({
-      ...prev,
-      successStories: { ...prev.successStories, hero: { ...prev.successStories.hero, [field]: value } },
-    }));
-  };
-
-  const handleSuccessStatChange = (index: number, field: "value" | "label", value: string) => {
-    setContent((prev) => ({
-      ...prev,
-      successStories: {
-        ...prev.successStories,
-        stats: prev.successStories.stats.map((stat, i) => (i === index ? { ...stat, [field]: value } : stat)),
-      },
-    }));
-  };
-
-  const handleAddSuccessStat = () => {
-    setContent((prev) => ({
-      ...prev,
-      successStories: { ...prev.successStories, stats: [...prev.successStories.stats, { value: "", label: "" }] },
-    }));
-  };
-
-  const handleRemoveSuccessStat = (index: number) => {
-    setContent((prev) => ({
-      ...prev,
-      successStories: { ...prev.successStories, stats: prev.successStories.stats.filter((_, i) => i !== index) },
-    }));
-  };
-
-  const handleSuccessStoryChange = (
-    index: number,
-    field: "name" | "role" | "content" | "rating" | "achievement",
-    value: string | number,
-  ) => {
-    setContent((prev) => ({
-      ...prev,
-      successStories: {
-        ...prev.successStories,
-        stories: prev.successStories.stories.map((story, i) => (i === index ? { ...story, [field]: value } : story)),
-      },
-    }));
-  };
-
-  const handleAddSuccessStory = () => {
-    setContent((prev) => ({
-      ...prev,
-      successStories: {
-        ...prev.successStories,
-        stories: [...prev.successStories.stories, { name: "", role: "", content: "", rating: 5, achievement: "" }],
-      },
-    }));
-  };
-
-  const handleRemoveSuccessStory = (index: number) => {
-    setContent((prev) => ({
-      ...prev,
-      successStories: { ...prev.successStories, stories: prev.successStories.stories.filter((_, i) => i !== index) },
-    }));
-  };
-
-  const handleSuccessVideoChange = (field: "description" | "linkText" | "linkUrl" | "note", value: string) => {
-    setContent((prev) => ({
-      ...prev,
-      successStories: { ...prev.successStories, video: { ...prev.successStories.video, [field]: value } },
-    }));
-  };
-
-  const handleSuccessCtaChange = (
-    field: "title" | "description" | "phoneLabel" | "phoneNumber",
-    value: string,
-  ) => {
-    setContent((prev) => ({
-      ...prev,
-      successStories: { ...prev.successStories, cta: { ...prev.successStories.cta, [field]: value } },
-    }));
-  };
-
-  const handleSuccessAchievementChange = (index: number, value: string) => {
-    setContent((prev) => ({
-      ...prev,
-      successStories: {
-        ...prev.successStories,
-        achievements: prev.successStories.achievements.map((achievement, i) => (i === index ? value : achievement)),
-      },
-    }));
-  };
-
-  const handleAddSuccessAchievement = () => {
-    setContent((prev) => ({
-      ...prev,
-      successStories: { ...prev.successStories, achievements: [...prev.successStories.achievements, ""] },
-    }));
-  };
-
-  const handleRemoveSuccessAchievement = (index: number) => {
-    setContent((prev) => ({
-      ...prev,
-      successStories: { ...prev.successStories, achievements: prev.successStories.achievements.filter((_, i) => i !== index) },
-    }));
-  };
-
-  const handleSuccessReviewLinkChange = (index: number, field: "label" | "url", value: string) => {
-    setContent((prev) => ({
-      ...prev,
-      successStories: {
-        ...prev.successStories,
-        cta: {
-          ...prev.successStories.cta,
-          reviewLinks: prev.successStories.cta.reviewLinks.map((link, i) =>
-            i === index ? { ...link, [field]: value } : link,
-          ),
-        },
-      },
-    }));
-  };
-
-  const handleAddSuccessReviewLink = () => {
-    setContent((prev) => ({
-      ...prev,
-      successStories: {
-        ...prev.successStories,
-        cta: {
-          ...prev.successStories.cta,
-          reviewLinks: [...prev.successStories.cta.reviewLinks, { label: "", url: "" }],
-        },
-      },
-    }));
-  };
-
-  const handleRemoveSuccessReviewLink = (index: number) => {
-    setContent((prev) => ({
-      ...prev,
-      successStories: {
-        ...prev.successStories,
-        cta: {
-          ...prev.successStories.cta,
-          reviewLinks: prev.successStories.cta.reviewLinks.filter((_, i) => i !== index),
-        },
-      },
-    }));
-  };
 
   const renderGalleryEditor = () => {
     const categoryKeys = Object.keys(content.gallery.categories) as Array<keyof typeof content.gallery.categories>;
@@ -2410,6 +3989,99 @@ const Admin = () => {
             </CardContent>
           </Card>
         ))}
+
+        <Card
+          className="shadow-soft"
+          onMouseEnter={() => setActiveSubSection('gallery-videos')}
+          onFocus={() => setActiveSubSection('gallery-videos')}
+        >
+          <CardHeader>
+            <CardTitle>Gallery Videos</CardTitle>
+            <CardDescription>Videos shown under the Videos tab on the Gallery page.</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {content.gallery.videos?.map((video, index) => (
+              <div key={index} className="border rounded-lg p-4 space-y-3">
+                <div className="flex items-center justify-between">
+                  <Label>Video {index + 1}</Label>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    type="button"
+                    onClick={() => {
+                      setContent(prev => ({
+                        ...prev,
+                        gallery: {
+                          ...prev.gallery,
+                          videos: (prev.gallery.videos || []).filter((_, i) => i !== index),
+                        },
+                      }));
+                    }}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
+                <div className="space-y-2">
+                  <Label>Title</Label>
+                  <Input
+                    value={video.title}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      setContent(prev => ({
+                        ...prev,
+                        gallery: {
+                          ...prev.gallery,
+                          videos: (prev.gallery.videos || []).map((v, i) =>
+                            i === index ? { ...v, title: value } : v,
+                          ),
+                        },
+                      }));
+                    }}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>Video URL (YouTube embed)</Label>
+                  <Input
+                    value={video.url}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      setContent(prev => ({
+                        ...prev,
+                        gallery: {
+                          ...prev.gallery,
+                          videos: (prev.gallery.videos || []).map((v, i) =>
+                            i === index ? { ...v, url: value } : v,
+                          ),
+                        },
+                      }));
+                    }}
+                  />
+                </div>
+              </div>
+            ))}
+
+            <Button
+              type="button"
+              variant="outline"
+              className="flex items-center gap-2"
+              onClick={() => {
+                setContent(prev => ({
+                  ...prev,
+                  gallery: {
+                    ...prev.gallery,
+                    videos: [
+                      ...(prev.gallery.videos || []),
+                      { title: "", url: "" },
+                    ],
+                  },
+                }));
+              }}
+            >
+              <Plus className="h-4 w-4" />
+              Add Video
+            </Button>
+          </CardContent>
+        </Card>
       </>
     );
   };
@@ -2514,84 +4186,290 @@ const Admin = () => {
     }));
   };
 
-  const renderReviewsEditor = () => (
-    <>
-      <Card 
-        className="shadow-soft"
-        onMouseEnter={() => setActiveSubSection('reviews-hero')}
-        onFocus={() => setActiveSubSection('reviews-hero')}
-      >
-        <CardHeader>
-          <CardTitle>Reviews Hero</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <Input placeholder="Title" value={content.reviews.hero.title} onChange={(e) => handleReviewsHeroChange("title", e.target.value)} />
-          <Textarea rows={2} placeholder="Subtitle" value={content.reviews.hero.subtitle} onChange={(e) => handleReviewsHeroChange("subtitle", e.target.value)} />
-        </CardContent>
-      </Card>
+    const renderReviewsEditor = () => {
+    const googleTestimonials = content.reviews.testimonials
+      .map((testimonial, index) => ({ testimonial, index }))
+      .filter(({ testimonial }) => (testimonial.source || "google") === "google");
 
-      <Card 
-        className="shadow-soft"
-        onMouseEnter={() => setActiveSubSection('reviews-hero')}
-        onFocus={() => setActiveSubSection('reviews-hero')}
-      >
-        <CardHeader>
-          <CardTitle>Rating Summary</CardTitle>
-        </CardHeader>
-        <CardContent className="grid gap-4 md:grid-cols-3">
-          <Input placeholder="Score" value={content.reviews.ratingSummary.score} onChange={(e) => handleRatingSummaryChange("score", e.target.value)} />
-          <Input placeholder="Label" value={content.reviews.ratingSummary.label} onChange={(e) => handleRatingSummaryChange("label", e.target.value)} />
-          <Input placeholder="Count" value={content.reviews.ratingSummary.count} onChange={(e) => handleRatingSummaryChange("count", e.target.value)} />
-        </CardContent>
-      </Card>
+    const facebookTestimonials = content.reviews.testimonials
+      .map((testimonial, index) => ({ testimonial, index }))
+      .filter(({ testimonial }) => testimonial.source === "facebook");
 
-      <Card 
-        className="shadow-soft"
-        onMouseEnter={() => setActiveSubSection('reviews-testimonials')}
-        onFocus={() => setActiveSubSection('reviews-testimonials')}
-      >
-        <CardHeader>
-          <CardTitle>Testimonials</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {content.reviews.testimonials.map((testimonial, index) => (
-            <div key={index} className="border rounded-lg p-4 space-y-3">
-              <div className="flex items-center justify-between">
-                <Label>Testimonial {index + 1}</Label>
-                <Button variant="ghost" size="icon" onClick={() => handleRemoveReviewTestimonial(index)}>
-                  <Trash2 className="h-4 w-4" />
-                </Button>
-              </div>
-              <Input placeholder="Name" value={testimonial.name} onChange={(e) => handleReviewTestimonialChange(index, "name", e.target.value)} />
-              <Input placeholder="Role" value={testimonial.role} onChange={(e) => handleReviewTestimonialChange(index, "role", e.target.value)} />
-              <Textarea rows={3} placeholder="Content" value={testimonial.content} onChange={(e) => handleReviewTestimonialChange(index, "content", e.target.value)} />
-              <Input type="number" min={1} max={5} placeholder="Rating" value={testimonial.rating} onChange={(e) => handleReviewTestimonialChange(index, "rating", Number(e.target.value))} />
+    const justdialTestimonials = content.reviews.testimonials
+      .map((testimonial, index) => ({ testimonial, index }))
+      .filter(({ testimonial }) => testimonial.source === "justdial");
+
+    return (
+      <>
+        {/* Reviews Hero */}
+        <Card
+          className="shadow-soft"
+          onMouseEnter={() => setActiveSubSection("reviews-hero")}
+          onFocus={() => setActiveSubSection("reviews-hero")}
+        >
+          <CardHeader>
+            <CardTitle>Reviews Hero</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <Input
+              placeholder="Title"
+              value={content.reviews.hero.title}
+              onChange={(e) => handleReviewsHeroChange("title", e.target.value)}
+            />
+            <Textarea
+              rows={2}
+              placeholder="Subtitle"
+              value={content.reviews.hero.subtitle}
+              onChange={(e) => handleReviewsHeroChange("subtitle", e.target.value)}
+            />
+          </CardContent>
+        </Card>
+
+        {/* Google section + testimonials */}
+        <Card
+          className="shadow-soft"
+          onMouseEnter={() => setActiveSubSection("reviews-google")}
+          onFocus={() => setActiveSubSection("reviews-google")}
+        >
+          <CardHeader>
+            <CardTitle>Google Reviews Section</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="space-y-3">
+              <Input
+                placeholder="Section Title"
+                value={content.reviews.sections?.google.title || ""}
+                onChange={(e) => handleReviewsSectionChange("google", "title", e.target.value)}
+              />
+              <Textarea
+                rows={2}
+                placeholder="Section Description"
+                value={content.reviews.sections?.google.description || ""}
+                onChange={(e) => handleReviewsSectionChange("google", "description", e.target.value)}
+              />
             </div>
-          ))}
-          <Button variant="outline" className="flex items-center gap-2" onClick={handleAddReviewTestimonial}>
-            <Plus className="h-4 w-4" />
-            Add Testimonial
-          </Button>
-        </CardContent>
-      </Card>
+            <div className="space-y-4">
+              {googleTestimonials.map(({ testimonial, index }) => (
+                <div key={index} className="border rounded-lg p-4 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <Label>Testimonial {index + 1}</Label>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => handleRemoveReviewTestimonial(index)}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                  <Input
+                    placeholder="Name"
+                    value={testimonial.name}
+                    onChange={(e) => handleReviewTestimonialChange(index, "name", e.target.value)}
+                  />
+                  <Input
+                    placeholder="Role"
+                    value={testimonial.role}
+                    onChange={(e) => handleReviewTestimonialChange(index, "role", e.target.value)}
+                  />
+                  <Textarea
+                    rows={3}
+                    placeholder="Content"
+                    value={testimonial.content}
+                    onChange={(e) =>
+                      handleReviewTestimonialChange(index, "content", e.target.value)
+                    }
+                  />
+                  <Input
+                    type="number"
+                    min={1}
+                    max={5}
+                    placeholder="Rating"
+                    value={testimonial.rating}
+                    onChange={(e) =>
+                      handleReviewTestimonialChange(index, "rating", Number(e.target.value))
+                    }
+                  />
+                </div>
+              ))}
+              
+            </div>
+          </CardContent>
+        </Card>
 
-      <Card 
-        className="shadow-soft"
-        onMouseEnter={() => setActiveSubSection('reviews-cta')}
-        onFocus={() => setActiveSubSection('reviews-cta')}
-      >
-        <CardHeader>
-          <CardTitle>Call to Action</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-3">
-          <Input placeholder="Title" value={content.reviews.cta.title} onChange={(e) => handleReviewsCtaChange("title", e.target.value)} />
-          <Textarea rows={2} placeholder="Description" value={content.reviews.cta.description} onChange={(e) => handleReviewsCtaChange("description", e.target.value)} />
-          <Input placeholder="Button Text" value={content.reviews.cta.buttonText} onChange={(e) => handleReviewsCtaChange("buttonText", e.target.value)} />
-          <Input placeholder="Mailto Link" value={content.reviews.cta.mailTo} onChange={(e) => handleReviewsCtaChange("mailTo", e.target.value)} />
-        </CardContent>
-      </Card>
-    </>
-  );
+        {/* Facebook section + testimonials */}
+        <Card
+          className="shadow-soft"
+          onMouseEnter={() => setActiveSubSection("reviews-facebook")}
+          onFocus={() => setActiveSubSection("reviews-facebook")}
+        >
+          <CardHeader>
+            <CardTitle>Facebook Reviews Section</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="space-y-3">
+              <Input
+                placeholder="Section Title"
+                value={content.reviews.sections?.facebook.title || ""}
+                onChange={(e) => handleReviewsSectionChange("facebook", "title", e.target.value)}
+              />
+              <Textarea
+                rows={2}
+                placeholder="Section Description"
+                value={content.reviews.sections?.facebook.description || ""}
+                onChange={(e) => handleReviewsSectionChange("facebook", "description", e.target.value)}
+              />
+            </div>
+            <div className="space-y-4">
+              {facebookTestimonials.map(({ testimonial, index }) => (
+                <div key={index} className="border rounded-lg p-4 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <Label>Testimonial {index + 1}</Label>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => handleRemoveReviewTestimonial(index)}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                  <Input
+                    placeholder="Name"
+                    value={testimonial.name}
+                    onChange={(e) => handleReviewTestimonialChange(index, "name", e.target.value)}
+                  />
+                  <Input
+                    placeholder="Role"
+                    value={testimonial.role}
+                    onChange={(e) => handleReviewTestimonialChange(index, "role", e.target.value)}
+                  />
+                  <Textarea
+                    rows={3}
+                    placeholder="Content"
+                    value={testimonial.content}
+                    onChange={(e) =>
+                      handleReviewTestimonialChange(index, "content", e.target.value)
+                    }
+                  />
+                  <Input
+                    type="number"
+                    min={1}
+                    max={5}
+                    placeholder="Rating"
+                    value={testimonial.rating}
+                    onChange={(e) =>
+                      handleReviewTestimonialChange(index, "rating", Number(e.target.value))
+                    }
+                  />
+                </div>
+              ))}
+             
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* JustDial section + testimonials */}
+        <Card
+          className="shadow-soft"
+          onMouseEnter={() => setActiveSubSection("reviews-justdial")}
+          onFocus={() => setActiveSubSection("reviews-justdial")}
+        >
+          <CardHeader>
+            <CardTitle>JustDial Reviews Section</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="space-y-3">
+              <Input
+                placeholder="Section Title"
+                value={content.reviews.sections?.justdial.title || ""}
+                onChange={(e) => handleReviewsSectionChange("justdial", "title", e.target.value)}
+              />
+              <Textarea
+                rows={2}
+                placeholder="Section Description"
+                value={content.reviews.sections?.justdial.description || ""}
+                onChange={(e) => handleReviewsSectionChange("justdial", "description", e.target.value)}
+              />
+            </div>
+            <div className="space-y-4">
+              {justdialTestimonials.map(({ testimonial, index }) => (
+                <div key={index} className="border rounded-lg p-4 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <Label>Testimonial {index + 1}</Label>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => handleRemoveReviewTestimonial(index)}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                  <Input
+                    placeholder="Name"
+                    value={testimonial.name}
+                    onChange={(e) => handleReviewTestimonialChange(index, "name", e.target.value)}
+                  />
+                  <Input
+                    placeholder="Role"
+                    value={testimonial.role}
+                    onChange={(e) => handleReviewTestimonialChange(index, "role", e.target.value)}
+                  />
+                  <Textarea
+                    rows={3}
+                    placeholder="Content"
+                    value={testimonial.content}
+                    onChange={(e) =>
+                      handleReviewTestimonialChange(index, "content", e.target.value)
+                    }
+                  />
+                  <Input
+                    type="number"
+                    min={1}
+                    max={5}
+                    placeholder="Rating"
+                    value={testimonial.rating}
+                    onChange={(e) =>
+                      handleReviewTestimonialChange(index, "rating", Number(e.target.value))
+                    }
+                  />
+                </div>
+              ))}
+              
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Call to Action */}
+        <Card
+          className="shadow-soft"
+          onMouseEnter={() => setActiveSubSection("reviews-cta")}
+          onFocus={() => setActiveSubSection("reviews-cta")}
+        >
+          <CardHeader>
+            <CardTitle>Call to Action</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <Input
+              placeholder="Title"
+              value={content.reviews.cta.title}
+              onChange={(e) => handleReviewsCtaChange("title", e.target.value)}
+            />
+            <Textarea
+              rows={2}
+              placeholder="Description"
+              value={content.reviews.cta.description}
+              onChange={(e) => handleReviewsCtaChange("description", e.target.value)}
+            />
+            <Input
+              placeholder="Button Text"
+              value={content.reviews.cta.buttonText}
+              onChange={(e) => handleReviewsCtaChange("buttonText", e.target.value)}
+            />
+          </CardContent>
+        </Card>
+      </>
+    );
+  };
+  
 
   const handleReviewsHeroChange = (field: "title" | "subtitle", value: string) => {
     setContent((prev) => ({
@@ -2600,16 +4478,36 @@ const Admin = () => {
     }));
   };
 
-  const handleRatingSummaryChange = (field: "score" | "label" | "count", value: string) => {
-    setContent((prev) => ({
-      ...prev,
-      reviews: { ...prev.reviews, ratingSummary: { ...prev.reviews.ratingSummary, [field]: value } },
-    }));
+  const handleReviewsSectionChange = (
+    section: "google" | "facebook" | "justdial",
+    field: "title" | "description",
+    value: string,
+  ) => {
+    setContent((prev) => {
+      const existing = prev.reviews.sections || {
+        google: { title: "Google Reviews", description: "" },
+        facebook: { title: "Facebook Reviews", description: "" },
+        justdial: { title: "JustDial Reviews", description: "" },
+      };
+      return {
+        ...prev,
+        reviews: {
+          ...prev.reviews,
+          sections: {
+            ...existing,
+            [section]: {
+              ...(existing as any)[section],
+              [field]: value,
+            },
+          },
+        },
+      };
+    });
   };
 
   const handleReviewTestimonialChange = (
     index: number,
-    field: "name" | "role" | "content" | "rating",
+    field: "name" | "role" | "content" | "rating" | "source",
     value: string | number,
   ) => {
     setContent((prev) => ({
@@ -2877,10 +4775,7 @@ const Admin = () => {
               </div>
             </div>
           ))}
-          <Button variant="outline" className="flex items-center gap-2" onClick={handleAddContactCard}>
-            <Plus className="h-4 w-4" />
-            Add Card
-          </Button>
+          
         </CardContent>
       </Card>
 
@@ -3077,10 +4972,7 @@ const Admin = () => {
                     </Button>
                   </div>
                 ))}
-                <Button variant="outline" className="flex items-center gap-2" onClick={() => handleFacultyMemberStringItemAdd(index, "specialization")}>
-                  <Plus className="h-4 w-4" />
-                  Add Specialization
-                </Button>
+               
               </div>
 
               <div className="space-y-2">
@@ -3386,7 +5278,7 @@ const Admin = () => {
       case "admissions":
         return renderAdmissionsEditor();
       case "success":
-        return renderSuccessStoriesEditor();
+        return renderStaticOverview(selectedSection);
       case "gallery":
         return renderGalleryEditor();
       case "reviews":
@@ -3510,7 +5402,21 @@ const Admin = () => {
               </SidebarMenu>
             </SidebarGroup>
           </SidebarContent>
-          
+          <div className="px-4 pb-4 mt-auto">
+            <Button
+              className="w-full justify-center gradient-accent"
+              type="button"
+              onClick={() => {
+                setIsAuthed(false);
+                if (typeof window !== "undefined") {
+                  window.location.href = "/";
+                }
+              }}
+            >
+              <LogOut className="h-4 w-4 mr-2" />
+              Logout
+            </Button>
+          </div>
         </Sidebar>
         <SidebarInset className="flex-1 overflow-hidden min-w-0">
           <div className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 px-4 py-2 flex items-center justify-between">
@@ -3519,9 +5425,9 @@ const Admin = () => {
               <Button className="gradient-accent" onClick={handleSaveChanges}>Save Changes</Button>
               <Button variant="outline" onClick={handleEditAction} className="hidden md:inline-flex">
                 <ExternalLink className="h-4 w-4 mr-2" /> Open live page
-              </Button>
-            </div>
-          </div>
+                </Button>
+              </div>
+              </div>
           <div className="flex h-[calc(100vh-44px)] w-full max-w-full overflow-x-hidden">
             <SiteContentManager
               selectedSection={selectedSection}

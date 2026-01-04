@@ -4,35 +4,34 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 import { MapPin, Phone, Mail, Clock } from "lucide-react";
 
 const Contact = () => {
   const { toast } = useToast();
   const { content } = useContent();
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
+  const [form, setForm] = useState({
+    firstName: "",
+    lastName: "",
+    workingPerson: "",
     phone: "",
-    course: "",
-    message: "",
+    area: "",
+    times: { morning: false, afternoon: false, evening: false },
   });
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
-    toast({
-      title: "Message Sent!",
-      description: "We'll get back to you within 24 hours.",
-    });
-    setFormData({ name: "", email: "", phone: "", course: "", message: "" });
+    toast({ title: "Request submitted", description: "We'll call you back shortly." });
+    setForm({ firstName: "", lastName: "", workingPerson: "", phone: "", area: "", times: { morning: false, afternoon: false, evening: false } });
   };
 
-  const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setForm((f) => ({ ...f, [name]: value }));
   };
 
   return (
@@ -55,83 +54,80 @@ const Contact = () => {
                 <h2 className="text-3xl font-bold mb-8">Send Us a Message</h2>
                 <Card className="shadow-medium">
                   <CardHeader>
-                    <CardTitle>Enquiry Form</CardTitle>
-                    <CardDescription>
-                      Fill out the form and we'll respond within 24 hours
-                    </CardDescription>
+                    <CardTitle>Request a call back</CardTitle>
+                    <CardDescription>Fill in your details and pick a suitable time.</CardDescription>
                   </CardHeader>
                   <CardContent>
                     <form onSubmit={handleSubmit} className="space-y-6">
-                      <div className="space-y-2">
-                        <Label htmlFor="name">Full Name *</Label>
-                        <Input
-                          id="name"
-                          name="name"
-                          value={formData.name}
-                          onChange={handleChange}
-                          required
-                          placeholder="Enter your name"
-                        />
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <Label htmlFor="firstName">Name *</Label>
+                          <Input id="firstName" name="firstName" placeholder="First" value={form.firstName} onChange={handleChange} required />
+                        </div>
+                        <div className="space-y-2">
+                          <Label className="opacity-0">Last</Label>
+                          <Input name="lastName" placeholder="Last" value={form.lastName} onChange={handleChange} />
+                        </div>
                       </div>
 
                       <div className="space-y-2">
-                        <Label htmlFor="email">Email Address *</Label>
-                        <Input
-                          id="email"
-                          name="email"
-                          type="email"
-                          value={formData.email}
-                          onChange={handleChange}
-                          required
-                          placeholder="your.email@example.com"
-                        />
-                      </div>
-
-                      <div className="space-y-2">
-                        <Label htmlFor="phone">Phone Number *</Label>
-                        <Input
-                          id="phone"
-                          name="phone"
-                          type="tel"
-                          value={formData.phone}
-                          onChange={handleChange}
-                          required
-                          placeholder="+91 98765 43210"
-                        />
-                      </div>
-
-                      <div className="space-y-2">
-                        <Label htmlFor="course">Interested Course</Label>
-                        <Select
-                          value={formData.course}
-                          onValueChange={(value) => setFormData({ ...formData, course: value })}
-                        >
+                        <Label>Dropdown</Label>
+                        <Select value={form.workingPerson} onValueChange={(v) => setForm((f) => ({ ...f, workingPerson: v }))}>
                           <SelectTrigger>
-                            <SelectValue placeholder="Select a course" />
+                            <SelectValue placeholder="Working Person" />
                           </SelectTrigger>
                           <SelectContent>
-                            {content.contact.courseOptions.map((opt) => (
-                              <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
-                            ))}
+                            <SelectItem value="working">Working Person</SelectItem>
+                            <SelectItem value="student">Student</SelectItem>
+                            <SelectItem value="homemaker">House Maker</SelectItem>
                           </SelectContent>
                         </Select>
                       </div>
 
                       <div className="space-y-2">
-                        <Label htmlFor="message">Message</Label>
-                        <Textarea
-                          id="message"
-                          name="message"
-                          value={formData.message}
+                        <Label htmlFor="phone">Contact Number *</Label>
+                        <Input id="phone" name="phone" type="tel" placeholder="Enter your number" value={form.phone} onChange={handleChange} required />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label htmlFor="area">Area of Residence/Work</Label>
+                        <Input
+                          id="area"
+                          name="area"
+                          placeholder="e.g., Ahmedabad"
+                          value={form.area}
                           onChange={handleChange}
-                          placeholder="Tell us about your requirements..."
-                          rows={4}
                         />
                       </div>
 
-                      <Button type="submit" className="w-full gradient-accent">
-                        Submit Enquiry
-                      </Button>
+                      <div className="space-y-3">
+                        <Label>Preferable call time</Label>
+                        <div className="flex flex-wrap gap-3">
+                          <label className="flex items-center space-x-2 border rounded-md p-3 flex-1 min-w-[120px] cursor-pointer hover:bg-gray-50 transition-colors">
+                            <Checkbox
+                              checked={form.times.morning}
+                              onCheckedChange={(c) => setForm((f) => ({ ...f, times: { ...f.times, morning: c === true } }))}
+                            />
+                            <span className="text-sm">Morning</span>
+                          </label>
+                          <label className="flex items-center space-x-2 border rounded-md p-3 flex-1 min-w-[120px] cursor-pointer hover:bg-gray-50 transition-colors">
+                            <Checkbox
+                              checked={form.times.afternoon}
+                              onCheckedChange={(c) => setForm((f) => ({ ...f, times: { ...f.times, afternoon: c === true } }))}
+                            />
+                            <span className="text-sm">Afternoon</span>
+                          </label>
+                          <label className="flex items-center space-x-2 border rounded-md p-3 flex-1 min-w-[120px] cursor-pointer hover:bg-gray-50 transition-colors">
+                            <Checkbox
+                              checked={form.times.evening}
+                              onCheckedChange={(c) => setForm((f) => ({ ...f, times: { ...f.times, evening: c === true } }))}
+                            />
+                            <span className="text-sm">Evening</span>
+                          </label>
+                        </div>
+                      </div>
+
+                      <Button type="submit" className="w-full gradient-accent">Submit</Button>
                     </form>
                   </CardContent>
                 </Card>

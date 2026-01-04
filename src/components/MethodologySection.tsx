@@ -5,6 +5,8 @@ import { useContent } from "@/lib/content";
 const MethodologySection = () => {
   const { content } = useContent();
   const methodologySections = content?.home?.methodologySections || [];
+  const methodologyHeading = content?.home?.methodologyHeading || "How We Teach";
+  const methodologyTitle = content?.home?.methodologyTitle || "Our Teaching Methodology";
 
   const [expandedIndex, setExpandedIndex] = useState<number>(0);
   const contentRefs = useRef<Array<HTMLDivElement | null>>([]);
@@ -33,10 +35,10 @@ const MethodologySection = () => {
           {/* Header */}
           <div className="mb-10 md:mb-14">
             <span className="text-xs font-semibold text-primary uppercase tracking-widest mb-4 inline-block">
-              How We Teach
+              {methodologyHeading}
             </span>
             <h2 className="text-2xl md:text-4xl font-bold leading-tight text-foreground">
-              Our <span className="text-primary">Teaching Methodology</span>
+              {methodologyTitle}
             </h2>
           </div>
 
@@ -67,9 +69,8 @@ const MethodologySection = () => {
                   </div>
 
                   <ChevronDown
-                    className={`w-5 h-5 text-muted-foreground flex-shrink-0 transition-transform duration-500 ease-in-out ${
-                      expandedIndex === index ? "rotate-180" : ""
-                    }`}
+                    className={`w-5 h-5 text-muted-foreground flex-shrink-0 transition-transform duration-500 ease-in-out ${expandedIndex === index ? "rotate-180" : ""
+                      }`}
                     aria-hidden
                   />
                 </button>
@@ -83,27 +84,18 @@ const MethodologySection = () => {
                   style={{ maxHeight: expandedIndex === index ? undefined : "0px", opacity: expandedIndex === index ? 1 : 0 }}
                 >
                   <div className="p-5 md:p-6">
-                    {section.intro && (
-                      <p className="text-foreground text-sm md:text-base leading-relaxed">
-                        {section.intro}
-                      </p>
-                    )}
+                    {(() => {
+                      const desc = (section.description && section.description.trim().length > 0)
+                        ? section.description
+                        : (section.intro || "");
+                      return desc ? (
+                        <p className="text-muted-foreground text-sm md:text-base leading-relaxed">{desc}</p>
+                      ) : null;
+                    })()}
 
-                    {section.subtitle && (
-                      <h4 className="text-lg md:text-xl font-bold text-foreground mt-4 mb-3">
-                        {section.subtitle}
-                      </h4>
-                    )}
-
-                    {section.description && (
-                      <p className="text-muted-foreground text-sm md:text-base leading-relaxed">
-                        {section.description}
-                      </p>
-                    )}
-
-                    {section.objectives && section.objectives.length > 0 && (
+                    {index === 1 && section.objectives && section.objectives.length > 0 && (
                       <div>
-                        {section.objectivesTitle && (
+                        {index === 1 && section.objectivesTitle && (
                           <h5 className="font-bold text-foreground mb-3 mt-8 text-sm md:text-base">
                             {section.objectivesTitle}
                           </h5>
