@@ -66,12 +66,18 @@ type MethodologySection = {
   description?: string;
   objectives?: string[];
   objectivesTitle?: string;
+  images?: { src: string; alt?: string }[];
 };
 
 type InformationBanner = {
   isVisible: boolean;
   content: string;
   imageUrl?: string;
+};
+
+type Marquee = {
+  isVisible: boolean;
+  text: string;
 };
 
 export type SiteContent = {
@@ -132,6 +138,7 @@ export type SiteContent = {
       subtitle: string;
     };
     informationBanner?: InformationBanner;
+    marquee?: Marquee;
     ctaTitle: string;
     ctaText: string;
   };
@@ -456,6 +463,11 @@ export const DEFAULT_CONTENT: SiteContent = {
       {
         title: "Coaching Method",
         intro: "You are going to study with Mr Ashish Bhatt and Mrs Pragna Bhatt who have taught thousands of students in more than two decades. Their highly interactive and practical method will help you to create your own sentence structures with amazing clarity in Grammar and other aspects. You are going to speak thousands of sentences during the grammar session, which are asked to you in Hindi/Gujarati for every grammar point being taught. During this step by step we connect all structures with logic and visualization in such a way that you will find out that each 5+ every sentence is formed by using basic 4 to 5 rules only! In this process your smartest errors will be rectified and you will develop presence of mind to use simplest to most complex structures for expressing yourself with the confidence that your grammar is always correct. This will help you in participating in variety of speaking activities with confidence and get true fluency in English.",
+        images: [
+          { src: "/src/assets/hero-classroom.jpg", alt: "Coaching Method Image 1" },
+          { src: "/src/assets/speaking-confidence.jpg", alt: "Coaching Method Image 2" },
+          { src: "/src/assets/student-success.jpg", alt: "Coaching Method Image 3" },
+        ],
       },
       {
         title: "Speaking Activities",
@@ -469,15 +481,30 @@ export const DEFAULT_CONTENT: SiteContent = {
           "Refining eye contact, gestures, movement of body parts and over all body language",
           "Removing stage fear while giving presentation and then responding to the questions from any corner of the audience and so on...",
         ],
+        images: [
+          { src: "/src/assets/speaking-confidence.jpg", alt: "Speaking Activities Image 1" },
+          { src: "/src/assets/hero-classroom.jpg", alt: "Speaking Activities Image 2" },
+          { src: "/src/assets/student-success.jpg", alt: "Speaking Activities Image 3" },
+        ],
       },
       {
         title: "Reading and Writing",
         description: "Growing in white collar profession is not possible without excellent reading and writing skills. Specially designed modules for reading and writing will enable you to read and write as effectively as in your mother tongue. With the help of reading techniques taught by us and absolute clarity in sentence formations, you will be able to read with perfect understanding and at double speed. You will be able to make written communication very effectively and the course will enable you to present your ideas in the way you want. Whether you would like to make it precise or elaborate or enthusiastic, you will have the tools to do it. This will enhance your performance specially working at corporate level.",
+        images: [
+          { src: "/src/assets/student-success.jpg", alt: "Reading and Writing Image 1" },
+          { src: "/src/assets/speaking-confidence.jpg", alt: "Reading and Writing Image 2" },
+          { src: "/src/assets/hero-classroom.jpg", alt: "Reading and Writing Image 3" },
+        ],
       },
       {
         title: "Personal Support",
         subtitle: "No Matter What !! We Are There You Will Achieve Your Goal !",
         description: "When you join our institute you become part of Turning Point Family. We make sure that each and every student gets the desired result. We are continuously monitoring the performance of all the students through various parameters and if required we provide personal support to the weak students. If you miss any lecture also our team is at your help to cover up what you had missed. The goal for which you have joined must be achieved. The only condition for our support is that you have to regular and do the work regularly which is of around 30 minutes.",
+        images: [
+          { src: "/src/assets/hero-classroom.jpg", alt: "Personal Support Image 1" },
+          { src: "/src/assets/student-success.jpg", alt: "Personal Support Image 2" },
+          { src: "/src/assets/speaking-confidence.jpg", alt: "Personal Support Image 3" },
+        ],
       },
     ],
     gainHeading: "What You Will Gain",
@@ -610,6 +637,10 @@ export const DEFAULT_CONTENT: SiteContent = {
       isVisible: false,
       content: "",
       imageUrl: undefined,
+    },
+    marquee: {
+      isVisible: true,
+      text: "Transform your English speaking skills with our proven methodology • Join 10,000+ successful students • Expert training from institute founders • Get certified and confident in English communication",
     },
     ctaTitle: "Ready to Transform Your Future?",
     ctaText: "Join thousands of successful students and start your journey towards excellence today",

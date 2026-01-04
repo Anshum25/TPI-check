@@ -1597,6 +1597,108 @@ const Admin = () => {
                                                 />
                                             </div>
 
+                {/* Section Images */}
+                <div className="space-y-3 border-t pt-4">
+                  <Label className="text-sm font-medium">Section Images (3 required)</Label>
+                  <div className="grid grid-cols-3 gap-3">
+                    {(section.images || []).map((image, imgIdx) => (
+                      <div key={imgIdx} className="space-y-2">
+                        {image.src && (
+                          <div className="relative mb-2">
+                            <img
+                              src={image.src.startsWith('data:') || image.src.startsWith('http') ? image.src : image.src}
+                              alt="Preview"
+                              className="w-full h-24 object-cover rounded-md border"
+                              onError={(e) => {
+                                (e.target as HTMLImageElement).style.display = 'none';
+                              }}
+                            />
+                            {image.src.startsWith('data:') && (
+                              <Button
+                                type="button"
+                                size="icon"
+                                variant="destructive"
+                                className="absolute top-1 right-1 h-5 w-5"
+                                onClick={() => {
+                                  setContent((prev) => ({
+                                    ...prev,
+                                    home: {
+                                      ...prev.home,
+                                      methodologySections: prev.home.methodologySections.map((s, i) =>
+                                        i === index
+                                          ? {
+                                              ...s,
+                                              images: (s.images || []).map((img, j) =>
+                                                j === imgIdx ? { ...img, src: "" } : img
+                                              ),
+                                            }
+                                          : s
+                                      ),
+                                    },
+                                  }));
+                                }}
+                              >
+                                <X className="h-3 w-3" />
+                              </Button>
+                            )}
+                          </div>
+                        )}
+                        <div className="flex gap-1">
+                          <Input
+                            type="file"
+                            accept="image/*"
+                            className="hidden"
+                            id={`methodology-image-${index}-${imgIdx}`}
+                            onChange={(e) => {
+                              const file = e.target.files?.[0];
+                              if (file) {
+                                const reader = new FileReader();
+                                reader.onloadend = () => {
+                                  const base64String = reader.result as string;
+                                  setContent((prev) => ({
+                                    ...prev,
+                                    home: {
+                                      ...prev.home,
+                                      methodologySections: prev.home.methodologySections.map((s, i) =>
+                                        i === index
+                                          ? {
+                                              ...s,
+                                              images: (s.images || []).map((img, j) =>
+                                                j === imgIdx ? { ...img, src: base64String } : img
+                                              ),
+                                            }
+                                          : s
+                                      ),
+                                    },
+                                  }));
+                                  toast({
+                                    title: "Image uploaded",
+                                    description: "Section image has been successfully uploaded.",
+                                  });
+                                };
+                                reader.readAsDataURL(file);
+                              }
+                              e.target.value = '';
+                            }}
+                          />
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            className="flex-1 text-xs"
+                            onClick={() => {
+                              document.getElementById(`methodology-image-${index}-${imgIdx}`)?.click();
+                            }}
+                          >
+                            <Upload className="h-3 w-3 mr-1" />
+                            Upload
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
                 {index === 1 && (
                   <div className="space-y-2">
                     <Label>Objectives Title (Section 2)</Label>
@@ -2558,7 +2660,86 @@ const Admin = () => {
         </CardContent>
       </Card>
 
-     
+      {/* Marquee Section */}
+      <Card
+        className="shadow-soft"
+        onMouseEnter={() => setActiveSubSection('marquee')}
+        onFocus={() => setActiveSubSection('marquee')}
+      >
+        <CardHeader>
+          <CardTitle>Marquee Banner</CardTitle>
+          <CardDescription>Endless scrolling text banner displayed below the course section</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {/* Visibility Toggle */}
+          <div className="flex items-center justify-between p-4 rounded-lg border">
+            <div>
+              <Label className="text-sm font-medium">Marquee Visibility</Label>
+              <p className="text-xs text-muted-foreground">Show or hide the marquee banner on the home page</p>
+            </div>
+            <Button
+              type="button"
+              variant={content.home.marquee?.isVisible ? "default" : "outline"}
+              size="sm"
+              onClick={() => {
+                setContent((prev) => ({
+                  ...prev,
+                  home: {
+                    ...prev.home,
+                    marquee: {
+                      ...(prev.home.marquee || { isVisible: false, text: "" }),
+                      isVisible: !prev.home.marquee?.isVisible,
+                    },
+                  },
+                }));
+              }}
+              aria-label={`Turn marquee ${content.home.marquee?.isVisible ? 'off' : 'on'}`}
+              aria-pressed={content.home.marquee?.isVisible}
+            >
+              {content.home.marquee?.isVisible ? "ON" : "OFF"}
+            </Button>
+          </div>
+
+          {/* Marquee Text */}
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <Label htmlFor="marquee-text">Marquee Text</Label>
+              <span
+                className="text-xs text-muted-foreground"
+                aria-live="polite"
+                aria-label={`Character count: ${(content.home.marquee?.text || "").length}`}
+              >
+                {(content.home.marquee?.text || "").length} characters
+              </span>
+            </div>
+            <Textarea
+              id="marquee-text"
+              placeholder="Enter the text that will scroll continuously in the marquee... Use bullet points (•) to separate sections"
+              value={content.home.marquee?.text || ""}
+              onChange={(e) => {
+                const newText = e.target.value;
+                setContent((prev) => ({
+                  ...prev,
+                  home: {
+                    ...prev.home,
+                    marquee: {
+                      ...(prev.home.marquee || { isVisible: false, text: "" }),
+                      text: newText,
+                    },
+                  },
+                }));
+              }}
+              rows={3}
+              aria-describedby="marquee-text-help"
+            />
+            <div id="marquee-text-help" className="text-xs text-muted-foreground">
+              This text will scroll continuously across the page. Use bullet points (•) to separate different messages for visual clarity.
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+
     </>
   );
 

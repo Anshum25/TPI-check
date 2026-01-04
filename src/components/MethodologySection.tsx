@@ -1,6 +1,21 @@
 import { useEffect, useRef, useState } from "react";
 import { ChevronDown } from "lucide-react";
 import { useContent } from "@/lib/content";
+import heroClassroom from "@/assets/hero-classroom.jpg";
+import speakingConfidence from "@/assets/speaking-confidence.jpg";
+import studentSuccess from "@/assets/student-success.jpg";
+
+const imageMap: Record<string, string> = {
+  "/src/assets/hero-classroom.jpg": heroClassroom,
+  "/src/assets/speaking-confidence.jpg": speakingConfidence,
+  "/src/assets/student-success.jpg": studentSuccess,
+};
+
+const resolveImageSrc = (src: string) => {
+  if (!src) return "";
+  if (src.startsWith("data:") || src.startsWith("http")) return src;
+  return imageMap[src] || src;
+};
 
 const MethodologySection = () => {
   const { content } = useContent();
@@ -113,6 +128,26 @@ const MethodologySection = () => {
                             </li>
                           ))}
                         </ul>
+                      </div>
+                    )}
+
+                    {section.images && section.images.length > 0 && (
+                      <div className="mt-8 grid grid-cols-3 gap-4">
+                        {section.images.map((image, imgIdx) => (
+                          <div
+                            key={imgIdx}
+                            className="overflow-hidden rounded-lg shadow-medium"
+                          >
+                            <img
+                              src={resolveImageSrc(image.src)}
+                              alt={image.alt || `Section image ${imgIdx + 1}`}
+                              className="w-full h-48 object-cover hover:scale-105 transition-transform duration-300"
+                              onError={(e) => {
+                                (e.target as HTMLImageElement).style.display = 'none';
+                              }}
+                            />
+                          </div>
+                        ))}
                       </div>
                     )}
                   </div>

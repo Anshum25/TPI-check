@@ -9,6 +9,7 @@ import ActivityVideos from "@/components/ActivityVideos";
 import ActivityImages from "@/components/ActivityImages";
 import FacultyHighlight from "@/components/FacultyHighlight";
 import CourseDetails from "@/components/CourseDetails";
+import Marquee from "@/components/Marquee";
 import MethodologySection from "@/components/MethodologySection";
 import InformationBanner from "@/components/InformationBanner";
 import GainFromCourse from "@/components/GainFromCourse";
@@ -40,6 +41,7 @@ const Home = () => {
         <Differentiators />
         <JoinUsSection showJourney={false} />
         <CourseDetails />
+        <Marquee />
 
         {/* Learn English + Director's Desk */}
         <section className="py-20 md:py-24 relative">
