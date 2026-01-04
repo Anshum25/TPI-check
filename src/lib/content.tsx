@@ -66,6 +66,7 @@ type MethodologySection = {
   description?: string;
   objectives?: string[];
   objectivesTitle?: string;
+  images?: { src: string; alt?: string }[];
 };
 
 type InformationBanner = {
