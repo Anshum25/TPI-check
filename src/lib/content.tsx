@@ -137,6 +137,7 @@ export type SiteContent = {
       subtitle: string;
     };
     informationBanner?: InformationBanner;
+    marquee?: Marquee;
     ctaTitle: string;
     ctaText: string;
   };
