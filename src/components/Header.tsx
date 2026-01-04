@@ -38,6 +38,7 @@ const POPUP_TIMING_CONFIG: PopupTimingConfig = {
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [callbackOpen, setCallbackOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
   const location = useLocation();
   const callbackTimerRef = useRef<number | null>(null);
   const popupCountRef = useRef<number>(0); // Track popup display count
@@ -184,6 +185,18 @@ const Header = () => {
     };
   }, [isAdminRoute, callbackOpen]);
 
+  useEffect(() => {
+    const updateScrolled = () => {
+      setIsScrolled(window.scrollY > 10);
+    };
+
+    updateScrolled();
+    window.addEventListener("scroll", updateScrolled, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", updateScrolled);
+    };
+  }, []);
+
   const isActive = (path: string) => location.pathname === path;
 
   const navLinks = [
@@ -199,69 +212,80 @@ const Header = () => {
   ];
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container-flex mx-auto px-4">
-        <div className="flex h-16 items-center justify-between">
-          <Link to="/" className="flex-shrink-0">
-            <div className="flex items-center">
-              <img src={tpLogo} alt="Turning Point Institute" className="h-10 w-10 object-contain" />
-              <div className="ml-2">
-                <h1 className="text-sm font-bold leading-tight">TURNING POINT INSTITUTE</h1>
-                <p className="text-xs text-muted-foreground">THE ONE TO TURN TO</p>
+    <>
+      <header
+        className={`fixed top-0 left-0 right-0 z-50 w-full transition-colors duration-300 ${
+          isScrolled
+            ? "bg-background/30 backdrop-blur-md supports-[backdrop-filter]:bg-background/20"
+            : "border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60"
+        }`}
+      >
+        <div className="container-flex mx-auto px-4">
+          <div className="flex h-16 items-center justify-between">
+            <Link to="/" className="flex-shrink-0">
+              <div className="flex items-center">
+                <img src={tpLogo} alt="Turning Point Institute" className="h-10 w-10 object-contain" />
+                <div className="ml-2">
+                  <h1 className="text-sm font-bold leading-tight">TURNING POINT INSTITUTE</h1>
+                  <p className="text-xs text-muted-foreground">THE ONE TO TURN TO</p>
+                </div>
               </div>
-            </div>
-          </Link>
+            </Link>
 
-          <nav className="hidden lg:flex items-center space-x-1">
-            {navLinks.map((link) => (
-              <Link
-                key={link.path}
-                to={link.path}
-                className={`px-3 py-2 text-sm font-medium transition-colors hover:text-primary ${isActive(link.path) ? "text-primary" : "text-foreground/60"
-                  }`}
-              >
-                {link.label}
-              </Link>
-            ))}
-            <Button size="sm" className="gradient-accent ml-4" type="button" onClick={() => handlePopupClose(true)}>
-              <Phone className="mr-2 h-4 w-4" />
-              Request Callback
-            </Button>
-          </nav>
-
-          <button
-            className="md:hidden"
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-            aria-label="Toggle menu"
-          >
-            {isMenuOpen ? <X /> : <Menu />}
-          </button>
-        </div>
-
-        {isMenuOpen && (
-          <nav className="md:hidden py-4 border-t">
-            <div className="flex flex-col space-y-3">
+            <nav className="hidden lg:flex items-center space-x-1">
               {navLinks.map((link) => (
                 <Link
                   key={link.path}
                   to={link.path}
-                  onClick={() => setIsMenuOpen(false)}
-                  className={`text-sm font-medium transition-colors hover:text-primary ${isActive(link.path) ? "text-primary" : "text-foreground/60"
-                    }`}
+                  className={`px-3 py-2 text-sm font-medium transition-colors hover:text-primary ${
+                    isActive(link.path) ? "text-primary" : "text-foreground/60"
+                  }`}
                 >
                   {link.label}
                 </Link>
               ))}
-              <Button size="sm" className="gradient-accent w-full" type="button" onClick={() => handlePopupClose(true)}>
+              <Button size="sm" className="gradient-accent ml-4" type="button" onClick={() => handlePopupClose(true)}>
                 <Phone className="mr-2 h-4 w-4" />
                 Request Callback
               </Button>
-            </div>
-          </nav>
-        )}
-      </div>
-      <RequestCallbackDialog open={callbackOpen} onOpenChange={handlePopupClose} />
-    </header>
+            </nav>
+
+            <button
+              className="md:hidden"
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              aria-label="Toggle menu"
+            >
+              {isMenuOpen ? <X /> : <Menu />}
+            </button>
+          </div>
+
+          {isMenuOpen && (
+            <nav className="md:hidden py-4 border-t">
+              <div className="flex flex-col space-y-3">
+                {navLinks.map((link) => (
+                  <Link
+                    key={link.path}
+                    to={link.path}
+                    onClick={() => setIsMenuOpen(false)}
+                    className={`text-sm font-medium transition-colors hover:text-primary ${
+                      isActive(link.path) ? "text-primary" : "text-foreground/60"
+                    }`}
+                  >
+                    {link.label}
+                  </Link>
+                ))}
+                <Button size="sm" className="gradient-accent w-full" type="button" onClick={() => handlePopupClose(true)}>
+                  <Phone className="mr-2 h-4 w-4" />
+                  Request Callback
+                </Button>
+              </div>
+            </nav>
+          )}
+        </div>
+        <RequestCallbackDialog open={callbackOpen} onOpenChange={handlePopupClose} />
+      </header>
+      <div className="h-16" />
+    </>
   );
 };
 
