@@ -41,6 +41,7 @@ const Home = () => {
         <Differentiators />
         <JoinUsSection showJourney={false} />
         <CourseDetails />
+        <Marquee />
 
         {/* Learn English + Director's Desk */}
         <section className="py-20 md:py-24 relative">
