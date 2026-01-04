@@ -115,6 +115,26 @@ const MethodologySection = () => {
                         </ul>
                       </div>
                     )}
+
+                    {section.images && section.images.length > 0 && (
+                      <div className="mt-8 grid grid-cols-3 gap-4">
+                        {section.images.map((image, imgIdx) => (
+                          <div
+                            key={imgIdx}
+                            className="overflow-hidden rounded-lg shadow-medium"
+                          >
+                            <img
+                              src={image.src.startsWith('data:') || image.src.startsWith('http') ? image.src : image.src}
+                              alt={image.alt || `Section image ${imgIdx + 1}`}
+                              className="w-full h-48 object-cover hover:scale-105 transition-transform duration-300"
+                              onError={(e) => {
+                                (e.target as HTMLImageElement).style.display = 'none';
+                              }}
+                            />
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
