@@ -139,7 +139,7 @@ const MethodologySection = () => {
                             className="overflow-hidden rounded-lg shadow-medium"
                           >
                             <img
-                              src={image.src.startsWith('data:') || image.src.startsWith('http') ? image.src : image.src}
+                              src={resolveImageSrc(image.src)}
                               alt={image.alt || `Section image ${imgIdx + 1}`}
                               className="w-full h-48 object-cover hover:scale-105 transition-transform duration-300"
                               onError={(e) => {
