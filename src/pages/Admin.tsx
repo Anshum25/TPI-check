@@ -1597,6 +1597,108 @@ const Admin = () => {
                                                 />
                                             </div>
 
+                {/* Section Images */}
+                <div className="space-y-3 border-t pt-4">
+                  <Label className="text-sm font-medium">Section Images (3 required)</Label>
+                  <div className="grid grid-cols-3 gap-3">
+                    {(section.images || []).map((image, imgIdx) => (
+                      <div key={imgIdx} className="space-y-2">
+                        {image.src && (
+                          <div className="relative mb-2">
+                            <img
+                              src={image.src.startsWith('data:') || image.src.startsWith('http') ? image.src : image.src}
+                              alt="Preview"
+                              className="w-full h-24 object-cover rounded-md border"
+                              onError={(e) => {
+                                (e.target as HTMLImageElement).style.display = 'none';
+                              }}
+                            />
+                            {image.src.startsWith('data:') && (
+                              <Button
+                                type="button"
+                                size="icon"
+                                variant="destructive"
+                                className="absolute top-1 right-1 h-5 w-5"
+                                onClick={() => {
+                                  setContent((prev) => ({
+                                    ...prev,
+                                    home: {
+                                      ...prev.home,
+                                      methodologySections: prev.home.methodologySections.map((s, i) =>
+                                        i === index
+                                          ? {
+                                              ...s,
+                                              images: (s.images || []).map((img, j) =>
+                                                j === imgIdx ? { ...img, src: "" } : img
+                                              ),
+                                            }
+                                          : s
+                                      ),
+                                    },
+                                  }));
+                                }}
+                              >
+                                <X className="h-3 w-3" />
+                              </Button>
+                            )}
+                          </div>
+                        )}
+                        <div className="flex gap-1">
+                          <Input
+                            type="file"
+                            accept="image/*"
+                            className="hidden"
+                            id={`methodology-image-${index}-${imgIdx}`}
+                            onChange={(e) => {
+                              const file = e.target.files?.[0];
+                              if (file) {
+                                const reader = new FileReader();
+                                reader.onloadend = () => {
+                                  const base64String = reader.result as string;
+                                  setContent((prev) => ({
+                                    ...prev,
+                                    home: {
+                                      ...prev.home,
+                                      methodologySections: prev.home.methodologySections.map((s, i) =>
+                                        i === index
+                                          ? {
+                                              ...s,
+                                              images: (s.images || []).map((img, j) =>
+                                                j === imgIdx ? { ...img, src: base64String } : img
+                                              ),
+                                            }
+                                          : s
+                                      ),
+                                    },
+                                  }));
+                                  toast({
+                                    title: "Image uploaded",
+                                    description: "Section image has been successfully uploaded.",
+                                  });
+                                };
+                                reader.readAsDataURL(file);
+                              }
+                              e.target.value = '';
+                            }}
+                          />
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            className="flex-1 text-xs"
+                            onClick={() => {
+                              document.getElementById(`methodology-image-${index}-${imgIdx}`)?.click();
+                            }}
+                          >
+                            <Upload className="h-3 w-3 mr-1" />
+                            Upload
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
                 {index === 1 && (
                   <div className="space-y-2">
                     <Label>Objectives Title (Section 2)</Label>
