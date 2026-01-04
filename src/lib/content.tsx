@@ -481,6 +481,11 @@ export const DEFAULT_CONTENT: SiteContent = {
           "Refining eye contact, gestures, movement of body parts and over all body language",
           "Removing stage fear while giving presentation and then responding to the questions from any corner of the audience and so on...",
         ],
+        images: [
+          { src: "/src/assets/speaking-confidence.jpg", alt: "Speaking Activities Image 1" },
+          { src: "/src/assets/hero-classroom.jpg", alt: "Speaking Activities Image 2" },
+          { src: "/src/assets/student-success.jpg", alt: "Speaking Activities Image 3" },
+        ],
       },
       {
         title: "Reading and Writing",
