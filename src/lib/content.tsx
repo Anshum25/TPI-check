@@ -74,6 +74,11 @@ type InformationBanner = {
   imageUrl?: string;
 };
 
+type Marquee = {
+  isVisible: boolean;
+  text: string;
+};
+
 export type SiteContent = {
   home: {
     heroTitle: string;
