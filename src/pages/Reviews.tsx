@@ -9,7 +9,6 @@ import justdialLogo from "@/assets/justdial.svg";
 
 const Reviews = () => {
   const { content } = useContent();
-  const reviewLinks = content?.successStories?.cta?.reviewLinks || [];
   const reviews = content.reviews ?? DEFAULT_CONTENT.reviews;
 
   const testimonials = reviews.testimonials ?? [];
@@ -39,10 +38,6 @@ const Reviews = () => {
       <h2 className="text-2xl md:text-3xl font-bold text-foreground">{title}</h2>
     </div>
   );
-
-  // Resolve platform link by label
-  const getLink = (labelIncludes: string) =>
-    reviewLinks.find((l: any) => (l.label || "").toLowerCase().includes(labelIncludes))?.url || "#";
 
   const googleSection = reviews.sections?.google;
   const facebookSection = reviews.sections?.facebook;
@@ -79,6 +74,7 @@ const Reviews = () => {
                   role={t.role}
                   content={t.content}
                   rating={t.rating ?? 5}
+                  expandable
                   hideRole
                 />
               )) : testimonials.slice(0, 3).map((t, i) => (
@@ -88,14 +84,59 @@ const Reviews = () => {
                   role={t.role}
                   content={t.content}
                   rating={t.rating ?? 5}
+                  expandable
                   hideRole
                 />
               ))}
             </div>
             <div className="text-center mt-8">
-              <a href="https://www.google.com/search?q=turning+point+institute#lrd=0x395e84cf0a8203a1:0xd1a3ec8eb1a3e77e,1,,,," target="_blank" rel="noopener noreferrer">
-                <Button variant="outline" className="px-6">Watch More</Button>
-              </a>
+              <Button asChild variant="outline" className="px-6">
+                <a href={googleSection?.watchMoreUrl || "#"} target="_blank" rel="noopener noreferrer">
+                  Watch More
+                </a>
+              </Button>
+            </div>
+          </div>
+        </section>
+          {/* JustDial Reviews */}
+        <section className="py-16">
+          <div className="container mx-auto px-4">
+            <div className="text-center">
+              <SectionHeader
+                title={justdialSection?.title || "JustDial Reviews"}
+                icon={<img src={justdialLogo} alt="JustDial" className="h-5 w-5" />}
+              />
+              <p className="text-muted-foreground mb-8">{justdialSection?.description || "Ratings and feedback from JustDial"}</p>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {justdialTestimonials.length ? justdialTestimonials.map((t, i) => (
+                <TestimonialCard
+                  key={`j-${i}`}
+                  name={t.name}
+                  role={t.role}
+                  content={t.content}
+                  rating={t.rating ?? 5}
+                  expandable
+                  hideRole
+                />
+              )) : testimonials.slice(6, 9).map((t, i) => (
+                <TestimonialCard
+                  key={`j-${i}`}
+                  name={t.name}
+                  role={t.role}
+                  content={t.content}
+                  rating={t.rating ?? 5}
+                  expandable
+                  hideRole
+                />
+              ))}
+            </div>
+            <div className="text-center mt-8">
+              <Button asChild variant="outline" className="px-6">
+                <a href={justdialSection?.watchMoreUrl || "#"} target="_blank" rel="noopener noreferrer">
+                  Watch More
+                </a>
+              </Button>
             </div>
           </div>
         </section>
@@ -118,6 +159,7 @@ const Reviews = () => {
                   role={t.role}
                   content={t.content}
                   rating={t.rating ?? 5}
+                  expandable
                   hideRole
                 />
               )) : testimonials.slice(3, 6).map((t, i) => (
@@ -127,56 +169,22 @@ const Reviews = () => {
                   role={t.role}
                   content={t.content}
                   rating={t.rating ?? 5}
+                  expandable
                   hideRole
                 />
               ))}
             </div>
             <div className="text-center mt-8">
-              <a href={getLink("facebook")} target="_blank" rel="noopener noreferrer">
-                <Button variant="outline" className="px-6">Watch More</Button>
-              </a>
+              <Button asChild variant="outline" className="px-6">
+                <a href={facebookSection?.watchMoreUrl || "#"} target="_blank" rel="noopener noreferrer">
+                  Watch More
+                </a>
+              </Button>
             </div>
           </div>
         </section>
 
-        {/* JustDial Reviews */}
-        <section className="py-16">
-          <div className="container mx-auto px-4">
-            <div className="text-center">
-              <SectionHeader
-                title={justdialSection?.title || "JustDial Reviews"}
-                icon={<img src={justdialLogo} alt="JustDial" className="h-5 w-5" />}
-              />
-              <p className="text-muted-foreground mb-8">{justdialSection?.description || "Ratings and feedback from JustDial"}</p>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {justdialTestimonials.length ? justdialTestimonials.map((t, i) => (
-                <TestimonialCard
-                  key={`j-${i}`}
-                  name={t.name}
-                  role={t.role}
-                  content={t.content}
-                  rating={t.rating ?? 5}
-                  hideRole
-                />
-              )) : testimonials.slice(6, 9).map((t, i) => (
-                <TestimonialCard
-                  key={`j-${i}`}
-                  name={t.name}
-                  role={t.role}
-                  content={t.content}
-                  rating={t.rating ?? 5}
-                  hideRole
-                />
-              ))}
-            </div>
-            <div className="text-center mt-8">
-              <a href={getLink("just")} target="_blank" rel="noopener noreferrer">
-                <Button variant="outline" className="px-6">Watch More</Button>
-              </a>
-            </div>
-          </div>
-        </section>
+      
 
         {/* Submit review stays at the bottom */}
         <section className="py-20 bg-secondary/30">
@@ -190,8 +198,11 @@ const Reviews = () => {
               target="_blank"
               rel="noopener noreferrer"
             >
-              <Button className="inline-flex items-center justify-center px-8 py-3 rounded-lg gradient-accent text-accent-foreground font-semibold hover:opacity-90 transition-opacity">
-                {reviews.cta.buttonText}
+              <Button
+                asChild
+                className="inline-flex items-center justify-center px-8 py-3 rounded-lg gradient-accent text-accent-foreground font-semibold hover:opacity-90 transition-opacity"
+              >
+                <span>{reviews.cta.buttonText}</span>
               </Button>
             </a>
           </div>

@@ -258,6 +258,25 @@ const Admin = () => {
     };
   }, []);
 
+  useEffect(() => {
+    const defaultVideos = DEFAULT_CONTENT.home.activityVideos?.videos || [];
+    const currentVideos = content.home.activityVideos?.videos || [];
+
+    if (!defaultVideos.length) return;
+    if (currentVideos.length >= defaultVideos.length) return;
+
+    setContent((prev) => ({
+      ...prev,
+      home: {
+        ...prev.home,
+        activityVideos: {
+          ...(prev.home.activityVideos || DEFAULT_CONTENT.home.activityVideos),
+          videos: [...(prev.home.activityVideos?.videos || []), ...defaultVideos.slice((prev.home.activityVideos?.videos || []).length)],
+        },
+      },
+    }));
+  }, [content.home.activityVideos?.videos?.length, setContent]);
+
   const handleAdminLogin = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     // Frontend-only check against a hardcoded demo password.
@@ -1150,7 +1169,10 @@ const Admin = () => {
                     ...prev,
                     home: { ...prev.home, courseOverview: { ...(prev.home.courseOverview||{}), schedule: [
                       { ...(prev.home.courseOverview?.schedule?.[0]||{ heading:"", color:"primary", items:[] }), heading: e.target.value },
-                      ...(prev.home.courseOverview?.schedule?.slice(1) || [{ heading:"", color:"accent", items:[] }]),
+                      ...(prev.home.courseOverview?.schedule?.slice(1) || [
+                        { heading:"Afternoon", color:"primary", items:[] },
+                        { heading:"Evening", color:"accent", items:[] },
+                      ]),
                     ] } },
                   }))}
                 />
@@ -1167,10 +1189,12 @@ const Admin = () => {
                           setContent(prev => {
                             const prevSchedule = prev.home.courseOverview?.schedule || [
                               { heading:"", color:"primary", items:[] as {label:string; time:string}[] },
+                              { heading:"", color:"primary", items:[] as {label:string; time:string}[] },
                               { heading:"", color:"accent", items:[] as {label:string; time:string}[] },
                             ];
                             const morning = prevSchedule[0] || { heading:"", color:"primary", items:[] as {label:string; time:string}[] };
-                            const evening = prevSchedule[1] || { heading:"", color:"accent", items:[] as {label:string; time:string}[] };
+                            const afternoon = prevSchedule[1] || { heading:"", color:"primary", items:[] as {label:string; time:string}[] };
+                            const evening = prevSchedule[2] || { heading:"", color:"accent", items:[] as {label:string; time:string}[] };
                             const updatedMorningItems = (morning.items || []).map((it, j) =>
                               j === ii ? { ...it, label: e.target.value } : it,
                             );
@@ -1182,6 +1206,7 @@ const Admin = () => {
                                   ...(prev.home.courseOverview || {}),
                                   schedule: [
                                     { ...morning, items: updatedMorningItems },
+                                    afternoon,
                                     evening,
                                   ],
                                 },
@@ -1199,10 +1224,12 @@ const Admin = () => {
                           setContent(prev => {
                             const prevSchedule = prev.home.courseOverview?.schedule || [
                               { heading:"", color:"primary", items:[] as {label:string; time:string}[] },
+                              { heading:"", color:"primary", items:[] as {label:string; time:string}[] },
                               { heading:"", color:"accent", items:[] as {label:string; time:string}[] },
                             ];
                             const morning = prevSchedule[0] || { heading:"", color:"primary", items:[] as {label:string; time:string}[] };
-                            const evening = prevSchedule[1] || { heading:"", color:"accent", items:[] as {label:string; time:string}[] };
+                            const afternoon = prevSchedule[1] || { heading:"", color:"primary", items:[] as {label:string; time:string}[] };
+                            const evening = prevSchedule[2] || { heading:"", color:"accent", items:[] as {label:string; time:string}[] };
                             const updatedMorningItems = (morning.items || []).map((it, j) =>
                               j === ii ? { ...it, time: e.target.value } : it,
                             );
@@ -1214,6 +1241,7 @@ const Admin = () => {
                                   ...(prev.home.courseOverview || {}),
                                   schedule: [
                                     { ...morning, items: updatedMorningItems },
+                                    afternoon,
                                     evening,
                                   ],
                                 },
@@ -1236,10 +1264,12 @@ const Admin = () => {
                     setContent(prev => {
                       const prevSchedule = prev.home.courseOverview?.schedule || [
                         { heading:"Morning", color:"primary", items:[] as {label:string; time:string}[] },
+                        { heading:"Afternoon", color:"primary", items:[] as {label:string; time:string}[] },
                         { heading:"Evening", color:"accent", items:[] as {label:string; time:string}[] },
                       ];
                       const morning = prevSchedule[0] || { heading:"Morning", color:"primary", items:[] as {label:string; time:string}[] };
-                      const evening = prevSchedule[1] || { heading:"Evening", color:"accent", items:[] as {label:string; time:string}[] };
+                      const afternoon = prevSchedule[1] || { heading:"Afternoon", color:"primary", items:[] as {label:string; time:string}[] };
+                      const evening = prevSchedule[2] || { heading:"Evening", color:"accent", items:[] as {label:string; time:string}[] };
                       const nextIndex = (morning.items?.length || 0) + 1;
                       const updatedMorningItems = [...(morning.items || []), { label: `Batch ${nextIndex}`, time: "" }];
                       return {
@@ -1250,6 +1280,7 @@ const Admin = () => {
                             ...(prev.home.courseOverview || {}),
                             schedule: [
                               { ...morning, items: updatedMorningItems },
+                              afternoon,
                               evening,
                             ],
                           },
@@ -1266,7 +1297,7 @@ const Admin = () => {
           </div>
 
           <div className="space-y-3">
-            <Label className="text-xs uppercase tracking-wide text-muted-foreground">Schedule - Evening</Label>
+            <Label className="text-xs uppercase tracking-wide text-muted-foreground">Schedule - Afternoon</Label>
             <div className="grid gap-3 md:grid-cols-4">
               <div className="space-y-2 md:col-span-4">
                 <Label>Heading</Label>
@@ -1276,7 +1307,8 @@ const Admin = () => {
                     ...prev,
                     home: { ...prev.home, courseOverview: { ...(prev.home.courseOverview||{}), schedule: [
                       ...(prev.home.courseOverview?.schedule?.slice(0,1) || [{ heading:"", color:"primary", items:[] }]),
-                      { ...(prev.home.courseOverview?.schedule?.[1]||{ heading:"", color:"accent", items:[] }), heading: e.target.value },
+                      { ...(prev.home.courseOverview?.schedule?.[1]||{ heading:"", color:"primary", items:[] }), heading: e.target.value },
+                      ...(prev.home.courseOverview?.schedule?.slice(2) || [{ heading:"", color:"accent", items:[] }]),
                     ] } },
                   }))}
                 />
@@ -1293,10 +1325,151 @@ const Admin = () => {
                           setContent(prev => {
                             const prevSchedule = prev.home.courseOverview?.schedule || [
                               { heading:"", color:"primary", items:[] as {label:string; time:string}[] },
+                              { heading:"", color:"primary", items:[] as {label:string; time:string}[] },
                               { heading:"", color:"accent", items:[] as {label:string; time:string}[] },
                             ];
                             const morning = prevSchedule[0] || { heading:"", color:"primary", items:[] as {label:string; time:string}[] };
-                            const evening = prevSchedule[1] || { heading:"", color:"accent", items:[] as {label:string; time:string}[] };
+                            const afternoon = prevSchedule[1] || { heading:"", color:"primary", items:[] as {label:string; time:string}[] };
+                            const evening = prevSchedule[2] || { heading:"", color:"accent", items:[] as {label:string; time:string}[] };
+                            const updatedAfternoonItems = (afternoon.items || []).map((it, j) =>
+                              j === ii ? { ...it, label: e.target.value } : it,
+                            );
+                            return {
+                              ...prev,
+                              home: {
+                                ...prev.home,
+                                courseOverview: {
+                                  ...(prev.home.courseOverview || {}),
+                                  schedule: [
+                                    morning,
+                                    { ...afternoon, items: updatedAfternoonItems },
+                                    evening,
+                                  ],
+                                },
+                              },
+                            };
+                          });
+                        }}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Item {ii+1} Time</Label>
+                      <Input
+                        value={item.time || ""}
+                        onChange={(e)=> {
+                          setContent(prev => {
+                            const prevSchedule = prev.home.courseOverview?.schedule || [
+                              { heading:"", color:"primary", items:[] as {label:string; time:string}[] },
+                              { heading:"", color:"primary", items:[] as {label:string; time:string}[] },
+                              { heading:"", color:"accent", items:[] as {label:string; time:string}[] },
+                            ];
+                            const morning = prevSchedule[0] || { heading:"", color:"primary", items:[] as {label:string; time:string}[] };
+                            const afternoon = prevSchedule[1] || { heading:"", color:"primary", items:[] as {label:string; time:string}[] };
+                            const evening = prevSchedule[2] || { heading:"", color:"accent", items:[] as {label:string; time:string}[] };
+                            const updatedAfternoonItems = (afternoon.items || []).map((it, j) =>
+                              j === ii ? { ...it, time: e.target.value } : it,
+                            );
+                            return {
+                              ...prev,
+                              home: {
+                                ...prev.home,
+                                courseOverview: {
+                                  ...(prev.home.courseOverview || {}),
+                                  schedule: [
+                                    morning,
+                                    { ...afternoon, items: updatedAfternoonItems },
+                                    evening,
+                                  ],
+                                },
+                              },
+                            };
+                          });
+                        }}
+                      />
+                    </div>
+                  </div>
+                </div>
+              ))}
+
+              <div className="md:col-span-4 flex justify-start">
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="flex items-center gap-2"
+                  onClick={() => {
+                    setContent(prev => {
+                      const prevSchedule = prev.home.courseOverview?.schedule || [
+                        { heading:"Morning", color:"primary", items:[] as {label:string; time:string}[] },
+                        { heading:"Afternoon", color:"primary", items:[] as {label:string; time:string}[] },
+                        { heading:"Evening", color:"accent", items:[] as {label:string; time:string}[] },
+                      ];
+                      const morning = prevSchedule[0] || { heading:"Morning", color:"primary", items:[] as {label:string; time:string}[] };
+                      const afternoon = prevSchedule[1] || { heading:"Afternoon", color:"primary", items:[] as {label:string; time:string}[] };
+                      const evening = prevSchedule[2] || { heading:"Evening", color:"accent", items:[] as {label:string; time:string}[] };
+                      const nextIndex = (afternoon.items?.length || 0) + 1;
+                      const offset = (morning.items?.length || 0);
+                      const updatedAfternoonItems = [...(afternoon.items || []), { label: `Batch ${nextIndex + offset}`, time: "" }];
+                      return {
+                        ...prev,
+                        home: {
+                          ...prev.home,
+                          courseOverview: {
+                            ...(prev.home.courseOverview || {}),
+                            schedule: [
+                              morning,
+                              { ...afternoon, items: updatedAfternoonItems },
+                              evening,
+                            ],
+                          },
+                        },
+                      };
+                    });
+                  }}
+                >
+                  <Plus className="h-4 w-4" />
+                  Add Afternoon Batch
+                </Button>
+              </div>
+            </div>
+          </div>
+
+          <div className="space-y-3">
+            <Label className="text-xs uppercase tracking-wide text-muted-foreground">Schedule - Evening</Label>
+            <div className="grid gap-3 md:grid-cols-4">
+              <div className="space-y-2 md:col-span-4">
+                <Label>Heading</Label>
+                <Input
+                  value={content.home.courseOverview?.schedule?.[2]?.heading || ""}
+                  onChange={(e)=> setContent(prev=> ({
+                    ...prev,
+                    home: { ...prev.home, courseOverview: { ...(prev.home.courseOverview||{}), schedule: [
+                      ...(prev.home.courseOverview?.schedule?.slice(0,2) || [
+                        { heading:"", color:"primary", items:[] },
+                        { heading:"", color:"primary", items:[] },
+                      ]),
+                      { ...(prev.home.courseOverview?.schedule?.[2]||{ heading:"", color:"accent", items:[] }), heading: e.target.value },
+                    ] } },
+                  }))}
+                />
+              </div>
+
+              {(content.home.courseOverview?.schedule?.[2]?.items || []).map((item, ii)=> (
+                <div key={ii} className="md:col-span-4">
+                  <div className="grid gap-3 md:grid-cols-2">
+                    <div className="space-y-2">
+                      <Label>Item {ii+1} Label</Label>
+                      <Input
+                        value={item.label || ""}
+                        onChange={(e)=> {
+                          setContent(prev => {
+                            const prevSchedule = prev.home.courseOverview?.schedule || [
+                              { heading:"", color:"primary", items:[] as {label:string; time:string}[] },
+                              { heading:"", color:"primary", items:[] as {label:string; time:string}[] },
+                              { heading:"", color:"accent", items:[] as {label:string; time:string}[] },
+                            ];
+                            const morning = prevSchedule[0] || { heading:"", color:"primary", items:[] as {label:string; time:string}[] };
+                            const afternoon = prevSchedule[1] || { heading:"", color:"primary", items:[] as {label:string; time:string}[] };
+                            const evening = prevSchedule[2] || { heading:"", color:"accent", items:[] as {label:string; time:string}[] };
                             const updatedEveningItems = (evening.items || []).map((it, j) =>
                               j === ii ? { ...it, label: e.target.value } : it,
                             );
@@ -1308,6 +1481,7 @@ const Admin = () => {
                                   ...(prev.home.courseOverview || {}),
                                   schedule: [
                                     morning,
+                                    afternoon,
                                     { ...evening, items: updatedEveningItems },
                                   ],
                                 },
@@ -1325,10 +1499,12 @@ const Admin = () => {
                           setContent(prev => {
                             const prevSchedule = prev.home.courseOverview?.schedule || [
                               { heading:"", color:"primary", items:[] as {label:string; time:string}[] },
+                              { heading:"", color:"primary", items:[] as {label:string; time:string}[] },
                               { heading:"", color:"accent", items:[] as {label:string; time:string}[] },
                             ];
                             const morning = prevSchedule[0] || { heading:"", color:"primary", items:[] as {label:string; time:string}[] };
-                            const evening = prevSchedule[1] || { heading:"", color:"accent", items:[] as {label:string; time:string}[] };
+                            const afternoon = prevSchedule[1] || { heading:"", color:"primary", items:[] as {label:string; time:string}[] };
+                            const evening = prevSchedule[2] || { heading:"", color:"accent", items:[] as {label:string; time:string}[] };
                             const updatedEveningItems = (evening.items || []).map((it, j) =>
                               j === ii ? { ...it, time: e.target.value } : it,
                             );
@@ -1340,6 +1516,7 @@ const Admin = () => {
                                   ...(prev.home.courseOverview || {}),
                                   schedule: [
                                     morning,
+                                    afternoon,
                                     { ...evening, items: updatedEveningItems },
                                   ],
                                 },
@@ -1362,12 +1539,15 @@ const Admin = () => {
                     setContent(prev => {
                       const prevSchedule = prev.home.courseOverview?.schedule || [
                         { heading:"Morning", color:"primary", items:[] as {label:string; time:string}[] },
+                        { heading:"Afternoon", color:"primary", items:[] as {label:string; time:string}[] },
                         { heading:"Evening", color:"accent", items:[] as {label:string; time:string}[] },
                       ];
                       const morning = prevSchedule[0] || { heading:"Morning", color:"primary", items:[] as {label:string; time:string}[] };
-                      const evening = prevSchedule[1] || { heading:"Evening", color:"accent", items:[] as {label:string; time:string}[] };
+                      const afternoon = prevSchedule[1] || { heading:"Afternoon", color:"primary", items:[] as {label:string; time:string}[] };
+                      const evening = prevSchedule[2] || { heading:"Evening", color:"accent", items:[] as {label:string; time:string}[] };
                       const nextIndex = (evening.items?.length || 0) + 1;
-                      const updatedEveningItems = [...(evening.items || []), { label: `Batch ${nextIndex + (morning.items?.length || 0)}`, time: "" }];
+                      const offset = (morning.items?.length || 0) + (afternoon.items?.length || 0);
+                      const updatedEveningItems = [...(evening.items || []), { label: `Batch ${nextIndex + offset}`, time: "" }];
                       return {
                         ...prev,
                         home: {
@@ -1376,6 +1556,7 @@ const Admin = () => {
                             ...(prev.home.courseOverview || {}),
                             schedule: [
                               morning,
+                              afternoon,
                               { ...evening, items: updatedEveningItems },
                             ],
                           },
@@ -2444,219 +2625,8 @@ const Admin = () => {
               />
             </div>
           </div>
-          
-        </CardContent>
-      </Card>
+      
 
-      {/* Information Banner Management */}
-      <Card 
-        className="shadow-soft"
-        onMouseEnter={() => setActiveSubSection('information-banner')}
-        onFocus={() => setActiveSubSection('information-banner')}
-      >
-        <CardHeader>
-          <CardTitle>Information Banner</CardTitle>
-          <CardDescription>Manage the announcement banner displayed between methodology and gain sections.</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="space-y-4">
-            {/* Visibility Toggle */}
-            <div className="flex items-center justify-between p-4 rounded-lg border">
-              <div>
-                <Label className="text-sm font-medium">Banner Visibility</Label>
-                <p className="text-xs text-muted-foreground">Show or hide the banner on the home page</p>
-              </div>
-              <Button
-                type="button"
-                variant={content.home.informationBanner?.isVisible ? "default" : "outline"}
-                size="sm"
-                onClick={() => {
-                  setContent((prev) => ({
-                    ...prev,
-                    home: {
-                      ...prev.home,
-                      informationBanner: {
-                        ...(prev.home.informationBanner || { isVisible: false, content: "", imageUrl: undefined }),
-                        isVisible: !prev.home.informationBanner?.isVisible,
-                      },
-                    },
-                  }));
-                }}
-                aria-label={`Turn banner ${content.home.informationBanner?.isVisible ? 'off' : 'on'}`}
-                aria-pressed={content.home.informationBanner?.isVisible}
-              >
-                {content.home.informationBanner?.isVisible ? "ON" : "OFF"}
-              </Button>
-            </div>
-
-            {/* Banner Content */}
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <Label htmlFor="banner-content">Banner Content</Label>
-                <span 
-                  className="text-xs text-muted-foreground"
-                  aria-live="polite"
-                  aria-label={`Character count: ${(content.home.informationBanner?.content || "").length} of 500`}
-                >
-                  {(content.home.informationBanner?.content || "").length}/500 characters
-                </span>
-              </div>
-              <Textarea
-                id="banner-content"
-                placeholder="Enter your announcement, event details, or important information..."
-                value={content.home.informationBanner?.content || ""}
-                onChange={(e) => {
-                  const newContent = e.target.value;
-                  if (newContent.length > 500) {
-                    toast({ 
-                      title: "Content too long", 
-                      description: "Banner content should be 500 characters or less for optimal display.", 
-                      variant: "destructive" as any 
-                    });
-                    return;
-                  }
-                  setContent((prev) => ({
-                    ...prev,
-                    home: {
-                      ...prev.home,
-                      informationBanner: {
-                        ...(prev.home.informationBanner || { isVisible: false, content: "", imageUrl: undefined }),
-                        content: newContent,
-                      },
-                    },
-                  }));
-                }}
-                rows={3}
-                maxLength={500}
-                aria-describedby="banner-content-help"
-              />
-              <div id="banner-content-help" className="text-xs text-muted-foreground">
-                This content will be displayed prominently on the home page between sections.
-              </div>
-              {(content.home.informationBanner?.content || "").length > 400 && (
-                <p className="text-xs text-amber-600" role="alert">
-                  ⚠️ Consider keeping content concise for better readability
-                </p>
-              )}
-            </div>
-
-            {/* Image Upload */}
-            <div className="space-y-2">
-              <Label htmlFor="banner-image-upload">Banner Image (Optional)</Label>
-              {content.home.informationBanner?.imageUrl && (
-                <div className="relative mb-2">
-                  <img
-                    src={content.home.informationBanner.imageUrl}
-                    alt="Banner preview - will be displayed alongside the banner content"
-                    className="w-full h-32 object-cover rounded-md border"
-                    onError={(e) => {
-                      (e.target as HTMLImageElement).style.display = 'none';
-                    }}
-                  />
-                  <Button
-                    type="button"
-                    size="icon"
-                    variant="destructive"
-                    className="absolute top-2 right-2 h-6 w-6"
-                    onClick={() => {
-                      setContent((prev) => ({
-                        ...prev,
-                        home: {
-                          ...prev.home,
-                          informationBanner: {
-                            ...(prev.home.informationBanner || { isVisible: false, content: "", imageUrl: undefined }),
-                            imageUrl: undefined,
-                          },
-                        },
-                      }));
-                    }}
-                    aria-label="Remove banner image"
-                  >
-                    <X className="h-3 w-3" />
-                  </Button>
-                </div>
-              )}
-              <div className="flex gap-2">
-                <Input
-                  type="file"
-                  accept="image/*"
-                  className="hidden"
-                  id="banner-image-upload"
-                  onChange={(e) => {
-                    const file = e.target.files?.[0];
-                    if (file) {
-                      // Validate file type
-                      const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
-                      if (!validTypes.includes(file.type)) {
-                        toast({ 
-                          title: "Invalid file type", 
-                          description: "Please upload a valid image file (JPG, PNG, GIF, or WebP).", 
-                          variant: "destructive" as any 
-                        });
-                        return;
-                      }
-
-                      // Validate file size (5MB limit)
-                      const maxSize = 5 * 1024 * 1024; // 5MB in bytes
-                      if (file.size > maxSize) {
-                        toast({ 
-                          title: "File too large", 
-                          description: "Please upload an image smaller than 5MB.", 
-                          variant: "destructive" as any 
-                        });
-                        return;
-                      }
-
-                      const reader = new FileReader();
-                      reader.onloadend = () => {
-                        const base64String = reader.result as string;
-                        setContent((prev) => ({
-                          ...prev,
-                          home: {
-                            ...prev.home,
-                            informationBanner: {
-                              ...(prev.home.informationBanner || { isVisible: false, content: "", imageUrl: undefined }),
-                              imageUrl: base64String,
-                            },
-                          },
-                        }));
-                        toast({ 
-                          title: "Image uploaded", 
-                          description: "Banner image has been successfully uploaded." 
-                        });
-                      };
-                      reader.onerror = () => {
-                        toast({ 
-                          title: "Upload failed", 
-                          description: "Failed to read the image file. Please try again.", 
-                          variant: "destructive" as any 
-                        });
-                      };
-                      reader.readAsDataURL(file);
-                    }
-                    // Reset input
-                    e.target.value = '';
-                  }}
-                  aria-describedby="image-upload-help"
-                />
-                <Button
-                  type="button"
-                  variant="outline"
-                  className="flex items-center gap-2"
-                  onClick={() => {
-                    document.getElementById('banner-image-upload')?.click();
-                  }}
-                  aria-label="Upload banner image"
-                >
-                  <Upload className="h-4 w-4" />
-                  Upload Image
-                </Button>
-              </div>
-              <div id="image-upload-help" className="text-xs text-muted-foreground">
-                Supported formats: JPG, PNG, GIF, WebP. Maximum size: 5MB. Image will be displayed on the left side of the banner on desktop.
-              </div>
-            </div>
-          </div>
         </CardContent>
       </Card>
 
@@ -2667,7 +2637,7 @@ const Admin = () => {
         onFocus={() => setActiveSubSection('marquee')}
       >
         <CardHeader>
-          <CardTitle>Marquee Banner</CardTitle>
+          <CardTitle> Banner</CardTitle>
           <CardDescription>Endless scrolling text banner displayed below the course section</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -4428,6 +4398,11 @@ const Admin = () => {
                 value={content.reviews.sections?.google.description || ""}
                 onChange={(e) => handleReviewsSectionChange("google", "description", e.target.value)}
               />
+              <Input
+                placeholder="Watch More URL"
+                value={content.reviews.sections?.google.watchMoreUrl || ""}
+                onChange={(e) => handleReviewsSectionChange("google", "watchMoreUrl", e.target.value)}
+              />
             </div>
             <div className="space-y-4">
               {googleTestimonials.map(({ testimonial, index }) => (
@@ -4499,6 +4474,11 @@ const Admin = () => {
                 value={content.reviews.sections?.facebook.description || ""}
                 onChange={(e) => handleReviewsSectionChange("facebook", "description", e.target.value)}
               />
+              <Input
+                placeholder="Watch More URL"
+                value={content.reviews.sections?.facebook.watchMoreUrl || ""}
+                onChange={(e) => handleReviewsSectionChange("facebook", "watchMoreUrl", e.target.value)}
+              />
             </div>
             <div className="space-y-4">
               {facebookTestimonials.map(({ testimonial, index }) => (
@@ -4569,6 +4549,11 @@ const Admin = () => {
                 placeholder="Section Description"
                 value={content.reviews.sections?.justdial.description || ""}
                 onChange={(e) => handleReviewsSectionChange("justdial", "description", e.target.value)}
+              />
+              <Input
+                placeholder="Watch More URL"
+                value={content.reviews.sections?.justdial.watchMoreUrl || ""}
+                onChange={(e) => handleReviewsSectionChange("justdial", "watchMoreUrl", e.target.value)}
               />
             </div>
             <div className="space-y-4">
@@ -4661,14 +4646,14 @@ const Admin = () => {
 
   const handleReviewsSectionChange = (
     section: "google" | "facebook" | "justdial",
-    field: "title" | "description",
+    field: "title" | "description" | "watchMoreUrl",
     value: string,
   ) => {
     setContent((prev) => {
       const existing = prev.reviews.sections || {
-        google: { title: "Google Reviews", description: "" },
-        facebook: { title: "Facebook Reviews", description: "" },
-        justdial: { title: "JustDial Reviews", description: "" },
+        google: { title: "Google Reviews", description: "", watchMoreUrl: "" },
+        facebook: { title: "Facebook Reviews", description: "", watchMoreUrl: "" },
+        justdial: { title: "JustDial Reviews", description: "", watchMoreUrl: "" },
       };
       return {
         ...prev,
@@ -5141,6 +5126,23 @@ const Admin = () => {
                 <Input placeholder="Experience" value={member.experience} onChange={(e) => handleFacultyMemberChange(index, "experience", e.target.value)} />
               </div>
               <Input placeholder="Education" value={member.education} onChange={(e) => handleFacultyMemberChange(index, "education", e.target.value)} />
+              {index === 2 ? (
+                <div className="space-y-2">
+                  <Label>Extra Link</Label>
+                  <div className="grid gap-4 md:grid-cols-2">
+                    <Input
+                      placeholder="Link Text (e.g. Turning Point Community)"
+                      value={member.extraLinkLabel || ""}
+                      onChange={(e) => handleFacultyMemberChange(index, "extraLinkLabel", e.target.value)}
+                    />
+                    <Input
+                      placeholder="Link URL (https://...)"
+                      value={member.extraLinkUrl || ""}
+                      onChange={(e) => handleFacultyMemberChange(index, "extraLinkUrl", e.target.value)}
+                    />
+                  </div>
+                </div>
+              ) : null}
               <Textarea rows={3} placeholder="Description" value={member.description} onChange={(e) => handleFacultyMemberChange(index, "description", e.target.value)} />
 
               <div className="space-y-2">
@@ -5225,7 +5227,16 @@ const Admin = () => {
 
   const handleFacultyMemberChange = (
     index: number,
-    field: "name" | "role" | "imageInitials" | "education" | "experience" | "description" | "imageUrl",
+    field:
+      | "name"
+      | "role"
+      | "imageInitials"
+      | "education"
+      | "experience"
+      | "description"
+      | "imageUrl"
+      | "extraLinkLabel"
+      | "extraLinkUrl",
     value: string,
   ) => {
     setContent((prev) => ({

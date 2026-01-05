@@ -1,12 +1,30 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { useContent } from "@/lib/content";
+import { DEFAULT_CONTENT, useContent } from "@/lib/content";
 
 const ActivityVideos = () => {
   const { content } = useContent();
   const activityVideos = content?.home?.activityVideos;
+  const defaultActivityVideos = DEFAULT_CONTENT.home.activityVideos;
 
-  if (!activityVideos) return null;
+  const resolvedActivityVideos = (() => {
+    if (!activityVideos) return defaultActivityVideos;
+    if (!defaultActivityVideos) return activityVideos;
+    if (!Array.isArray(activityVideos.videos)) return defaultActivityVideos;
+    if (!Array.isArray(defaultActivityVideos.videos)) return activityVideos;
+
+    if (activityVideos.videos.length >= defaultActivityVideos.videos.length) {
+      return activityVideos;
+    }
+
+    return {
+      ...defaultActivityVideos,
+      ...activityVideos,
+      videos: [...activityVideos.videos, ...defaultActivityVideos.videos.slice(activityVideos.videos.length)],
+    };
+  })();
+
+  if (!resolvedActivityVideos) return null;
 
   return (
     <section className="py-16 md:py-20">
@@ -14,16 +32,16 @@ const ActivityVideos = () => {
         {/* Header */}
         <div className="text-center mb-12">
           <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-2">
-            {activityVideos.title}
+            {resolvedActivityVideos.title}
           </h2>
           <p className="text-muted-foreground">
-            {activityVideos.subtitle}
+            {resolvedActivityVideos.subtitle}
           </p>
         </div>
 
         {/* Activities Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
-          {activityVideos.videos.map((activity, index) => (
+          {resolvedActivityVideos.videos.map((activity, index) => (
             <div
               key={index}
               className="bg-card rounded-lg overflow-hidden shadow-soft hover:shadow-medium hover:scale-105 hover:-translate-y-2 transition-all duration-300 cursor-pointer"

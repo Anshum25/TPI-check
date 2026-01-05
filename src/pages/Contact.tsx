@@ -80,6 +80,7 @@ const Contact = () => {
                             <SelectItem value="working">Working Person</SelectItem>
                             <SelectItem value="student">Student</SelectItem>
                             <SelectItem value="homemaker">House Maker</SelectItem>
+                            <SelectItem value="other">Other</SelectItem>
                           </SelectContent>
                         </Select>
                       </div>

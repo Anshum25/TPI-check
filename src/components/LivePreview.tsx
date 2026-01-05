@@ -8,8 +8,8 @@ import Hero from "@/components/Hero";
 import Differentiators from "@/components/Differentiators";
 import JoinUsSection from "@/components/JoinUsSection";
 import CourseDetails from "@/components/CourseDetails";
+import Marquee from "@/components/Marquee";
 import MethodologySection from "@/components/MethodologySection";
-import InformationBanner from "@/components/InformationBanner";
 import GainFromCourse from "@/components/GainFromCourse";
 import FacultyHighlight from "@/components/FacultyHighlight";
 import ActivityVideos from "@/components/ActivityVideos";
@@ -59,7 +59,7 @@ const LivePreview = ({ selectedSectionId, activeSubSection }: LivePreviewProps) 
   const facultyHighlightRef = useRef<HTMLDivElement>(null);
   const homeAchievementsRef = useRef<HTMLDivElement>(null);
   const methodologyVideoRef = useRef<HTMLDivElement>(null);
-  const informationBannerRef = useRef<HTMLDivElement>(null);
+  const marqueeRef = useRef<HTMLDivElement>(null);
   const gainFromCourseRef = useRef<HTMLDivElement>(null);
   const activityVideosRef = useRef<HTMLDivElement>(null);
   const activityImagesRef = useRef<HTMLDivElement>(null);
@@ -183,7 +183,7 @@ const LivePreview = ({ selectedSectionId, activeSubSection }: LivePreviewProps) 
       'faculty-highlight': facultyHighlightRef,
       'home-achievements': homeAchievementsRef,
       'methodology-video': methodologyVideoRef,
-      'information-banner': informationBannerRef,
+      'marquee': marqueeRef,
       'gain-from-course': gainFromCourseRef,
       'activity-videos': activityVideosRef,
       'activity-images': activityImagesRef,
@@ -312,9 +312,13 @@ const LivePreview = ({ selectedSectionId, activeSubSection }: LivePreviewProps) 
                   <CourseDetails />
                 </div>
 
+                <div ref={marqueeRef}>
+                  <Marquee />
+                </div>
+
                 {/* Our Methodology Section with Video */}
                 <div ref={methodologyVideoRef}>
-                  <section className="py-20 md:py-24 relative">
+                  <section className="pt-12 pb-20 md:pt-16 md:pb-24 relative">
                     <div className="container mx-auto px-4">
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-16 items-center">
                         {/* Left Content */}
@@ -367,9 +371,6 @@ const LivePreview = ({ selectedSectionId, activeSubSection }: LivePreviewProps) 
                   </section>
                 </div>
                 <MethodologySection />
-                <div ref={informationBannerRef}>
-                  <InformationBanner />
-                </div>
                 <div ref={gainFromCourseRef}>
                   <GainFromCourse />
                 </div>
@@ -414,13 +415,13 @@ const LivePreview = ({ selectedSectionId, activeSubSection }: LivePreviewProps) 
                 <div ref={activityVideosRef}>
                   <ActivityVideos />
                 </div>
-                {/* Moments that Matter */}
-                <div ref={activityImagesRef}>
-                  <ActivityImages />
-                </div>
                 {/* Review from our achievers */}
                 <div ref={homeReviewsRef}>
                   <HomeReviewsSection />
+                </div>
+                {/* Moments that Matter */}
+                <div ref={activityImagesRef}>
+                  <ActivityImages />
                 </div>
                 {/* Final CTA (same as Home.tsx bottom section) */}
                 <section ref={admissionsCtaRef} className="py-20">
@@ -1300,6 +1301,7 @@ const LivePreview = ({ selectedSectionId, activeSubSection }: LivePreviewProps) 
                                     <SelectItem value="working">Working Person</SelectItem>
                                     <SelectItem value="student">Student</SelectItem>
                                     <SelectItem value="homemaker">House Maker</SelectItem>
+                                    <SelectItem value="other">Other</SelectItem>
                                   </SelectContent>
                                 </Select>
                               </div>
@@ -1438,6 +1440,19 @@ const LivePreview = ({ selectedSectionId, activeSubSection }: LivePreviewProps) 
                                       <BookOpen className="h-4 w-4 text-accent" />
                                       <span>{member.education}</span>
                                     </div>
+                                    {member.extraLinkLabel && member.extraLinkUrl ? (
+                                      <div className="flex items-center space-x-2">
+                                        <Users className="h-4 w-4 text-accent" />
+                                        <a
+                                          href={member.extraLinkUrl}
+                                          target="_blank"
+                                          rel="noreferrer"
+                                          className="text-accent hover:underline"
+                                        >
+                                          {member.extraLinkLabel}
+                                        </a>
+                                      </div>
+                                    ) : null}
                                   </div>
                                 </div>
 
