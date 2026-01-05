@@ -50,6 +50,7 @@ type JoinUs = {
   titleHighlight?: string;
   titleAfter?: string;
   subtitle?: string;
+  videoUrl?: string;
   steps?: { label: string }[];
   reasons?: { title: string; description: string }[];
   reasonsHeading?: string;
@@ -329,6 +330,7 @@ export const DEFAULT_CONTENT: SiteContent = {
       titleBefore: "Bring a",
       titleHighlight: "Turning Point",
       subtitle: "Be fluent and confident in English, from basic to advanced level",
+      videoUrl: "https://www.youtube.com/embed/sLMm9trcZYc",
       steps: [
         { label: "Basics" },
         { label: "Intermediate" },
@@ -1306,7 +1308,7 @@ export const DEFAULT_CONTENT: SiteContent = {
         lines: ["Monday - Friday: 9:00 AM - 8:00 PM", "Saturday: 9:00 AM - 6:00 PM", "Sunday: Closed"],
       },
     ],
-    mapNote: "Map would be embedded here",
+    mapNote: "",
   },
   faculty: {
     hero: {
@@ -1425,6 +1427,18 @@ const migrateContent = (stored: any): SiteContent => {
       ...stored.home,
       heroCarousel: stored.home.heroCarousel || DEFAULT_CONTENT.home.heroCarousel,
     };
+  }
+
+  // Ensure joinUs has videoUrl even for older content
+  if (migrated.home?.joinUs) {
+    migrated.home.joinUs = {
+      ...DEFAULT_CONTENT.home.joinUs,
+      ...migrated.home.joinUs,
+      videoUrl:
+        migrated.home.joinUs.videoUrl ||
+        (DEFAULT_CONTENT.home.joinUs as any).videoUrl ||
+        "https://www.youtube.com/embed/sLMm9trcZYc",
+    } as any;
   }
 
   if (migrated.home?.courseOverview && DEFAULT_CONTENT.home.courseOverview?.schedule?.length) {

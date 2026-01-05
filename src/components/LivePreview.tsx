@@ -1382,10 +1382,22 @@ const LivePreview = ({ selectedSectionId, activeSubSection }: LivePreviewProps) 
                 <section ref={contactMapRef} className="py-20 bg-secondary/30">
                   <div className="container mx-auto px-4">
                     <h2 className="text-3xl font-bold mb-8 text-center">Find Us</h2>
-                    <div className="max-w-4xl mx-auto">
-                      <div className="aspect-video bg-muted rounded-lg flex items-center justify-center">
-                        <p className="text-muted-foreground">{contact.mapNote || "Map would be embedded here"}</p>
+                    <div className="max-w-4xl mx-auto space-y-4">
+                      <div className="aspect-video rounded-lg overflow-hidden shadow-soft bg-muted">
+                        <iframe
+                          title="Turning Point Institute Location"
+                          src="https://www.google.com/maps?q=Turning+Point+Institute,+The+Grand+Monarch,+306,+100+Feet+Anand+Nagar+Rd,+near+Sima+Hall,+beside+Diamond+Gym+lounge,+Satellite,+Ahmedabad,+Gujarat+380015&hl=en&z=17&output=embed"
+                          width="100%"
+                          height="100%"
+                          style={{ border: 0 }}
+                          allowFullScreen
+                          loading="lazy"
+                          referrerPolicy="no-referrer-when-downgrade"
+                        />
                       </div>
+                      {contact.mapNote && (
+                        <p className="text-sm text-muted-foreground text-center">{contact.mapNote}</p>
+                      )}
                     </div>
                   </div>
                 </section>

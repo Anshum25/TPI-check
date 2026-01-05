@@ -983,25 +983,16 @@ const Admin = () => {
             />
           </div>
 
-          <div className="space-y-3">
-            <Label className="text-xs uppercase tracking-wide text-muted-foreground">Steps</Label>
-            <div className="grid gap-3 md:grid-cols-3">
-              {(content.home.joinUs?.steps || [{label:"Basics"},{label:"Intermediate"},{label:"Fluent"}]).map((s, i) => (
-                <div key={i} className="space-y-2">
-                  <Label>Step {i+1} Label</Label>
-                  <Input
-                    value={s.label}
-                    onChange={(e) => setContent((prev) => ({
-                      ...prev,
-                      home: {
-                        ...prev.home,
-                        joinUs: { ...(prev.home.joinUs||{}), steps: (prev.home.joinUs?.steps||[{label:"Basics"},{label:"Intermediate"},{label:"Fluent"}]).map((x, xi)=> xi===i? {...x, label: e.target.value}: x) },
-                      },
-                    }))}
-                  />
-                </div>
-              ))}
-            </div>
+          <div className="space-y-2">
+            <Label>Intro Video URL (Right side)</Label>
+            <Input
+              value={content.home.joinUs?.videoUrl || ""}
+              onChange={(e) => setContent((prev) => ({
+                ...prev,
+                home: { ...prev.home, joinUs: { ...(prev.home.joinUs || {}), videoUrl: e.target.value } },
+              }))}
+              placeholder="https://www.youtube.com/embed/..."
+            />
           </div>
 
           <div className="space-y-3">
@@ -1041,64 +1032,6 @@ const Admin = () => {
                 </div>
               </div>
             ))}
-          </div>
-
-          <div className="grid gap-4 md:grid-cols-3">
-            <div className="space-y-2">
-              <Label>Stat Metric</Label>
-              <Input
-                value={content.home.joinUs?.statCard.metric || ""}
-                onChange={(e)=> setContent((prev)=> ({
-                  ...prev,
-                  home: { ...prev.home, joinUs: { ...(prev.home.joinUs||{}), statCard: { ...(prev.home.joinUs?.statCard||{ metric:"", heading:"", description:""}), metric: e.target.value } } },
-                }))}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label>Stat Heading</Label>
-              <Input
-                value={content.home.joinUs?.statCard.heading || ""}
-                onChange={(e)=> setContent((prev)=> ({
-                  ...prev,
-                  home: { ...prev.home, joinUs: { ...(prev.home.joinUs||{}), statCard: { ...(prev.home.joinUs?.statCard||{ metric:"", heading:"", description:""}), heading: e.target.value } } },
-                }))}
-              />
-            </div>
-            <div className="space-y-2 md:col-span-1">
-              <Label>Stat Description</Label>
-              <Textarea
-                value={content.home.joinUs?.statCard.description || ""}
-                onChange={(e)=> setContent((prev)=> ({
-                  ...prev,
-                  home: { ...prev.home, joinUs: { ...(prev.home.joinUs||{}), statCard: { ...(prev.home.joinUs?.statCard||{ metric:"", heading:"", description:""}), description: e.target.value } } },
-                }))}
-                rows={2}
-              />
-            </div>
-          </div>
-
-          <div className="grid gap-4 md:grid-cols-2">
-            <div className="space-y-2">
-              <Label>Info Card Title</Label>
-              <Input
-                value={content.home.joinUs?.infoCard.title || ""}
-                onChange={(e)=> setContent((prev)=> ({
-                  ...prev,
-                  home: { ...prev.home, joinUs: { ...(prev.home.joinUs||{}), infoCard: { ...(prev.home.joinUs?.infoCard||{ title:"", description:""}), title: e.target.value } } },
-                }))}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label>Info Card Description</Label>
-              <Textarea
-                value={content.home.joinUs?.infoCard.description || ""}
-                onChange={(e)=> setContent((prev)=> ({
-                  ...prev,
-                  home: { ...prev.home, joinUs: { ...(prev.home.joinUs||{}), infoCard: { ...(prev.home.joinUs?.infoCard||{ title:"", description:""}), description: e.target.value } } },
-                }))}
-                rows={2}
-              />
-            </div>
           </div>
 
           <div className="space-y-2">
@@ -1780,7 +1713,7 @@ const Admin = () => {
 
                 {/* Section Images */}
                 <div className="space-y-3 border-t pt-4">
-                  <Label className="text-sm font-medium">Section Images (3 required)</Label>
+                  <Label className="text-sm font-medium">Section Images</Label>
                   <div className="grid grid-cols-3 gap-3">
                     {(section.images || []).map((image, imgIdx) => (
                       <div key={imgIdx} className="space-y-2">
@@ -2813,244 +2746,232 @@ const Admin = () => {
   );
 
   const renderFooterEditor = () => (
-    <div className="overflow-x-auto overflow-y-hidden scroll-smooth" style={{ scrollbarWidth: 'auto', scrollbarColor: '#64748b #e2e8f0' }}>
-      <div className="flex gap-8 pb-4" style={{ minWidth: '2500px', width: 'max-content' }}>
-    <Card
-      className="shadow-soft flex-shrink-0"
-      style={{ width: '450px', minWidth: '450px' }}
-      onMouseEnter={() => setActiveSubSection('footer-institute')}
-      onFocus={() => setActiveSubSection('footer-institute')}
-    >
-                            <CardHeader>
-        <CardTitle>Footer - Institute Info</CardTitle>
-        <CardDescription>Main footer institute name, sub header line, and tagline.</CardDescription>
-                            </CardHeader>
-                            <CardContent className="space-y-4">
-                                <div className="space-y-2">
-          <Label htmlFor="footerInstituteName">Institute Name</Label>
-                                    <Input
-            id="footerInstituteName"
-            value={content.footer.instituteName}
-                                        onChange={(e) =>
-                                            setContent((prev) => ({
-                                                ...prev,
-                footer: { ...prev.footer, instituteName: e.target.value },
-                                            }))
-                                        }
-                                    />
-                                </div>
-        <div className="space-y-2">
-          <Label htmlFor="footerSubHeader">Sub Header (small line under the name)</Label>
-          <Textarea
-            id="footerSubHeader"
-            value={content.footer.subHeader}
-            onChange={(e) =>
-              setContent((prev) => ({
-                ...prev,
-                footer: { ...prev.footer, subHeader: e.target.value },
-              }))
-            }
-            rows={2}
-          />
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="footerTagline">Tagline</Label>
-          <Textarea
-            id="footerTagline"
-            value={content.footer.tagline}
-            onChange={(e) =>
-              setContent((prev) => ({
-                ...prev,
-                footer: { ...prev.footer, tagline: e.target.value },
-              }))
-            }
-            rows={2}
-          />
-        </div>
-                            </CardContent>
-                        </Card>
+    <div className="space-y-8">
+      <Card
+        className="shadow-soft w-full"
+        onMouseEnter={() => setActiveSubSection('footer-institute')}
+        onFocus={() => setActiveSubSection('footer-institute')}
+      >
+        <CardHeader>
+          <CardTitle>Footer - Institute Info</CardTitle>
+          <CardDescription>Main footer institute name, sub header line, and tagline.</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="footerInstituteName">Institute Name</Label>
+            <Input
+              id="footerInstituteName"
+              value={content.footer.instituteName}
+              onChange={(e) =>
+                setContent((prev) => ({
+                  ...prev,
+                  footer: { ...prev.footer, instituteName: e.target.value },
+                }))
+              }
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="footerSubHeader">Sub Header (small line under the name)</Label>
+            <Textarea
+              id="footerSubHeader"
+              value={content.footer.subHeader}
+              onChange={(e) =>
+                setContent((prev) => ({
+                  ...prev,
+                  footer: { ...prev.footer, subHeader: e.target.value },
+                }))
+              }
+              rows={2}
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="footerTagline">Tagline</Label>
+            <Textarea
+              id="footerTagline"
+              value={content.footer.tagline}
+              onChange={(e) =>
+                setContent((prev) => ({
+                  ...prev,
+                  footer: { ...prev.footer, tagline: e.target.value },
+                }))
+              }
+              rows={2}
+            />
+          </div>
+        </CardContent>
+      </Card>
 
-   
+      <Card
+        className="shadow-soft w-full"
+        onMouseEnter={() => setActiveSubSection('footer-quick-links')}
+        onFocus={() => setActiveSubSection('footer-quick-links')}
+      >
+        <CardHeader>
+          <CardTitle>Quick Links</CardTitle>
+          <CardDescription>Navigation link labels displayed in the footer.</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="space-y-4">
+            {content.footer.quickLinks.map((link, index) => (
+              <div key={index} className="flex items-center gap-2">
+                <Input
+                  className="flex-1"
+                  placeholder="Label"
+                  value={link.label}
+                  onChange={(e) => {
+                    setContent((prev) => ({
+                      ...prev,
+                      footer: {
+                        ...prev.footer,
+                        quickLinks: prev.footer.quickLinks.map((l, i) =>
+                          i === index ? { ...l, label: e.target.value } : l
+                        ),
+                      },
+                    }));
+                  }}
+                />
+                <Button
+                  type="button"
+                  size="icon"
+                  variant="ghost"
+                  onClick={() => {
+                    setContent((prev) => ({
+                      ...prev,
+                      footer: {
+                        ...prev.footer,
+                        quickLinks: prev.footer.quickLinks.filter((_, i) => i !== index),
+                      },
+                    }));
+                  }}
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
 
-    <Card
-      className="shadow-soft flex-shrink-0"
-      style={{ width: '400px', minWidth: '400px' }}
-      onMouseEnter={() => setActiveSubSection('footer-quick-links')}
-      onFocus={() => setActiveSubSection('footer-quick-links')}
-    >
-                            <CardHeader>
-        <CardTitle>Quick Links</CardTitle>
-        <CardDescription>Navigation link labels displayed in the footer.</CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <div className="space-y-4">
-          {content.footer.quickLinks.map((link, index) => (
-            <div key={index} className="flex items-center gap-2">
-              <Input
-                className="flex-1"
-                placeholder="Label"
-                value={link.label}
-                onChange={(e) => {
-                  setContent((prev) => ({
-                    ...prev,
-                    footer: {
-                      ...prev.footer,
-                      quickLinks: prev.footer.quickLinks.map((l, i) =>
-                        i === index ? { ...l, label: e.target.value } : l
-                      ),
-                    },
-                  }));
-                }}
-              />
-              <Button
-                type="button"
-                size="icon"
-                variant="ghost"
-                onClick={() => {
-                  setContent((prev) => ({
-                    ...prev,
-                    footer: {
-                      ...prev.footer,
-                      quickLinks: prev.footer.quickLinks.filter((_, i) => i !== index),
-                    },
-                  }));
-                }}
-              >
-                <Trash2 className="h-4 w-4" />
-              </Button>
-            </div>
-          ))}
-        </div>
-       
-      </CardContent>
-    </Card>
+      <Card
+        className="shadow-soft w-full"
+        onMouseEnter={() => setActiveSubSection('footer-what-we-do')}
+        onFocus={() => setActiveSubSection('footer-what-we-do')}
+      >
+        <CardHeader>
+          <CardTitle>What We Do</CardTitle>
+          <CardDescription>Items shown under the “What We Do” column in the footer.</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="space-y-3">
+            {(content.footer.whatWeDo || []).map((item, index) => (
+              <div key={index} className="flex items-center gap-2">
+                <Input
+                  className="flex-1"
+                  value={item}
+                  onChange={(e) =>
+                    setContent((prev) => ({
+                      ...prev,
+                      footer: {
+                        ...prev.footer,
+                        whatWeDo: (prev.footer.whatWeDo || []).map((w, i) => (i === index ? e.target.value : w)),
+                      },
+                    }))
+                  }
+                />
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
 
-    <Card
-      className="shadow-soft flex-shrink-0"
-      style={{ width: '400px', minWidth: '400px' }}
-      onMouseEnter={() => setActiveSubSection('footer-what-we-do')}
-      onFocus={() => setActiveSubSection('footer-what-we-do')}
-    >
-      <CardHeader>
-        <CardTitle>What We Do</CardTitle>
-        <CardDescription>Items shown under the “What We Do” column in the footer.</CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <div className="space-y-3">
-          {(content.footer.whatWeDo || []).map((item, index) => (
-            <div key={index} className="flex items-center gap-2">
-              <Input
-                className="flex-1"
-                value={item}
-                onChange={(e) =>
-                  setContent((prev) => ({
-                    ...prev,
-                    footer: {
-                      ...prev.footer,
-                      whatWeDo: (prev.footer.whatWeDo || []).map((w, i) => (i === index ? e.target.value : w)),
-                    },
-                  }))
-                }
-              />
-              
-            </div>
-          ))}
-        </div>
-       
-      </CardContent>
-    </Card>
+      <Card
+        className="shadow-soft w-full"
+        onMouseEnter={() => setActiveSubSection('footer-contact')}
+        onFocus={() => setActiveSubSection('footer-contact')}
+      >
+        <CardHeader>
+          <CardTitle>Contact Information</CardTitle>
+          <CardDescription>Contact details displayed in the footer.</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="footerAddress">Address</Label>
+            <Textarea
+              id="footerAddress"
+              value={content.footer.contact.address}
+              onChange={(e) =>
+                setContent((prev) => ({
+                  ...prev,
+                  footer: {
+                    ...prev.footer,
+                    contact: { ...prev.footer.contact, address: e.target.value },
+                  },
+                }))
+              }
+              rows={2}
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="footerPhone">Phone</Label>
+            <Input
+              id="footerPhone"
+              value={content.footer.contact.phone}
+              onChange={(e) =>
+                setContent((prev) => ({
+                  ...prev,
+                  footer: {
+                    ...prev.footer,
+                    contact: { ...prev.footer.contact, phone: e.target.value },
+                  },
+                }))
+              }
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="footerEmail">Email</Label>
+            <Input
+              id="footerEmail"
+              type="email"
+              value={content.footer.contact.email}
+              onChange={(e) =>
+                setContent((prev) => ({
+                  ...prev,
+                  footer: {
+                    ...prev.footer,
+                    contact: { ...prev.footer.contact, email: e.target.value },
+                  },
+                }))
+              }
+            />
+          </div>
+        </CardContent>
+      </Card>
 
-    <Card
-      className="shadow-soft flex-shrink-0"
-      style={{ width: '450px', minWidth: '450px' }}
-      onMouseEnter={() => setActiveSubSection('footer-contact')}
-      onFocus={() => setActiveSubSection('footer-contact')}
-    >
-      <CardHeader>
-        <CardTitle>Contact Information</CardTitle>
-        <CardDescription>Contact details displayed in the footer.</CardDescription>
-                            </CardHeader>
-                            <CardContent className="space-y-4">
-                                <div className="space-y-2">
-          <Label htmlFor="footerAddress">Address</Label>
-                                    <Textarea
-            id="footerAddress"
-            value={content.footer.contact.address}
-            onChange={(e) =>
-              setContent((prev) => ({
-                ...prev,
-                footer: {
-                  ...prev.footer,
-                  contact: { ...prev.footer.contact, address: e.target.value },
-                },
-              }))
-            }
-            rows={2}
-          />
-                                </div>
-        <div className="space-y-2">
-          <Label htmlFor="footerPhone">Phone</Label>
-          <Input
-            id="footerPhone"
-            value={content.footer.contact.phone}
-            onChange={(e) =>
-              setContent((prev) => ({
-                ...prev,
-                footer: {
-                  ...prev.footer,
-                  contact: { ...prev.footer.contact, phone: e.target.value },
-                },
-              }))
-            }
-          />
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="footerEmail">Email</Label>
-          <Input
-            id="footerEmail"
-            type="email"
-            value={content.footer.contact.email}
-            onChange={(e) =>
-              setContent((prev) => ({
-                ...prev,
-                footer: {
-                  ...prev.footer,
-                  contact: { ...prev.footer.contact, email: e.target.value },
-                },
-              }))
-            }
-          />
-        </div>
-      </CardContent>
-    </Card>
-
-    <Card
-      className="shadow-soft flex-shrink-0"
-      style={{ width: '350px', minWidth: '350px' }}
-      onMouseEnter={() => setActiveSubSection('footer-copyright')}
-      onFocus={() => setActiveSubSection('footer-copyright')}
-    >
-      <CardHeader>
-        <CardTitle>Copyright</CardTitle>
-        <CardDescription>Copyright text displayed at the bottom of the footer.</CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <div className="space-y-2">
-          <Label htmlFor="footerCopy">Copyright Text</Label>
-          <Input
-            id="footerCopy"
-            value={content.footer.copyright}
-            onChange={(e) =>
-              setContent((prev) => ({
-                ...prev,
-                footer: { ...prev.footer, copyright: e.target.value },
-              }))
-            }
-          />
-                                </div>
-                            </CardContent>
-                        </Card>
-      </div>
+      <Card
+        className="shadow-soft w-full"
+        onMouseEnter={() => setActiveSubSection('footer-copyright')}
+        onFocus={() => setActiveSubSection('footer-copyright')}
+      >
+        <CardHeader>
+          <CardTitle>Copyright</CardTitle>
+          <CardDescription>Copyright text displayed at the bottom of the footer.</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="footerCopy">Copyright Text</Label>
+            <Input
+              id="footerCopy"
+              value={content.footer.copyright}
+              onChange={(e) =>
+                setContent((prev) => ({
+                  ...prev,
+                  footer: { ...prev.footer, copyright: e.target.value },
+                }))
+              }
+            />
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 

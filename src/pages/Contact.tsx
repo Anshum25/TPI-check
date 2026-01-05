@@ -168,16 +168,19 @@ const Contact = () => {
           </div>
         </section>
 
-        <section className="py-20 bg-secondary/30">
-          <div className="container mx-auto px-4">
-            <h2 className="text-3xl font-bold mb-8 text-center">Find Us</h2>
-            <div className="max-w-4xl mx-auto">
-              <div className="aspect-video bg-muted rounded-lg flex items-center justify-center">
-                <p className="text-muted-foreground">{content.contact.mapNote || "Map would be embedded here"}</p>
-              </div>
-            </div>
-          </div>
-        </section>
+      <div className="max-w-6xl mx-auto">
+  <div className="h-[500px] rounded-lg overflow-hidden shadow-soft bg-muted">
+    <iframe
+      title="Turning Point Institute Location"
+      src="https://www.google.com/maps?q=Turning+Point+Institute,+The+Grand+Monarch,+306,+100+Feet+Anand+Nagar+Rd,+near+Sima+Hall,+beside+Diamond+Gym+lounge,+Satellite,+Ahmedabad,+Gujarat+380015&hl=en&z=17&output=embed"
+      className="w-full h-full border-0"
+      loading="lazy"
+      allowFullScreen
+      referrerPolicy="no-referrer-when-downgrade"
+    />
+  </div>
+</div>
+
       </main>
       <Footer />
     </div>
