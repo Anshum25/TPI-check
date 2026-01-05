@@ -11,7 +11,6 @@ import FacultyHighlight from "@/components/FacultyHighlight";
 import CourseDetails from "@/components/CourseDetails";
 import Marquee from "@/components/Marquee";
 import MethodologySection from "@/components/MethodologySection";
-import InformationBanner from "@/components/InformationBanner";
 import GainFromCourse from "@/components/GainFromCourse";
 import HomeReviewsSection from "@/components/HomeReviewsSection";
 import TestimonialCard from "@/components/TestimonialCard";
@@ -44,7 +43,7 @@ const Home = () => {
         <Marquee />
 
         {/* Learn English + Director's Desk */}
-        <section className="py-20 md:py-24 relative">
+        <section className="pt-12 pb-20 md:pt-16 md:pb-24 relative">
           <div className="container mx-auto px-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-16 items-center">
               {/* Left Content */}
@@ -112,7 +111,6 @@ const Home = () => {
           </div>
         </section>
         <MethodologySection />
-        <InformationBanner />
         <GainFromCourse />
 
         <FacultyHighlight />
@@ -153,6 +151,10 @@ const Home = () => {
         )}
 
         <ActivityVideos />
+
+        {/* Reviews from achievers */}
+        <HomeReviewsSection />
+
         <ActivityImages />
 
         {/* Courses Section */}
@@ -226,9 +228,6 @@ const Home = () => {
           </div>
         </section>
         */}
-
-        {/* Reviews from achievers */}
-        <HomeReviewsSection />
 
         {/* Secondary CTA Section (Ready to Get Started?) - shown below the gradient CTA */}
         <section className="py-20">

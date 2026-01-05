@@ -247,9 +247,9 @@ export type SiteContent = {
     ratingSummary: { score: string; label: string; count: string };
     testimonials: Testimonial[];
     sections?: {
-      google: { title: string; description: string };
-      facebook: { title: string; description: string };
-      justdial: { title: string; description: string };
+      google: { title: string; description: string; watchMoreUrl: string };
+      facebook: { title: string; description: string; watchMoreUrl: string };
+      justdial: { title: string; description: string; watchMoreUrl: string };
     };
     cta: { title: string; description: string; buttonText: string; mailTo: string };
   };
@@ -276,6 +276,8 @@ export type SiteContent = {
       specialization: string[];
       description: string;
       achievements: string[];
+      extraLinkLabel?: string;
+      extraLinkUrl?: string;
     }[];
     methodology: SimpleCard[];
     promise: { title: string; paragraphs: string[] };
@@ -380,6 +382,11 @@ export const DEFAULT_CONTENT: SiteContent = {
             { label: "Batch 2", time: "9:30 am to 11:00 am" },
             { label: "Batch 3", time: "11:00 am to 12:30 pm" },
           ],
+        },
+        {
+          heading: "Afternoon",
+          color: "primary",
+          items: [],
         },
         {
           heading: "Evening",
@@ -607,6 +614,18 @@ export const DEFAULT_CONTENT: SiteContent = {
         },
         {
           title: "Interactive Role Play Session",
+          videoUrl: "https://www.youtube.com/embed/sLMm9trcZYc",
+        },
+        {
+          title: "Stage Presentation Practice",
+          videoUrl: "https://www.youtube.com/embed/sLMm9trcZYc",
+        },
+        {
+          title: "Speaking Drill & Fluency Building",
+          videoUrl: "https://www.youtube.com/embed/sLMm9trcZYc",
+        },
+        {
+          title: "Interview & Personality Development",
           videoUrl: "https://www.youtube.com/embed/sLMm9trcZYc",
         },
       ],
@@ -1117,14 +1136,18 @@ export const DEFAULT_CONTENT: SiteContent = {
       google: {
         title: "Google Reviews",
         description: "Highlights from our latest Google reviews",
+        watchMoreUrl:
+          "https://www.google.com/search?q=turning+point+institute#lrd=0x395e84cf0a8203a1:0xd1a3ec8eb1a3e77e,1,,,,",
       },
       facebook: {
         title: "Facebook Reviews",
         description: "Stories shared by our community on Facebook",
+        watchMoreUrl: "https://www.facebook.com/",
       },
       justdial: {
         title: "JustDial Reviews",
         description: "Ratings and feedback from JustDial",
+        watchMoreUrl: "https://www.justdial.com/",
       },
     },
     cta: {
@@ -1329,6 +1352,8 @@ export const DEFAULT_CONTENT: SiteContent = {
         imageInitials: "AD",
         education: "National-level Debater",
         experience: "10+ years",
+        extraLinkLabel: "Turning Point Community",
+        extraLinkUrl: "https://turningpointinstitute.in/",
         specialization: ["Public Speaking", "Personality Development", "Model United Nations"],
         description:
           "Apart from being the Founder of Turning Point Community, Aditya is a national-level debater with extensive experience in public speaking. He has chaired over 100 Model United Nations conferences and judged numerous debates at premier colleges across India.",
@@ -1400,6 +1425,30 @@ const migrateContent = (stored: any): SiteContent => {
       ...stored.home,
       heroCarousel: stored.home.heroCarousel || DEFAULT_CONTENT.home.heroCarousel,
     };
+  }
+
+  if (migrated.home?.courseOverview && DEFAULT_CONTENT.home.courseOverview?.schedule?.length) {
+    const defaultSchedule = DEFAULT_CONTENT.home.courseOverview.schedule;
+    const currentSchedule = migrated.home.courseOverview.schedule;
+
+    if (!Array.isArray(currentSchedule)) {
+      migrated.home = {
+        ...migrated.home,
+        courseOverview: {
+          ...DEFAULT_CONTENT.home.courseOverview,
+          ...(migrated.home.courseOverview || {}),
+          schedule: defaultSchedule,
+        },
+      };
+    } else if (currentSchedule.length === 2 && defaultSchedule.length >= 3) {
+      migrated.home = {
+        ...migrated.home,
+        courseOverview: {
+          ...(migrated.home.courseOverview || {}),
+          schedule: [currentSchedule[0], defaultSchedule[1], currentSchedule[1]],
+        },
+      };
+    }
   }
 
   if (migrated.home?.differentiators?.cards?.length) {
@@ -1508,10 +1557,22 @@ const migrateContent = (stored: any): SiteContent => {
       testimonials: Array.isArray(stored.reviews.testimonials)
         ? stored.reviews.testimonials
         : DEFAULT_CONTENT.reviews.testimonials,
-      sections: {
-        ...(DEFAULT_CONTENT.reviews.sections || {}),
-        ...(stored.reviews.sections || {}),
-      },
+      sections: DEFAULT_CONTENT.reviews.sections
+        ? {
+            google: {
+              ...DEFAULT_CONTENT.reviews.sections.google,
+              ...((stored.reviews.sections || {}).google || {}),
+            },
+            facebook: {
+              ...DEFAULT_CONTENT.reviews.sections.facebook,
+              ...((stored.reviews.sections || {}).facebook || {}),
+            },
+            justdial: {
+              ...DEFAULT_CONTENT.reviews.sections.justdial,
+              ...((stored.reviews.sections || {}).justdial || {}),
+            },
+          }
+        : undefined,
       cta: {
         ...DEFAULT_CONTENT.reviews.cta,
         ...(stored.reviews.cta || {}),

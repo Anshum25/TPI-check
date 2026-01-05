@@ -76,6 +76,19 @@ const Faculty = () => {
                               <BookOpen className="h-4 w-4 text-accent" />
                               <span>{member.education}</span>
                             </div>
+                            {member.extraLinkLabel && member.extraLinkUrl ? (
+                              <div className="flex items-center space-x-2">
+                                <Users className="h-4 w-4 text-accent" />
+                                <a
+                                  href={member.extraLinkUrl}
+                                  target="_blank"
+                                  rel="noreferrer"
+                                  className="text-accent hover:underline"
+                                >
+                                  {member.extraLinkLabel}
+                                </a>
+                              </div>
+                            ) : null}
                           </div>
                         </div>
 
