@@ -94,11 +94,33 @@ const MethodologySection = () => {
                 <div
                   id={`methodology-panel-${index}`}
                   ref={(el) => (contentRefs.current[index] = el)}
-                  className="border-t border-border/40 bg-secondary/10 space-y-5 overflow-hidden transition-[max-height] duration-300 ease-in-out transition-opacity"
+                  className="border-t border-border/40 bg-secondary/10 overflow-hidden transition-[max-height] duration-300 ease-in-out transition-opacity"
                   // initial inline styles ensure collapsed state until effect runs
                   style={{ maxHeight: expandedIndex === index ? undefined : "0px", opacity: expandedIndex === index ? 1 : 0 }}
                 >
-                  <div className="p-5 md:p-6">
+                  <div className="p-5 md:p-6 space-y-5">
+                    {/* Images Section - Displayed First */}
+                    {section.images && section.images.length > 0 && (
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        {section.images.map((image, imgIdx) => (
+                          <div
+                            key={imgIdx}
+                            className="overflow-hidden rounded-lg shadow-medium"
+                          >
+                            <img
+                              src={resolveImageSrc(image.src)}
+                              alt={image.alt || `Section image ${imgIdx + 1}`}
+                              className="w-full h-48 object-cover hover:scale-105 transition-transform duration-300"
+                              onError={(e) => {
+                                (e.target as HTMLImageElement).style.display = 'none';
+                              }}
+                            />
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    {/* Description Section */}
                     {(() => {
                       const desc = (section.description && section.description.trim().length > 0)
                         ? section.description
@@ -108,10 +130,11 @@ const MethodologySection = () => {
                       ) : null;
                     })()}
 
+                    {/* Objectives Section */}
                     {index === 1 && section.objectives && section.objectives.length > 0 && (
                       <div>
                         {index === 1 && section.objectivesTitle && (
-                          <h5 className="font-bold text-foreground mb-3 mt-8 text-sm md:text-base">
+                          <h5 className="font-bold text-foreground mb-3 text-sm md:text-base">
                             {section.objectivesTitle}
                           </h5>
                         )}
@@ -128,26 +151,6 @@ const MethodologySection = () => {
                             </li>
                           ))}
                         </ul>
-                      </div>
-                    )}
-
-                    {section.images && section.images.length > 0 && (
-                      <div className="mt-8 grid grid-cols-3 gap-4">
-                        {section.images.map((image, imgIdx) => (
-                          <div
-                            key={imgIdx}
-                            className="overflow-hidden rounded-lg shadow-medium"
-                          >
-                            <img
-                              src={resolveImageSrc(image.src)}
-                              alt={image.alt || `Section image ${imgIdx + 1}`}
-                              className="w-full h-48 object-cover hover:scale-105 transition-transform duration-300"
-                              onError={(e) => {
-                                (e.target as HTMLImageElement).style.display = 'none';
-                              }}
-                            />
-                          </div>
-                        ))}
                       </div>
                     )}
                   </div>
