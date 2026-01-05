@@ -49,7 +49,22 @@ const JoinUsSection = ({ showJourney = true }: JoinUsSectionProps) => {
               <div>
                 <h3 className="text-2xl font-bold text-foreground mb-6">{j?.reasonsHeading || "Why Turning Point?"}</h3>
 
-                <div className="space-y-6">
+                {/* Mobile: video directly below heading */}
+                <div className="mt-4 md:hidden">
+                  <div className="w-full rounded-2xl overflow-hidden shadow-soft bg-black/80">
+                    <div className="relative w-full" style={{ paddingBottom: "56.25%" }}>
+                      <iframe
+                        className="absolute inset-0 w-full h-full"
+                        src={j?.videoUrl || "https://www.youtube.com/embed/sLMm9trcZYc"}
+                        title="Introduction to the course"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                        allowFullScreen
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="space-y-6 mt-6 md:mt-0">
                   {(j?.reasons || [
                     { title: "Established Since 1999", description: "Founded by Ashish Bhatt and Pragna Bhatt, we've been the ultimate solution for effective English communication skills in Ahmedabad for over 25 years." },
                     { title: "Learn Directly from Founders", description: "Study with Mr Ashish Bhatt and Mrs Pragna Bhatt themselves. Their rich experience in making students fluent and confident is unmatched." },
@@ -64,23 +79,27 @@ const JoinUsSection = ({ showJourney = true }: JoinUsSectionProps) => {
               </div>
             </div>
 
-            {/* Right - Stats & Highlight */}
-            <div className="flex flex-col justify-between gap-6">
-              <div className="gradient-hero rounded-xl p-8 text-primary-foreground">
-                <p className="text-5xl font-bold mb-2">{j?.statCard?.metric || "25+"}</p>
-                <p className="text-lg font-semibold mb-3">{j?.statCard?.heading || "Years of Excellence"}</p>
-                <p className="text-primary-foreground/90 text-sm leading-relaxed">{j?.statCard?.description || "Two decades of transforming lives and building confidence in English communication. Join thousands of successful alumni."}</p>
-              </div>
-
-              <div className="bg-secondary/50 rounded-xl p-8 border-2 border-accent/30">
-                <p className="text-2xl font-bold text-foreground mb-3">{j?.infoCard?.title || "Perfect Institute For You"}</p>
-                <p className="text-muted-foreground text-sm leading-relaxed">{j?.infoCard?.description || "If you're looking for the best English speaking classes in Ahmedabad, Turning Point is the ultimate choice. We've evolved into an institution of excellence."}</p>
+            {/* Right - Intro Video */}
+            <div className="hidden md:flex items-center justify-center">
+              <div className="w-full md:w-[115%] max-w-[840px] rounded-2xl overflow-hidden shadow-soft bg-black/80 group transition-transform">
+                <div
+                  className="relative w-full origin-center transform transition-transform duration-300 ease-out group-hover:scale-105"
+                  style={{ paddingBottom: "56.25%" }}
+                >
+                  <iframe
+                    className="absolute inset-0 w-full h-full"
+                    src={j?.videoUrl || "https://www.youtube.com/embed/sLMm9trcZYc"}
+                    title="Introduction to the course"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    allowFullScreen
+                  />
+                </div>
               </div>
             </div>
           </div>
 
-          {/* Bottom Full Width Message - Hidden on mobile, shown on desktop */}
-          <div className="hidden md:block bg-gradient-to-r from-primary/10 via-transparent to-accent/10 border border-primary/20 rounded-xl p-8 md:p-12">
+          {/* Bottom Full Width Message - Now also visible on mobile, below video */}
+          <div className="mt-8 bg-gradient-to-r from-primary/10 via-transparent to-accent/10 border border-primary/20 rounded-xl p-6 md:p-12">
             <div className="max-w-3xl">
               <h3 className="text-xl md:text-2xl font-bold text-foreground mb-4">{j?.bottom?.title || "You belong here."}</h3>
               <p className="text-muted-foreground leading-relaxed">{j?.bottom?.description || "The real strength of any institute is its teachers. At Turning Point, you're not just a student – you're part of a community led by the founders themselves. Your success is our responsibility. You'll experience a teaching method that's proven effective for making students fluent, confident, and genuinely interested in learning English."}</p>
