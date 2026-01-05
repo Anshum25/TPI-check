@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useContent } from "@/lib/content";
+import RequestCallbackDialog from "@/components/RequestCallbackDialog";
 import heroClassroom from "@/assets/hero-classroom.jpg";
 import speakingConfidence from "@/assets/speaking-confidence.jpg";
 import studentSuccess from "@/assets/student-success.jpg";
@@ -16,7 +17,31 @@ const imageMap: Record<string, string> = {
 
 const Hero = () => {
   const { content } = useContent();
+  const navigate = useNavigate();
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [isCallbackDialogOpen, setIsCallbackDialogOpen] = useState(false);
+
+  // Static button configuration
+  const heroButtons = [
+    {
+      text: 'CALL NOW',
+      action: 'navigate' as const,
+      target: '/contact#phone',
+      variant: 'default' as const
+    },
+    {
+      text: 'GET DIRECTION',
+      action: 'navigate' as const,
+      target: '/contact#map',
+      variant: 'outline' as const
+    },
+    {
+      text: 'REQUEST CALL BACK',
+      action: 'modal' as const,
+      target: 'RequestCallbackDialog',
+      variant: 'outline' as const
+    }
+  ];
 
   const slides = content.home.heroCarousel.slides.map((slide) => ({
     ...slide,
@@ -32,6 +57,27 @@ const Hero = () => {
 
   const nextSlide = () => setCurrentSlide((prev) => (prev + 1) % slides.length);
   const prevSlide = () => setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length);
+
+  // Button action handlers
+  const handleCallNow = () => {
+    navigate('/contact#phone');
+  };
+
+  const handleGetDirection = () => {
+    navigate('/contact#map');
+  };
+
+  const handleRequestCallback = () => {
+    setIsCallbackDialogOpen(true);
+  };
+
+  const handleButtonClick = (button: typeof heroButtons[0]) => {
+    if (button.action === 'navigate') {
+      navigate(button.target);
+    } else if (button.action === 'modal') {
+      setIsCallbackDialogOpen(true);
+    }
+  };
 
   return (
     <div className="relative h-[400px] md:h-[630px] overflow-hidden">
@@ -58,17 +104,21 @@ const Hero = () => {
                   <p className="text-xl md:text-2xl text-white/90 mb-8">
                     {slide.subtitle}
                   </p>
-                  <div className="flex flex-wrap gap-4">
-                    <Link to={slide.primaryButtonLink}>
-                      <Button size="lg" className="gradient-accent">
-                        {slide.primaryButtonText}
+                  <div className="flex flex-wrap justify-center md:justify-start gap-2 sm:gap-3 md:gap-4">
+                    {heroButtons.map((button, buttonIndex) => (
+                      <Button
+                        key={buttonIndex}
+                        size="sm"
+                        variant={button.variant}
+                        onClick={() => handleButtonClick(button)}
+                        className={`min-w-[110px] sm:min-w-[140px] md:min-w-[160px] text-xs sm:text-sm md:text-base px-3 sm:px-4 md:px-6 py-2 sm:py-3 md:py-4 transition-all duration-200 ease-in-out ${button.variant === 'outline' 
+                          ? "bg-white/10 backdrop-blur-sm border-white text-white hover:bg-accent hover:text-white hover:border-accent"
+                          : "gradient-accent"
+                        }`}
+                      >
+                        {button.text}
                       </Button>
-                    </Link>
-                    <Link to={slide.secondaryButtonLink}>
-                      <Button size="lg" variant="outline" className="bg-white/10 backdrop-blur-sm border-white text-white hover:bg-white hover:text-primary">
-                        {slide.secondaryButtonText}
-                      </Button>
-                    </Link>
+                    ))}
                   </div>
                 </div>
               </div>
@@ -106,6 +156,11 @@ const Hero = () => {
           />
         ))}
       </div>
+
+      <RequestCallbackDialog 
+        open={isCallbackDialogOpen} 
+        onOpenChange={setIsCallbackDialogOpen} 
+      />
     </div>
   );
 };

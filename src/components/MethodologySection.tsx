@@ -75,10 +75,10 @@ const MethodologySection = () => {
                   className="w-full flex items-center justify-between p-5 md:p-6 hover:bg-secondary/30 transition-colors text-left group"
                 >
                   <div className="flex items-center gap-3">
-                    <span className="text-sm md:text-base font-bold text-primary">
+                    <span className="text-sm md:text-base font-bold text-accent">
                       +
                     </span>
-                    <h3 className="text-lg md:text-xl font-bold text-foreground group-hover:text-primary transition-colors">
+                    <h3 className="text-lg md:text-xl font-bold text-foreground group-hover:text-accent transition-colors">
                       {section.title}
                     </h3>
                   </div>
@@ -144,7 +144,7 @@ const MethodologySection = () => {
                               key={idx}
                               className="flex items-start gap-3 text-sm md:text-base"
                             >
-                              <span className="text-primary font-bold mt-1">•</span>
+                              <span className="text-accent font-bold mt-1">•</span>
                               <span className="text-muted-foreground leading-relaxed">
                                 {objective}
                               </span>

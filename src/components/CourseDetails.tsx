@@ -38,13 +38,13 @@ const CourseDetails = () => {
             <div className="order-2 md:order-1 bg-card border border-border/60 rounded-2xl shadow-soft p-6 md:p-8">
               <h3 className="text-2xl font-bold text-foreground mb-8">{co?.titleHighlight ? `${co.titleHighlight} Schedule` : 'Batch Schedule'}</h3>
               {(co?.schedule || [
-                { heading: 'Morning', color: 'primary', items: [{label:'Batch 1', time:'8:00 am to 9:30 am'},{label:'Batch 2', time:'9:30 am to 11:00 am'},{label:'Batch 3', time:'11:00 am to 12:30 pm'}] },
+                { heading: 'Morning', color: 'accent', items: [{label:'Batch 1', time:'8:00 am to 9:30 am'},{label:'Batch 2', time:'9:30 am to 11:00 am'},{label:'Batch 3', time:'11:00 am to 12:30 pm'}] },
                 { heading: 'Afternoon', color: 'primary', items: [] },
                 { heading: 'Evening', color: 'accent', items: [{label:'Batch 4', time:'6:00 pm to 7:30 pm'},{label:'Batch 5', time:'7:30 pm to 9:00 pm'}] },
               ]).map((g, gi, arr) => (
                 <div key={gi} className={gi < arr.length - 1 ? 'mb-8' : ''}>
                   <h4 className="text-lg font-bold text-foreground mb-4 flex items-center gap-3">
-                    <span className={`w-1 h-6 ${(g.color ?? (gi === 1 ? 'accent' : 'primary')) === 'accent' ? 'bg-accent' : 'bg-primary'} rounded-full`}></span>
+                    <span className={`w-1 h-6 ${gi === 0 ? 'bg-accent' : gi === 1 ? 'bg-primary' : 'bg-accent'} rounded-full`}></span>
                     {g.heading}
                   </h4>
                   <div className="space-y-3 ml-0 md:ml-4">

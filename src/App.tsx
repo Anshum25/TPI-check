@@ -3,6 +3,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider, useIsFetching } from "@tanstack/react-query";
 import LoadingOverlay from "@/components/LoadingOverlay";
+import ScrollToTop from "@/components/ScrollToTop";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ContentProvider } from "@/lib/content";
 import Home from "./pages/Home";
@@ -44,6 +45,7 @@ const AppRoutes = () => (
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <BrowserRouter>
+      <ScrollToTop />
       <ContentProvider>
         <TooltipProvider>
           <Toaster />
