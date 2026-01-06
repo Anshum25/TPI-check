@@ -129,21 +129,6 @@ const Home = () => {
           </div>
         </section>
 
-        {/* "You belong here" paragraph - Shown on mobile only after CourseDetails */}
-        <section className="block md:hidden pt-10 pb-2">
-          <div className="container mx-auto px-4">
-            <div className="max-w-6xl mx-auto">
-              <div className="bg-gradient-to-r from-primary/10 via-transparent to-accent/10 border border-primary/20 rounded-xl p-6">
-                <div className="max-w-3xl">
-                  <h3 className="text-xl font-bold text-foreground mb-4">You belong here.</h3>
-                  <p className="text-muted-foreground leading-relaxed">
-                    The real strength of any institute is its teachers. At Turning Point, you're not just a student – you're part of a community led by the founders themselves. Your success is our responsibility. You'll experience a teaching method that's proven effective for making students fluent, confident, and genuinely interested in learning English.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
         <MethodologySection />
         <GainFromCourse />
 

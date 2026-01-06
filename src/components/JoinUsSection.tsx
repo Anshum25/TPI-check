@@ -98,9 +98,9 @@ const JoinUsSection = ({ showJourney = true }: JoinUsSectionProps) => {
             </div>
           </div>
 
-          {/* Bottom Full Width Message - Now also visible on mobile, below video */}
+          {/* Bottom Full Width Message - text only */}
           <div className="mt-8 bg-gradient-to-r from-primary/10 via-transparent to-accent/10 border border-primary/20 rounded-xl p-6 md:p-12">
-            <div className="max-w-3xl">
+            <div className="w-full">
               <h3 className="text-xl md:text-2xl font-bold text-foreground mb-4">{j?.bottom?.title || "You belong here."}</h3>
               <p className="text-muted-foreground leading-relaxed">{j?.bottom?.description || "The real strength of any institute is its teachers. At Turning Point, you're not just a student – you're part of a community led by the founders themselves. Your success is our responsibility. You'll experience a teaching method that's proven effective for making students fluent, confident, and genuinely interested in learning English."}</p>
             </div>

@@ -1355,7 +1355,7 @@ export const DEFAULT_CONTENT: SiteContent = {
         education: "National-level Debater",
         experience: "10+ years",
         extraLinkLabel: "Turning Point Community",
-        extraLinkUrl: "https://turningpointinstitute.in/",
+        extraLinkUrl: "https://www.turningpointcommunity.in/",
         specialization: ["Public Speaking", "Personality Development", "Model United Nations"],
         description:
           "Apart from being the Founder of Turning Point Community, Aditya is a national-level debater with extensive experience in public speaking. He has chaired over 100 Model United Nations conferences and judged numerous debates at premier colleges across India.",
