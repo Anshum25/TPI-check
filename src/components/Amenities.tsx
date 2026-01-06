@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 interface AmenitiesProps {
   title?: string;
@@ -33,12 +33,48 @@ const Amenities = ({
 }: AmenitiesProps) => {
   const [currentSlide, setCurrentSlide] = useState(0);
 
+  const touchStartXRef = useRef<number | null>(null);
+  const touchEndXRef = useRef<number | null>(null);
+
+  // Auto-advance slides every 3 seconds
   useEffect(() => {
+    if (!carouselImages.length) return;
     const timer = setInterval(() => {
-      setCurrentSlide((prev) => (prev - 1 + carouselImages.length) % carouselImages.length);
+      setCurrentSlide((prev) => (prev + 1) % carouselImages.length);
     }, 3000);
     return () => clearInterval(timer);
   }, [carouselImages.length]);
+
+  const handleTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
+    if (!carouselImages.length) return;
+    touchStartXRef.current = e.touches[0].clientX;
+    touchEndXRef.current = null;
+  };
+
+  const handleTouchMove = (e: React.TouchEvent<HTMLDivElement>) => {
+    if (!carouselImages.length) return;
+    touchEndXRef.current = e.touches[0].clientX;
+  };
+
+  const handleTouchEnd = () => {
+    const startX = touchStartXRef.current;
+    const endX = touchEndXRef.current;
+    if (startX === null || endX === null) return;
+
+    const deltaX = endX - startX;
+    const threshold = 40; // minimum px to count as a swipe
+
+    if (deltaX > threshold) {
+      // swipe right - previous slide
+      setCurrentSlide((prev) => (prev - 1 + carouselImages.length) % carouselImages.length);
+    } else if (deltaX < -threshold) {
+      // swipe left - next slide
+      setCurrentSlide((prev) => (prev + 1) % carouselImages.length);
+    }
+
+    touchStartXRef.current = null;
+    touchEndXRef.current = null;
+  };
 
   return (
     <section className="py-16 md:py-24">
@@ -46,9 +82,13 @@ const Amenities = ({
         <div className="max-w-7xl mx-auto">
           {/* Content Grid */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-stretch">
-            {/* Left Side - Carousel with rounded corners - narrower (7/12) */}
-            <div className="lg:col-span-7 relative w-full h-80 md:h-[420px] lg:h-[480px] rounded-2xl overflow-hidden shadow-medium bg-muted">
-              {/* Carousel Images */}
+            {/* Left Side - Fading slideshow (all breakpoints, swipe-enabled on touch devices) */}
+            <div
+              className="lg:col-span-7 relative w-full h-80 md:h-[420px] lg:h-[480px] rounded-2xl overflow-hidden shadow-medium bg-muted"
+              onTouchStart={handleTouchStart}
+              onTouchMove={handleTouchMove}
+              onTouchEnd={handleTouchEnd}
+            >
               {carouselImages.map((image, index) => (
                 <div
                   key={index}

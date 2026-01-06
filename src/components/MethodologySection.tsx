@@ -75,13 +75,13 @@ const MethodologySection = () => {
                   className="w-full flex items-center justify-between p-5 md:p-6 hover:bg-secondary/30 transition-colors text-left group"
                 >
                   <div className="flex items-center gap-3">
-                    <span className="text-sm md:text-base font-bold text-accent">
-                      +
-                    </span>
-                    <h3 className="text-lg md:text-xl font-bold text-foreground group-hover:text-accent transition-colors">
-                      {section.title}
-                    </h3>
-                  </div>
+              <span className="text-sm md:text-base font-bold text-primary transition-colors">
+                +
+              </span>
+              <h3 className="text-lg md:text-xl font-bold text-foreground group-hover:text-primary transition-colors">
+                {section.title}
+              </h3>
+            </div>
 
                   <ChevronDown
                     className={`w-5 h-5 text-muted-foreground flex-shrink-0 transition-transform duration-500 ease-in-out ${expandedIndex === index ? "rotate-180" : ""

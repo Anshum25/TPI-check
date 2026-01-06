@@ -30,13 +30,13 @@ const Hero = () => {
       variant: 'default' as const
     },
     {
-      text: 'GET DIRECTION',
+      text: 'GET DIRECTIONS',
       action: 'navigate' as const,
       target: '/contact#map',
       variant: 'outline' as const
     },
     {
-      text: 'REQUEST CALL BACK',
+      text: 'REQUEST A CALL BACK',
       action: 'modal' as const,
       target: 'RequestCallbackDialog',
       variant: 'outline' as const
@@ -85,7 +85,9 @@ const Hero = () => {
         <div
           key={index}
           className={`absolute inset-0 transition-opacity duration-700 ${
-            index === currentSlide ? "opacity-100" : "opacity-0"
+            index === currentSlide
+              ? "opacity-100 pointer-events-auto"
+              : "opacity-0 pointer-events-none"
           }`}
         >
           <div className="relative h-full">
@@ -111,9 +113,15 @@ const Hero = () => {
                         size="sm"
                         variant={button.variant}
                         onClick={() => handleButtonClick(button)}
-                        className={`min-w-[110px] sm:min-w-[140px] md:min-w-[160px] text-xs sm:text-sm md:text-base px-3 sm:px-4 md:px-6 py-2 sm:py-3 md:py-4 transition-all duration-200 ease-in-out ${button.variant === 'outline' 
-                          ? "bg-white/10 backdrop-blur-sm border-white text-white hover:bg-accent hover:text-white hover:border-accent"
-                          : "gradient-accent"
+                        className={`text-[11px] sm:text-sm md:text-base font-semibold px-3 sm:px-4 md:px-6 py-2 sm:py-3 md:py-4 transition-all duration-200 ease-in-out ${
+                          // Mobile: first two buttons share the top row (side by side), third takes full row below
+                          buttonIndex === 2
+                            ? 'w-full sm:w-auto'
+                            : 'w-[calc(50%-0.25rem)] sm:w-auto'
+                        } ${
+                          button.variant === 'outline'
+                            ? "bg-white/10 backdrop-blur-sm border-white text-white hover:bg-white hover:text-primary hover:border-primary"
+                            : "gradient-accent"
                         }`}
                       >
                         {button.text}
