@@ -1,4 +1,4 @@
-import { useState, type FormEvent, type ChangeEvent } from "react";
+import { useState, useEffect, type FormEvent, type ChangeEvent } from "react";
 import { useContent } from "@/lib/content";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -33,6 +33,27 @@ const Contact = () => {
     const { name, value } = e.target;
     setForm((f) => ({ ...f, [name]: value }));
   };
+
+  // Handle hash-based navigation
+  useEffect(() => {
+    const hash = window.location.hash.substring(1);
+    if (hash) {
+      setTimeout(() => {
+        const element = document.getElementById(hash);
+        if (element) {
+          // Calculate offset to center the phone card better
+          const headerOffset = hash === 'phone' ? 120 : 80; // More offset for phone to center it better
+          const elementPosition = element.getBoundingClientRect().top;
+          const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+          
+          window.scrollTo({
+            top: offsetPosition,
+            behavior: 'smooth'
+          });
+        }
+      }, 300); // Increased timeout to ensure page is fully loaded
+    }
+  }, []);
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -140,7 +161,7 @@ const Contact = () => {
                   {content.contact.cards.map((c, i) => {
                     const Icon = c.type === "address" ? MapPin : c.type === "phone" ? Phone : c.type === "email" ? Mail : Clock;
                     return (
-                      <Card key={i} className="shadow-soft">
+                      <Card key={i} className="shadow-soft" id={c.type === "phone" ? "phone" : undefined}>
                         <CardContent className="pt-6">
                           <div className="flex items-start space-x-4">
                             <div className="h-12 w-12 rounded-full gradient-hero flex items-center justify-center flex-shrink-0">
@@ -168,18 +189,22 @@ const Contact = () => {
           </div>
         </section>
 
-      <div className="max-w-6xl mx-auto">
-  <div className="h-[500px] rounded-lg overflow-hidden shadow-soft bg-muted">
-    <iframe
-      title="Turning Point Institute Location"
-      src="https://www.google.com/maps?q=Turning+Point+Institute,+The+Grand+Monarch,+306,+100+Feet+Anand+Nagar+Rd,+near+Sima+Hall,+beside+Diamond+Gym+lounge,+Satellite,+Ahmedabad,+Gujarat+380015&hl=en&z=17&output=embed"
-      className="w-full h-full border-0"
-      loading="lazy"
-      allowFullScreen
-      referrerPolicy="no-referrer-when-downgrade"
-    />
-  </div>
-</div>
+        <section className="py-12" id="map">
+          <div className="container mx-auto px-4">
+            <div className="max-w-6xl mx-auto">
+              <div className="h-[500px] rounded-lg overflow-hidden shadow-soft bg-muted">
+                <iframe
+                  title="Turning Point Institute Location"
+                  src="https://www.google.com/maps?q=Turning+Point+Institute,+The+Grand+Monarch,+306,+100+Feet+Anand+Nagar+Rd,+near+Sima+Hall,+beside+Diamond+Gym+lounge,+Satellite,+Ahmedabad,+Gujarat+380015&hl=en&z=17&output=embed"
+                  className="w-full h-full border-0"
+                  loading="lazy"
+                  allowFullScreen
+                  referrerPolicy="no-referrer-when-downgrade"
+                />
+              </div>
+            </div>
+          </div>
+        </section>
 
       </main>
       <Footer />

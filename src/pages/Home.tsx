@@ -1,5 +1,6 @@
 import { Link, useLocation } from "react-router-dom";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import Hero from "@/components/Hero";
@@ -14,15 +15,48 @@ import MethodologySection from "@/components/MethodologySection";
 import GainFromCourse from "@/components/GainFromCourse";
 import HomeReviewsSection from "@/components/HomeReviewsSection";
 import TestimonialCard from "@/components/TestimonialCard";
+import RequestCallbackDialog from "@/components/RequestCallbackDialog";
 import { Button } from "@/components/ui/button";
 import { Target, Users, Award, BookOpen } from "lucide-react";
 import { DEFAULT_CONTENT, useContent } from "@/lib/content";
 
 const Home = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const { content } = useContent();
   const home = content.home ?? DEFAULT_CONTENT.home;
   const admissions = content.admissions ?? DEFAULT_CONTENT.admissions;
+  const [isCallbackDialogOpen, setIsCallbackDialogOpen] = useState(false);
+
+  // Static button configuration - same as Hero section
+  const ctaButtons = [
+    {
+      text: 'CALL NOW',
+      action: 'navigate' as const,
+      target: '/contact#phone',
+      variant: 'default' as const
+    },
+    {
+      text: 'GET DIRECTION',
+      action: 'navigate' as const,
+      target: '/contact#map',
+      variant: 'outline' as const
+    },
+    {
+      text: 'REQUEST CALL BACK',
+      action: 'modal' as const,
+      target: 'RequestCallbackDialog',
+      variant: 'outline' as const
+    }
+  ];
+
+  const handleButtonClick = (button: typeof ctaButtons[0]) => {
+    if (button.action === 'navigate') {
+      navigate(button.target);
+    } else if (button.action === 'modal') {
+      setIsCallbackDialogOpen(true);
+    }
+  };
 
   const featureIcons = [
     <Target key="icon-0" className="h-6 w-6" />,
@@ -235,21 +269,29 @@ const Home = () => {
             <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-3">{admissions.cta.title}</h2>
             <p className="text-lg text-muted-foreground max-w-3xl mx-auto mb-3">{admissions.cta.subtitle}</p>
             <p className="text-sm text-muted-foreground mb-6">{admissions.cta.tagline}</p>
-            <div className="inline-flex items-center gap-3 bg-secondary/30 rounded-full p-2">
-              <a href={`tel:${admissions.cta.phoneNumber}`}>
-                <Button size="lg" className="gradient-accent">{admissions.cta.phoneLabel}</Button>
-              </a>
-              <a href={admissions.cta.directionsUrl} target="_blank" rel="noopener noreferrer">
-                <Button size="lg" variant="outline">{admissions.cta.directionsLabel}</Button>
-              </a>
+            <div className="flex flex-wrap justify-center gap-3 sm:gap-4">
+              {ctaButtons.map((button, buttonIndex) => (
+                <Button
+                  key={buttonIndex}
+                  size="lg"
+                  variant={button.variant}
+                  onClick={() => handleButtonClick(button)}
+                  className={`min-w-[140px] sm:min-w-[160px] transition-all duration-200 ease-in-out ${button.variant === 'outline' 
+                    ? "border-border text-foreground hover:bg-accent hover:text-white hover:border-accent"
+                    : "gradient-accent"
+                  }`}
+                >
+                  {button.text}
+                </Button>
+              ))}
             </div>
           </div>
         </section>
 
-        <a
-          href={`tel:${admissions.cta.phoneNumber}`}
+        <Link
+          to="/contact"
           className="md:hidden fixed bottom-6 right-4 z-50 h-14 w-14 rounded-full gradient-accent shadow-lg flex items-center justify-center"
-          aria-label="Call"
+          aria-label="Contact Us"
         >
          <i
   aria-hidden="true"
@@ -258,9 +300,13 @@ const Home = () => {
 />
 
 
-        </a>
+        </Link>
       </main>
       <Footer />
+      <RequestCallbackDialog 
+        open={isCallbackDialogOpen} 
+        onOpenChange={setIsCallbackDialogOpen} 
+      />
     </div>
   );
 };
