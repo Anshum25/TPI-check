@@ -684,46 +684,6 @@ const Admin = () => {
                     rows={2}
                   />
                 </div>
-                <div className="space-y-2">
-                  <Label>Primary Button Text</Label>
-                  <Input
-                    value={slide.primaryButtonText}
-                    onChange={(e) => {
-                      setContent((prev) => ({
-                        ...prev,
-                        home: {
-                          ...prev.home,
-                          heroCarousel: {
-                            ...prev.home.heroCarousel,
-                            slides: prev.home.heroCarousel.slides.map((s, i) =>
-                              i === index ? { ...s, primaryButtonText: e.target.value } : s,
-                            ),
-                          },
-                        },
-                      }));
-                    }}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label>Secondary Button Text</Label>
-                  <Input
-                    value={slide.secondaryButtonText}
-                    onChange={(e) => {
-                      setContent((prev) => ({
-                        ...prev,
-                        home: {
-                          ...prev.home,
-                          heroCarousel: {
-                            ...prev.home.heroCarousel,
-                            slides: prev.home.heroCarousel.slides.map((s, i) =>
-                              i === index ? { ...s, secondaryButtonText: e.target.value } : s,
-                            ),
-                          },
-                        },
-                      }));
-                    }}
-                  />
-                </div>
               </div>
             ))}
           </div>
@@ -740,10 +700,12 @@ const Admin = () => {
                       imageUrl: "",
                       title: "",
                       subtitle: "",
-                      primaryButtonText: "Enroll Now",
-                      primaryButtonLink: "/admissions",
-                      secondaryButtonText: "Learn More",
-                      secondaryButtonLink: "/about",
+                      primaryButtonText: "Call Now",
+                      primaryButtonLink: "/contact#phone",
+                      secondaryButtonText: "Get Directions",
+                      secondaryButtonLink: "/contact#map",
+                      thirdButtonText: "Request Call Back",
+                      thirdButtonLink: "#callback",
                     },
                   ],
                 },
@@ -753,6 +715,103 @@ const Admin = () => {
             <Plus className="h-4 w-4" />
             Add Slide
           </Button>
+        </CardContent>
+      </Card>
+
+      {/* Hero Buttons Configuration */}
+      <Card 
+        className="shadow-soft"
+        onMouseEnter={() => setActiveSubSection('hero-buttons')}
+        onFocus={() => setActiveSubSection('hero-buttons')}
+      >
+        <CardHeader>
+          <CardTitle>Hero Section Buttons</CardTitle>
+          <CardDescription>Configure the three action buttons displayed in the hero section carousel.</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {/* Button 1: Call Now */}
+          <div className="space-y-2 p-4 border rounded-lg">
+            <Label className="text-sm font-medium">Button 1: Call Now</Label>
+            <div className="space-y-2">
+              <div>
+                <Label className="text-xs">Button Text</Label>
+                <Input
+                  value={content.home.heroButtons.callNow.text}
+                  onChange={(e) => {
+                    setContent((prev) => ({
+                      ...prev,
+                      home: {
+                        ...prev.home,
+                        heroButtons: {
+                          ...prev.home.heroButtons,
+                          callNow: {
+                            ...prev.home.heroButtons.callNow,
+                            text: e.target.value
+                          }
+                        }
+                      }
+                    }));
+                  }}
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Button 2: Get Directions */}
+          <div className="space-y-2 p-4 border rounded-lg">
+            <Label className="text-sm font-medium">Button 2: Get Directions</Label>
+            <div className="space-y-2">
+              <div>
+                <Label className="text-xs">Button Text</Label>
+                <Input
+                  value={content.home.heroButtons.getDirections.text}
+                  onChange={(e) => {
+                    setContent((prev) => ({
+                      ...prev,
+                      home: {
+                        ...prev.home,
+                        heroButtons: {
+                          ...prev.home.heroButtons,
+                          getDirections: {
+                            ...prev.home.heroButtons.getDirections,
+                            text: e.target.value
+                          }
+                        }
+                      }
+                    }));
+                  }}
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Button 3: Request Callback */}
+          <div className="space-y-2 p-4 border rounded-lg">
+            <Label className="text-sm font-medium">Button 3: Request Callback</Label>
+            <div className="space-y-2">
+              <div>
+                <Label className="text-xs">Button Text</Label>
+                <Input
+                  value={content.home.heroButtons.requestCallback.text}
+                  onChange={(e) => {
+                    setContent((prev) => ({
+                      ...prev,
+                      home: {
+                        ...prev.home,
+                        heroButtons: {
+                          ...prev.home.heroButtons,
+                          requestCallback: {
+                            ...prev.home.heroButtons.requestCallback,
+                            text: e.target.value
+                          }
+                        }
+                      }
+                    }));
+                  }}
+                />
+              </div>
+            </div>
+          </div>
         </CardContent>
       </Card>
       <Card 
@@ -2813,42 +2872,84 @@ const Admin = () => {
         <CardContent className="space-y-4">
           <div className="space-y-4">
             {content.footer.quickLinks.map((link, index) => (
-              <div key={index} className="flex items-center gap-2">
-                <Input
-                  className="flex-1"
-                  placeholder="Label"
-                  value={link.label}
-                  onChange={(e) => {
-                    setContent((prev) => ({
-                      ...prev,
-                      footer: {
-                        ...prev.footer,
-                        quickLinks: prev.footer.quickLinks.map((l, i) =>
-                          i === index ? { ...l, label: e.target.value } : l
-                        ),
-                      },
-                    }));
-                  }}
-                />
-                <Button
-                  type="button"
-                  size="icon"
-                  variant="ghost"
-                  onClick={() => {
-                    setContent((prev) => ({
-                      ...prev,
-                      footer: {
-                        ...prev.footer,
-                        quickLinks: prev.footer.quickLinks.filter((_, i) => i !== index),
-                      },
-                    }));
-                  }}
-                >
-                  <Trash2 className="h-4 w-4" />
-                </Button>
+              <div key={index} className="space-y-2 rounded-lg border p-3">
+                <div className="flex items-center justify-between gap-2">
+                  <Label className="text-xs uppercase tracking-wide text-muted-foreground">Link {index + 1}</Label>
+                  <Button
+                    type="button"
+                    size="icon"
+                    variant="ghost"
+                    onClick={() => {
+                      setContent((prev) => ({
+                        ...prev,
+                        footer: {
+                          ...prev.footer,
+                          quickLinks: prev.footer.quickLinks.filter((_, i) => i !== index),
+                        },
+                      }));
+                    }}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
+                <div className="grid gap-2 md:grid-cols-2">
+                  <div className="space-y-1">
+                    <Label>Label</Label>
+                    <Input
+                      placeholder="Link Label"
+                      value={link.label}
+                      onChange={(e) => {
+                        setContent((prev) => ({
+                          ...prev,
+                          footer: {
+                            ...prev.footer,
+                            quickLinks: prev.footer.quickLinks.map((l, i) =>
+                              i === index ? { ...l, label: e.target.value } : l
+                            ),
+                          },
+                        }));
+                      }}
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <Label>URL Path</Label>
+                    <Input
+                      placeholder="/page-url"
+                      value={link.to}
+                      onChange={(e) => {
+                        setContent((prev) => ({
+                          ...prev,
+                          footer: {
+                            ...prev.footer,
+                            quickLinks: prev.footer.quickLinks.map((l, i) =>
+                              i === index ? { ...l, to: e.target.value } : l
+                            ),
+                          },
+                        }));
+                      }}
+                    />
+                  </div>
+                </div>
               </div>
             ))}
           </div>
+          <Button
+            type="button"
+            variant="outline"
+            className="flex items-center gap-2"
+            onClick={() => {
+              setContent((prev) => ({
+                ...prev,
+                footer: {
+                  ...prev.footer,
+                  quickLinks: [...prev.footer.quickLinks, { label: "New Link", to: "/" }],
+                },
+              }));
+            }}
+          >
+            <Plus className="h-4 w-4" />
+            Add Quick Link
+          </Button>
         </CardContent>
       </Card>
 

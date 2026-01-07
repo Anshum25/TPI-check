@@ -81,10 +81,25 @@ type Marquee = {
   text: string;
 };
 
+export interface ButtonConfiguration {
+  text: string;
+  action: 'navigate' | 'modal';
+  target: string;
+  variant: 'default' | 'outline' | 'secondary';
+  enabled: boolean;
+}
+
+export interface HeroButtonsConfiguration {
+  callNow: ButtonConfiguration;
+  getDirections: ButtonConfiguration;
+  requestCallback: ButtonConfiguration;
+}
+
 export type SiteContent = {
   home: {
     heroTitle: string;
     heroSubtitle: string;
+    heroButtons: HeroButtonsConfiguration;
     heroCarousel: {
       slides: {
         imageUrl: string;
@@ -94,6 +109,8 @@ export type SiteContent = {
         primaryButtonLink: string;
         secondaryButtonText: string;
         secondaryButtonLink: string;
+        thirdButtonText?: string;
+        thirdButtonLink?: string;
       }[];
     };
     features: Feature[];
@@ -222,6 +239,7 @@ export type SiteContent = {
       phoneNumber: string;
       directionsLabel: string;
       directionsUrl: string;
+      callbackLabel: string;
     };
   };
   successStories: {
@@ -294,34 +312,63 @@ export const DEFAULT_CONTENT: SiteContent = {
   home: {
     heroTitle: "Learn English the way never experienced before",
     heroSubtitle: "Your Performance is Our Responsibility!!",
+    heroButtons: {
+      callNow: {
+        text: 'CALL NOW',
+        action: 'navigate',
+        target: '/contact#phone',
+        variant: 'default',
+        enabled: true
+      },
+      getDirections: {
+        text: 'GET DIRECTIONS',
+        action: 'navigate',
+        target: '/contact#map',
+        variant: 'outline',
+        enabled: true
+      },
+      requestCallback: {
+        text: 'REQUEST A CALL BACK',
+        action: 'modal',
+        target: 'RequestCallbackDialog',
+        variant: 'outline',
+        enabled: true
+      }
+    },
     heroCarousel: {
       slides: [
         {
           imageUrl: "/src/assets/hero-classroom.jpg",
           title: "Transform Your Communication Skills",
           subtitle: "Master English Speaking & Personality Development",
-          primaryButtonText: "Enroll Now",
-          primaryButtonLink: "/admissions",
-          secondaryButtonText: "Learn More",
-          secondaryButtonLink: "/about",
+          primaryButtonText: "Call Now",
+          primaryButtonLink: "/contact#phone",
+          secondaryButtonText: "Get Directions",
+          secondaryButtonLink: "/contact#map",
+          thirdButtonText: "Request Call Back",
+          thirdButtonLink: "#callback",
         },
         {
           imageUrl: "/src/assets/speaking-confidence.jpg",
           title: "Build Confidence & Leadership",
           subtitle: "Expert Training for Personal & Professional Growth",
-          primaryButtonText: "Enroll Now",
-          primaryButtonLink: "/admissions",
-          secondaryButtonText: "Learn More",
-          secondaryButtonLink: "/courses",
+          primaryButtonText: "Call Now",
+          primaryButtonLink: "/contact#phone",
+          secondaryButtonText: "Get Directions",
+          secondaryButtonLink: "/contact#map",
+          thirdButtonText: "Request Call Back",
+          thirdButtonLink: "#callback",
         },
         {
           imageUrl: "/src/assets/student-success.jpg",
           title: "Join 10,000+ Successful Students",
           subtitle: "Quality Education Since 1999",
-          primaryButtonText: "Enroll Now",
-          primaryButtonLink: "/admissions",
-          secondaryButtonText: "Learn More",
-          secondaryButtonLink: "/success-stories",
+          primaryButtonText: "Call Now",
+          primaryButtonLink: "/contact#phone",
+          secondaryButtonText: "Get Directions",
+          secondaryButtonLink: "/contact#map",
+          thirdButtonText: "Request Call Back",
+          thirdButtonLink: "#callback",
         },
       ],
     },
@@ -694,6 +741,7 @@ export const DEFAULT_CONTENT: SiteContent = {
       { label: "About Us", to: "/about" },
       { label: "Courses", to: "/courses" },
       { label: "Gallery", to: "/gallery" },
+      { label: "Privacy Policy", to: "/privacy-policy" },
     ],
     courses: [
       "Spoken English",
@@ -943,6 +991,7 @@ export const DEFAULT_CONTENT: SiteContent = {
       phoneNumber: "9725500435",
       directionsLabel: "Get Directions",
       directionsUrl: "https://www.google.com/maps/place/Turning+Point+Institute/@23.0131818,72.518835,17z/data=!3m1!4b1!4m6!3m5!1s0x395e84cf0a8203a1:0xd1a3ec8eb1a3e77e!8m2!3d23.0131818!4d72.5210237!16s%2Fg%2F1v42d5nt",
+      callbackLabel: "Request a Call Back",
     },
   },
 
@@ -1429,6 +1478,27 @@ const migrateContent = (stored: any): SiteContent => {
     };
   }
 
+  // Migrate heroButtons configuration - ensure new 3-button config exists
+  if (!stored?.home?.heroButtons || typeof stored.home.heroButtons !== "object") {
+    migrated.home.heroButtons = DEFAULT_CONTENT.home.heroButtons;
+  } else {
+    // Ensure all three buttons exist with proper structure
+    migrated.home.heroButtons = {
+      callNow: {
+        ...DEFAULT_CONTENT.home.heroButtons.callNow,
+        ...(stored.home.heroButtons.callNow || {})
+      },
+      getDirections: {
+        ...DEFAULT_CONTENT.home.heroButtons.getDirections,
+        ...(stored.home.heroButtons.getDirections || {})
+      },
+      requestCallback: {
+        ...DEFAULT_CONTENT.home.heroButtons.requestCallback,
+        ...(stored.home.heroButtons.requestCallback || {})
+      }
+    };
+  }
+
   // Ensure joinUs has videoUrl even for older content
   if (migrated.home?.joinUs) {
     migrated.home.joinUs = {
@@ -1603,6 +1673,23 @@ const migrateContent = (stored: any): SiteContent => {
 
   // Migrate footer if it exists but is missing new fields
   if (stored.footer && typeof stored.footer === 'object') {
+    // Ensure Privacy Policy link is always included in quickLinks
+    const defaultQuickLinks = DEFAULT_CONTENT.footer.quickLinks;
+    const storedQuickLinks = stored.footer.quickLinks || [];
+    
+    // Check if Privacy Policy link exists, if not add it
+    const hasPrivacyPolicy = storedQuickLinks.some((link: any) => 
+      link.to === '/privacy-policy' || link.label === 'Privacy Policy'
+    );
+    
+    let mergedQuickLinks = storedQuickLinks;
+    if (!hasPrivacyPolicy) {
+      const privacyPolicyLink = defaultQuickLinks.find(link => link.to === '/privacy-policy');
+      if (privacyPolicyLink) {
+        mergedQuickLinks = [...storedQuickLinks, privacyPolicyLink];
+      }
+    }
+
     const mergedFooter = {
       ...DEFAULT_CONTENT.footer,
       ...stored.footer,
@@ -1611,7 +1698,7 @@ const migrateContent = (stored: any): SiteContent => {
         ...DEFAULT_CONTENT.footer.socialMedia,
         ...(stored.footer.socialMedia || {}),
       },
-      quickLinks: stored.footer.quickLinks || DEFAULT_CONTENT.footer.quickLinks,
+      quickLinks: mergedQuickLinks,
       courses: stored.footer.courses || DEFAULT_CONTENT.footer.courses,
       contact: {
         ...DEFAULT_CONTENT.footer.contact,

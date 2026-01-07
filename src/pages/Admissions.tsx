@@ -1,3 +1,4 @@
+import { useState } from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -5,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { CheckCircle } from "lucide-react";
 import { DEFAULT_CONTENT, useContent } from "@/lib/content";
 import CourseDetails from "@/components/CourseDetails";
+import RequestCallbackDialog from "@/components/RequestCallbackDialog";
 
 const Admissions = () => {
   return (
@@ -135,19 +137,81 @@ const WhyChooseList = () => {
 
 const FinalCta = () => {
   const { cta } = useAdmissionsContent();
+  const [isCallbackDialogOpen, setIsCallbackDialogOpen] = useState(false);
+  
   return (
     <div className="max-w-4xl mx-auto text-center">
       <h2 className="text-3xl md:text-4xl font-bold mb-4">{cta.title}</h2>
       <p className="text-lg text-muted-foreground mb-6">{cta.subtitle}</p>
       <p className="text-sm text-muted-foreground mb-6">{cta.tagline}</p>
-      <div className="flex flex-wrap justify-center gap-4">
+      
+      {/* Mobile Layout: CALL NOW on top, other two below */}
+      <div className="flex flex-col items-center gap-3 md:hidden">
+        {/* CALL NOW button - full width on top */}
         <a href={`tel:${cta.phoneNumber}`}>
-          <Button size="lg" className="gradient-accent">{cta.phoneLabel}</Button>
+          <Button
+            size="sm"
+            className="text-xs sm:text-sm font-semibold px-4 py-2 min-w-[200px] transition-all duration-200 ease-in-out gradient-accent"
+          >
+            {cta.phoneLabel}
+          </Button>
+        </a>
+        
+        {/* GET DIRECTIONS and REQUEST A CALL BACK - side by side */}
+        <div className="flex gap-3 items-center">
+          <a href={cta.directionsUrl} target="_blank" rel="noopener noreferrer">
+            <Button
+              size="sm"
+              variant="outline"
+              className="text-xs sm:text-sm font-semibold px-4 py-2 min-w-[140px] transition-all duration-200 ease-in-out bg-white/10 backdrop-blur-sm border-white text-white hover:bg-white hover:text-primary hover:border-primary"
+            >
+              {cta.directionsLabel}
+            </Button>
+          </a>
+          <Button
+            size="sm"
+            variant="outline"
+            className="text-xs sm:text-sm font-semibold px-4 py-2 min-w-[140px] transition-all duration-200 ease-in-out bg-white/10 backdrop-blur-sm border-white text-white hover:bg-white hover:text-primary hover:border-primary"
+            onClick={() => setIsCallbackDialogOpen(true)}
+          >
+            {cta.callbackLabel}
+          </Button>
+        </div>
+      </div>
+
+      {/* Desktop Layout: All 3 buttons in one line */}
+      <div className="hidden md:flex items-center gap-4 justify-center">
+        <a href={`tel:${cta.phoneNumber}`}>
+          <Button
+            size="sm"
+            className="text-sm font-semibold px-6 py-3 min-w-[140px] transition-all duration-200 ease-in-out gradient-accent"
+          >
+            {cta.phoneLabel}
+          </Button>
         </a>
         <a href={cta.directionsUrl} target="_blank" rel="noopener noreferrer">
-          <Button size="lg" variant="outline">{cta.directionsLabel}</Button>
+          <Button
+            size="sm"
+            variant="outline"
+            className="text-sm font-semibold px-6 py-3 min-w-[140px] transition-all duration-200 ease-in-out bg-white/10 backdrop-blur-sm border-white text-white hover:bg-white hover:text-primary hover:border-primary"
+          >
+            {cta.directionsLabel}
+          </Button>
         </a>
+        <Button
+          size="sm"
+          variant="outline"
+          className="text-sm font-semibold px-6 py-3 min-w-[140px] transition-all duration-200 ease-in-out bg-white/10 backdrop-blur-sm border-white text-white hover:bg-white hover:text-primary hover:border-primary"
+          onClick={() => setIsCallbackDialogOpen(true)}
+        >
+          {cta.callbackLabel}
+        </Button>
       </div>
+      
+      <RequestCallbackDialog 
+        open={isCallbackDialogOpen} 
+        onOpenChange={setIsCallbackDialogOpen} 
+      />
     </div>
   );
 };
