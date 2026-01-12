@@ -27,37 +27,7 @@ const Home = () => {
   const { content } = useContent();
   const home = content.home ?? DEFAULT_CONTENT.home;
   const admissions = content.admissions ?? DEFAULT_CONTENT.admissions;
-  const [isCallbackDialogOpen, setIsCallbackDialogOpen] = useState(false);
-
-  // Static button configuration - same as Hero section
-  const ctaButtons = [
-    {
-      text: 'CALL NOW',
-      action: 'navigate' as const,
-      target: '/contact#phone',
-      variant: 'default' as const
-    },
-    {
-      text: 'GET DIRECTION',
-      action: 'navigate' as const,
-      target: '/contact#map',
-      variant: 'outline' as const
-    },
-    {
-      text: 'REQUEST A CALL BACK',
-      action: 'modal' as const,
-      target: 'RequestCallbackDialog',
-      variant: 'outline' as const
-    }
-  ];
-
-  const handleButtonClick = (button: typeof ctaButtons[0]) => {
-    if (button.action === 'navigate') {
-      navigate(button.target);
-    } else if (button.action === 'modal') {
-      setIsCallbackDialogOpen(true);
-    }
-  };
+  
 
   const featureIcons = [
     <Target key="icon-0" className="h-6 w-6" />,

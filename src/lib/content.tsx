@@ -240,6 +240,7 @@ export type SiteContent = {
       directionsLabel: string;
       directionsUrl: string;
       callbackLabel: string;
+      callbackLink: string;
     };
   };
   successStories: {
@@ -990,14 +991,11 @@ export const DEFAULT_CONTENT: SiteContent = {
       phoneLabel: "Call Now: 9725500435",
       phoneNumber: "9725500435",
       directionsLabel: "Get Directions",
-<<<<<<< Updated upstream
       directionsUrl: "https://www.google.com/maps/place/Turning+Point+Institute/@23.0131818,72.518835,17z/data=!3m1!4b1!4m6!3m5!1s0x395e84cf0a8203a1:0xd1a3ec8eb1a3e77e!8m2!3d23.0131818!4d72.5210237!16s%2Fg%2F1v42d5nt",
       callbackLabel: "Request a Call Back",
-=======
       directionsUrl:
         "https://www.google.com/maps/place/Turning+Point+Institute/@23.0131818,72.518835,17z/data=!3m1!4b1!4m6!3m5!1s0x395e84cf0a8203a1:0xd1a3ec8eb1a3e77e!8m2!3d23.0131818!4d72.5210237!16s%2Fg%2F1v42d5nt",
       callbackLabel: "Request Call Back",
->>>>>>> Stashed changes
     },
   },
 
