@@ -27,7 +27,6 @@ const Home = () => {
   const { content } = useContent();
   const home = content.home ?? DEFAULT_CONTENT.home;
   const admissions = content.admissions ?? DEFAULT_CONTENT.admissions;
-<<<<<<< Updated upstream
   const [isCallbackDialogOpen, setIsCallbackDialogOpen] = useState(false);
 
   // Static button configuration - same as Hero section
@@ -59,9 +58,6 @@ const Home = () => {
       setIsCallbackDialogOpen(true);
     }
   };
-=======
-  
->>>>>>> Stashed changes
 
   const featureIcons = [
     <Target key="icon-0" className="h-6 w-6" />,
@@ -185,65 +181,7 @@ const Home = () => {
         {/* Secondary CTA Section (Ready to Get Started?) */}
         <section className="py-20">
           <div className="container mx-auto px-4 text-center">
-<<<<<<< Updated upstream
-            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-3">{admissions.cta.title}</h2>
-            <p className="text-lg text-muted-foreground max-w-3xl mx-auto mb-3">{admissions.cta.subtitle}</p>
-            <p className="text-sm text-muted-foreground mb-6">{admissions.cta.tagline}</p>
-            
-            {/* Mobile Layout: CALL NOW on top, other two below */}
-            <div className="flex flex-col items-center gap-3 md:hidden">
-              {/* CALL NOW button - full width on top */}
-              <Button
-                size="sm"
-                variant={ctaButtons[0].variant}
-                onClick={() => handleButtonClick(ctaButtons[0])}
-                className={`text-xs sm:text-sm font-semibold px-4 py-2 min-w-[200px] transition-all duration-200 ease-in-out gradient-accent`}
-              >
-                {ctaButtons[0].text}
-              </Button>
-              
-              {/* GET DIRECTIONS and REQUEST CALL BACK - side by side */}
-              <div className="flex gap-3 items-center">
-                <Button
-                  size="sm"
-                  variant={ctaButtons[1].variant}
-                  onClick={() => handleButtonClick(ctaButtons[1])}
-                  className={`text-xs sm:text-sm font-semibold px-4 py-2 min-w-[140px] transition-all duration-200 ease-in-out border-border text-foreground hover:bg-accent hover:text-white hover:border-accent`}
-                >
-                  {ctaButtons[1].text}
-                </Button>
-                <Button
-                  size="sm"
-                  variant={ctaButtons[2].variant}
-                  onClick={() => handleButtonClick(ctaButtons[2])}
-                  className={`text-xs sm:text-sm font-semibold px-4 py-2 min-w-[140px] transition-all duration-200 ease-in-out border-border text-foreground hover:bg-accent hover:text-white hover:border-accent`}
-                >
-                  {ctaButtons[2].text}
-                </Button>
-              </div>
-            </div>
-
-            {/* Desktop Layout: All 3 buttons in one line */}
-            <div className="hidden md:flex items-center gap-4 justify-center">
-              {ctaButtons.map((button, buttonIndex) => (
-                <Button
-                  key={buttonIndex}
-                  size="sm"
-                  variant={button.variant}
-                  onClick={() => handleButtonClick(button)}
-                  className={`text-sm font-semibold px-6 py-3 min-w-[140px] transition-all duration-200 ease-in-out ${
-                    button.variant === 'outline'
-                      ? "border-border text-foreground hover:bg-accent hover:text-white hover:border-accent"
-                      : "gradient-accent"
-                  }`}
-                >
-                  {button.text}
-                </Button>
-              ))}
-            </div>
-=======
             <FinalCtaBanner />
->>>>>>> Stashed changes
           </div>
         </section>
 
