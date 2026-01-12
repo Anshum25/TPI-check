@@ -1,5 +1,5 @@
-import { Link, useLocation } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -19,6 +19,7 @@ import RequestCallbackDialog from "@/components/RequestCallbackDialog";
 import { Button } from "@/components/ui/button";
 import { Target, Users, Award, BookOpen } from "lucide-react";
 import { DEFAULT_CONTENT, useContent } from "@/lib/content";
+import FinalCtaBanner from "@/components/FinalCtaBanner";
 
 const Home = () => {
   const location = useLocation();
@@ -26,6 +27,7 @@ const Home = () => {
   const { content } = useContent();
   const home = content.home ?? DEFAULT_CONTENT.home;
   const admissions = content.admissions ?? DEFAULT_CONTENT.admissions;
+<<<<<<< Updated upstream
   const [isCallbackDialogOpen, setIsCallbackDialogOpen] = useState(false);
 
   // Static button configuration - same as Hero section
@@ -57,6 +59,9 @@ const Home = () => {
       setIsCallbackDialogOpen(true);
     }
   };
+=======
+  
+>>>>>>> Stashed changes
 
   const featureIcons = [
     <Target key="icon-0" className="h-6 w-6" />,
@@ -176,81 +181,11 @@ const Home = () => {
 
         <ActivityImages />
 
-        {/* Courses Section */}
-        {/* <section className="py-20">
-          <div className="container mx-auto px-4">
-            <div className="text-center mb-12">
-              <h2 className="text-3xl md:text-4xl font-bold mb-4">Our Courses</h2>
-              <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                Choose from our specialized programs designed to enhance your skills
-              </p>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-              {courses.map((course, index) => (
-                <CourseCard key={index} {...course} />
-              ))}
-            </div>
-            <div className="text-center mt-8">
-              <Link to="/courses">
-                <Button size="lg" variant="outline">View All Courses</Button>
-              </Link>
-            </div>
-          </div>
-        </section> */}
-
-        {/* Testimonials Section */}
-        {/* <section className="py-20 bg-secondary/30">
-          <div className="container mx-auto px-4">
-            <div className="text-center mb-12">
-              <h2 className="text-3xl md:text-4xl font-bold mb-4">Student Success Stories</h2>
-              <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                Hear from our students who transformed their careers and lives
-              </p>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {home.testimonials.map((testimonial, index) => (
-                <TestimonialCard key={index} {...testimonial} />
-              ))}
-            </div>
-            <div className="text-center mt-8">
-              <Link to="/reviews">
-                <Button size="lg" variant="outline">Read More Reviews</Button>
-              </Link>
-            </div>
-          </div>
-        </section> */}
-
-        {/* CTA Section - removed from home page */}
-        {/**
-        <section className="py-20">
-          <div className="container mx-auto px-4">
-            <div className="gradient-hero rounded-2xl p-12 text-center shadow-medium">
-              <h2 className="text-3xl md:text-4xl font-bold text-primary-foreground mb-4">
-                {home.ctaTitle}
-              </h2>
-              <p className="text-lg text-primary-foreground/90 mb-8 max-w-2xl mx-auto">
-                {home.ctaText}
-              </p>
-              <div className="flex flex-wrap justify-center gap-4">
-                <Link to="/contact">
-                  <Button size="lg" variant="secondary">
-                    Get Started Now
-                  </Button>
-                </Link>
-                <Link to="/about">
-                  <Button size="lg" variant="outline" className="bg-white/10 border-white text-white hover:bg-white hover:text-primary">
-                    Learn About Us
-                  </Button>
-                </Link>
-              </div>
-            </div>
-          </div>
-        </section>
-        */}
-
-        {/* Secondary CTA Section (Ready to Get Started?) - shown below the gradient CTA */}
+      
+        {/* Secondary CTA Section (Ready to Get Started?) */}
         <section className="py-20">
           <div className="container mx-auto px-4 text-center">
+<<<<<<< Updated upstream
             <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-3">{admissions.cta.title}</h2>
             <p className="text-lg text-muted-foreground max-w-3xl mx-auto mb-3">{admissions.cta.subtitle}</p>
             <p className="text-sm text-muted-foreground mb-6">{admissions.cta.tagline}</p>
@@ -306,28 +241,25 @@ const Home = () => {
                 </Button>
               ))}
             </div>
+=======
+            <FinalCtaBanner />
+>>>>>>> Stashed changes
           </div>
         </section>
 
-        <Link
-          to="/contact"
+        <a
+          href={`tel:${admissions.cta.phoneNumber}`}
           className="md:hidden fixed bottom-6 right-4 z-50 h-14 w-14 rounded-full gradient-accent shadow-lg flex items-center justify-center"
-          aria-label="Contact Us"
+          aria-label={`Call ${admissions.cta.phoneNumber}`}
         >
-         <i
-  aria-hidden="true"
-  className="fas fa-phone-volume inline-block text-white text-xl"
-  style={{ transform: "scale(-1, -1)" }}
-/>
-
-
-        </Link>
+          <i
+            aria-hidden="true"
+            className="fas fa-phone-volume inline-block text-white text-xl"
+            style={{ transform: "scale(-1, -1)" }}
+          />
+        </a>
       </main>
       <Footer />
-      <RequestCallbackDialog 
-        open={isCallbackDialogOpen} 
-        onOpenChange={setIsCallbackDialogOpen} 
-      />
     </div>
   );
 };

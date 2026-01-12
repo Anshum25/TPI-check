@@ -1172,7 +1172,7 @@ const Admin = () => {
 
               {(content.home.courseOverview?.schedule?.[0]?.items || []).map((item, ii)=> (
                 <div key={ii} className="md:col-span-4">
-                  <div className="grid gap-3 md:grid-cols-2">
+                  <div className="grid gap-3 md:grid-cols-[repeat(2,minmax(0,1fr))_auto] items-end">
                     <div className="space-y-2">
                       <Label>Item {ii+1} Label</Label>
                       <Input
@@ -1242,6 +1242,43 @@ const Admin = () => {
                           });
                         }}
                       />
+                    </div>
+                    <div className="flex justify-end items-center pb-1">
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => {
+                          setContent(prev => {
+                            const prevSchedule = prev.home.courseOverview?.schedule || [
+                              { heading:"", color:"primary", items:[] as {label:string; time:string}[] },
+                              { heading:"", color:"primary", items:[] as {label:string; time:string}[] },
+                              { heading:"", color:"accent", items:[] as {label:string; time:string}[] },
+                            ];
+                            const morning = prevSchedule[0] || { heading:"", color:"primary", items:[] as {label:string; time:string}[] };
+                            const afternoon = prevSchedule[1] || { heading:"", color:"primary", items:[] as {label:string; time:string}[] };
+                            const evening = prevSchedule[2] || { heading:"", color:"accent", items:[] as {label:string; time:string}[] };
+                            const updatedMorningItems = (morning.items || []).filter((_, j) => j !== ii);
+                            return {
+                              ...prev,
+                              home: {
+                                ...prev.home,
+                                courseOverview: {
+                                  ...(prev.home.courseOverview || {}),
+                                  schedule: [
+                                    { ...morning, items: updatedMorningItems },
+                                    afternoon,
+                                    evening,
+                                  ],
+                                },
+                              },
+                            };
+                          });
+                        }}
+                        aria-label={`Delete Morning Batch ${ii + 1}`}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
                     </div>
                   </div>
                 </div>
@@ -1308,7 +1345,7 @@ const Admin = () => {
 
               {(content.home.courseOverview?.schedule?.[1]?.items || []).map((item, ii)=> (
                 <div key={ii} className="md:col-span-4">
-                  <div className="grid gap-3 md:grid-cols-2">
+                  <div className="grid gap-3 md:grid-cols-[repeat(2,minmax(0,1fr))_auto] items-end">
                     <div className="space-y-2">
                       <Label>Item {ii+1} Label</Label>
                       <Input
@@ -1378,6 +1415,43 @@ const Admin = () => {
                           });
                         }}
                       />
+                    </div>
+                    <div className="flex justify-end items-center pb-1">
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => {
+                          setContent(prev => {
+                            const prevSchedule = prev.home.courseOverview?.schedule || [
+                              { heading:"", color:"primary", items:[] as {label:string; time:string}[] },
+                              { heading:"", color:"primary", items:[] as {label:string; time:string}[] },
+                              { heading:"", color:"accent", items:[] as {label:string; time:string}[] },
+                            ];
+                            const morning = prevSchedule[0] || { heading:"", color:"primary", items:[] as {label:string; time:string}[] };
+                            const afternoon = prevSchedule[1] || { heading:"", color:"primary", items:[] as {label:string; time:string}[] };
+                            const evening = prevSchedule[2] || { heading:"", color:"accent", items:[] as {label:string; time:string}[] };
+                            const updatedAfternoonItems = (afternoon.items || []).filter((_, j) => j !== ii);
+                            return {
+                              ...prev,
+                              home: {
+                                ...prev.home,
+                                courseOverview: {
+                                  ...(prev.home.courseOverview || {}),
+                                  schedule: [
+                                    morning,
+                                    { ...afternoon, items: updatedAfternoonItems },
+                                    evening,
+                                  ],
+                                },
+                              },
+                            };
+                          });
+                        }}
+                        aria-label={`Delete Afternoon Batch ${ii + 1}`}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
                     </div>
                   </div>
                 </div>
@@ -1447,7 +1521,7 @@ const Admin = () => {
 
               {(content.home.courseOverview?.schedule?.[2]?.items || []).map((item, ii)=> (
                 <div key={ii} className="md:col-span-4">
-                  <div className="grid gap-3 md:grid-cols-2">
+                  <div className="grid gap-3 md:grid-cols-[repeat(2,minmax(0,1fr))_auto] items-end">
                     <div className="space-y-2">
                       <Label>Item {ii+1} Label</Label>
                       <Input
@@ -1517,6 +1591,43 @@ const Admin = () => {
                           });
                         }}
                       />
+                    </div>
+                    <div className="flex justify-end items-center pb-1">
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => {
+                          setContent(prev => {
+                            const prevSchedule = prev.home.courseOverview?.schedule || [
+                              { heading:"", color:"primary", items:[] as {label:string; time:string}[] },
+                              { heading:"", color:"primary", items:[] as {label:string; time:string}[] },
+                              { heading:"", color:"accent", items:[] as {label:string; time:string}[] },
+                            ];
+                            const morning = prevSchedule[0] || { heading:"", color:"primary", items:[] as {label:string; time:string}[] };
+                            const afternoon = prevSchedule[1] || { heading:"", color:"primary", items:[] as {label:string; time:string}[] };
+                            const evening = prevSchedule[2] || { heading:"", color:"accent", items:[] as {label:string; time:string}[] };
+                            const updatedEveningItems = (evening.items || []).filter((_, j) => j !== ii);
+                            return {
+                              ...prev,
+                              home: {
+                                ...prev.home,
+                                courseOverview: {
+                                  ...(prev.home.courseOverview || {}),
+                                  schedule: [
+                                    morning,
+                                    afternoon,
+                                    { ...evening, items: updatedEveningItems },
+                                  ],
+                                },
+                              },
+                            };
+                          });
+                        }}
+                        aria-label={`Delete Evening Batch ${ii + 1}`}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
                     </div>
                   </div>
                 </div>
@@ -1587,6 +1698,83 @@ const Admin = () => {
               />
             </div>
           
+          </div>
+        </CardContent>
+      </Card>
+
+       {/* Marquee Section */}
+      <Card
+        className="shadow-soft"
+        onMouseEnter={() => setActiveSubSection('marquee')}
+        onFocus={() => setActiveSubSection('marquee')}
+      >
+        <CardHeader>
+          <CardTitle> Banner</CardTitle>
+          <CardDescription>Endless scrolling text banner displayed below the course section</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {/* Visibility Toggle */}
+          <div className="flex items-center justify-between p-4 rounded-lg border">
+            <div>
+              <Label className="text-sm font-medium">Marquee Visibility</Label>
+              <p className="text-xs text-muted-foreground">Show or hide the marquee banner on the home page</p>
+            </div>
+            <Button
+              type="button"
+              variant={content.home.marquee?.isVisible ? "default" : "outline"}
+              size="sm"
+              onClick={() => {
+                setContent((prev) => ({
+                  ...prev,
+                  home: {
+                    ...prev.home,
+                    marquee: {
+                      ...(prev.home.marquee || { isVisible: false, text: "" }),
+                      isVisible: !prev.home.marquee?.isVisible,
+                    },
+                  },
+                }));
+              }}
+              aria-label={`Turn marquee ${content.home.marquee?.isVisible ? 'off' : 'on'}`}
+              aria-pressed={content.home.marquee?.isVisible}
+            >
+              {content.home.marquee?.isVisible ? "ON" : "OFF"}
+            </Button>
+          </div>
+
+          {/* Marquee Text */}
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <Label htmlFor="marquee-text">Marquee Text</Label>
+              <span
+                className="text-xs text-muted-foreground"
+                aria-live="polite"
+                aria-label={`Character count: ${(content.home.marquee?.text || "").length}`}
+              >
+                {(content.home.marquee?.text || "").length} characters
+              </span>
+            </div>
+            <Textarea
+              id="marquee-text"
+              placeholder="Enter the text that will scroll continuously in the marquee... Use bullet points (•) to separate sections"
+              value={content.home.marquee?.text || ""}
+              onChange={(e) => {
+                const newText = e.target.value;
+                setContent((prev) => ({
+                  ...prev,
+                  home: {
+                    ...prev.home,
+                    marquee: {
+                      ...(prev.home.marquee || { isVisible: false, text: "" }),
+                      text: newText,
+                    },
+                  },
+                }));
+              }}
+              rows={3}
+              aria-describedby="marquee-text-help"
+            />
+           
           </div>
         </CardContent>
       </Card>
@@ -2622,84 +2810,11 @@ const Admin = () => {
         </CardContent>
       </Card>
 
-      {/* Marquee Section */}
-      <Card
-        className="shadow-soft"
-        onMouseEnter={() => setActiveSubSection('marquee')}
-        onFocus={() => setActiveSubSection('marquee')}
-      >
-        <CardHeader>
-          <CardTitle> Banner</CardTitle>
-          <CardDescription>Endless scrolling text banner displayed below the course section</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {/* Visibility Toggle */}
-          <div className="flex items-center justify-between p-4 rounded-lg border">
-            <div>
-              <Label className="text-sm font-medium">Marquee Visibility</Label>
-              <p className="text-xs text-muted-foreground">Show or hide the marquee banner on the home page</p>
-            </div>
-            <Button
-              type="button"
-              variant={content.home.marquee?.isVisible ? "default" : "outline"}
-              size="sm"
-              onClick={() => {
-                setContent((prev) => ({
-                  ...prev,
-                  home: {
-                    ...prev.home,
-                    marquee: {
-                      ...(prev.home.marquee || { isVisible: false, text: "" }),
-                      isVisible: !prev.home.marquee?.isVisible,
-                    },
-                  },
-                }));
-              }}
-              aria-label={`Turn marquee ${content.home.marquee?.isVisible ? 'off' : 'on'}`}
-              aria-pressed={content.home.marquee?.isVisible}
-            >
-              {content.home.marquee?.isVisible ? "ON" : "OFF"}
-            </Button>
-          </div>
+       <p className="text-sm text-muted-foreground">
+              <strong>Note:</strong> Ready to get started is editable in  <strong>Admissions</strong> page.
+            </p>
 
-          {/* Marquee Text */}
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <Label htmlFor="marquee-text">Marquee Text</Label>
-              <span
-                className="text-xs text-muted-foreground"
-                aria-live="polite"
-                aria-label={`Character count: ${(content.home.marquee?.text || "").length}`}
-              >
-                {(content.home.marquee?.text || "").length} characters
-              </span>
-            </div>
-            <Textarea
-              id="marquee-text"
-              placeholder="Enter the text that will scroll continuously in the marquee... Use bullet points (•) to separate sections"
-              value={content.home.marquee?.text || ""}
-              onChange={(e) => {
-                const newText = e.target.value;
-                setContent((prev) => ({
-                  ...prev,
-                  home: {
-                    ...prev.home,
-                    marquee: {
-                      ...(prev.home.marquee || { isVisible: false, text: "" }),
-                      text: newText,
-                    },
-                  },
-                }));
-              }}
-              rows={3}
-              aria-describedby="marquee-text-help"
-            />
-            <div id="marquee-text-help" className="text-xs text-muted-foreground">
-              This text will scroll continuously across the page. Use bullet points (•) to separate different messages for visual clarity.
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+     
 
 
     </>
@@ -3892,6 +4007,8 @@ const Admin = () => {
         true
       )}
 
+      
+
       <Card 
         className="shadow-soft"
         onMouseEnter={() => setActiveSubSection('admissions-cta')}
@@ -3914,6 +4031,13 @@ const Admin = () => {
               placeholder="Directions Button Text"
               value={content.admissions.cta.directionsLabel}
               onChange={(e) => handleAdmissionBannerChange("directionsLabel", e.target.value)}
+            />
+          </div>
+          <div className="grid gap-4 md:grid-cols-2">
+            <Input
+              placeholder="Third Button Text (e.g. Request Call Back)"
+              value={content.admissions.cta.callbackLabel}
+              onChange={(e) => handleAdmissionBannerChange("callbackLabel", e.target.value)}
             />
           </div>
         </CardContent>

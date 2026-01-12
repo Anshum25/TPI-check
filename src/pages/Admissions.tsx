@@ -6,7 +6,11 @@ import { Button } from "@/components/ui/button";
 import { CheckCircle } from "lucide-react";
 import { DEFAULT_CONTENT, useContent } from "@/lib/content";
 import CourseDetails from "@/components/CourseDetails";
+<<<<<<< Updated upstream
 import RequestCallbackDialog from "@/components/RequestCallbackDialog";
+=======
+import FinalCtaBanner from "@/components/FinalCtaBanner";
+>>>>>>> Stashed changes
 
 const Admissions = () => {
   return (
@@ -54,7 +58,7 @@ const Admissions = () => {
 
         <section className="py-20">
           <div className="container mx-auto px-4">
-            <FinalCta />
+            <FinalCtaBanner />
           </div>
         </section>
       </main>
@@ -135,6 +139,7 @@ const WhyChooseList = () => {
   );
 };
 
+<<<<<<< Updated upstream
 const FinalCta = () => {
   const { cta } = useAdmissionsContent();
   const [isCallbackDialogOpen, setIsCallbackDialogOpen] = useState(false);
@@ -215,3 +220,6 @@ const FinalCta = () => {
     </div>
   );
 };
+=======
+// Final CTA content is now rendered via shared <FinalCtaBanner /> component
+>>>>>>> Stashed changes
