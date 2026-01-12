@@ -1,204 +1,301 @@
+import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { vi } from 'vitest';
+import userEvent from '@testing-library/user-event';
+import { BrowserRouter } from 'react-router-dom';
 import Hero from '../Hero';
-import Contact from '../../pages/Contact';
-import { ContentProvider } from '@/lib/content';
+import { useContent } from '@/lib/content';
 
 // Mock the content hook
-vi.mock('@/lib/content', () => ({
-  useContent: () => ({
-    content: {
-      home: {
-        heroCarousel: {
-          slides: [
-            {
-              title: 'Test Title',
-              subtitle: 'Test Subtitle',
-              imageUrl: '/src/assets/hero-classroom.jpg',
-            }
-          ]
+jest.mock('@/lib/content', () => ({
+  useContent: jest.fn()
+}));
+
+// Mock the RequestCallbackDialog component
+jest.mock('../RequestCallbackDialog', () => {
+  return function MockRequestCallbackDialog({ open, onOpenChange }: any) {
+    return open ? (
+      <div data-testid="callback-dialog">
+        <button onClick={() => onOpenChange(false)}>Close Dialog</button>
+      </div>
+    ) : null;
+  };
+});
+
+// Mock react-router-dom
+const mockNavigate = jest.fn();
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
+  useNavigate: () => mockNavigate
+}));
+
+describe('Hero Component Integration', () => {
+  const mockContent = {
+    home: {
+      heroButtons: {
+        callNow: {
+          text: 'CALL NOW',
+          action: 'navigate',
+          target: '/contact#phone',
+          variant: 'default',
+          enabled: true
+        },
+        getDirections: {
+          text: 'GET DIRECTIONS',
+          action: 'navigate',
+          target: '/contact#map',
+          variant: 'outline',
+          enabled: true
+        },
+        requestCallback: {
+          text: 'REQUEST CALLBACK',
+          action: 'modal',
+          target: 'RequestCallbackDialog',
+          variant: 'outline',
+          enabled: true
         }
       },
-      contact: {
-        hero: {
-          title: 'Contact Us',
-          subtitle: 'Get in touch'
-        },
-        cards: [
+      heroCarousel: {
+        slides: [
           {
-            type: 'phone',
-            title: 'Phone',
-            lines: ['+1 234 567 8900']
-          },
-          {
-            type: 'address',
-            title: 'Address',
-            lines: ['123 Test Street', 'Test City']
+            imageUrl: '/test-image.jpg',
+            title: 'Test Title',
+            subtitle: 'Test Subtitle',
+            primaryButtonText: 'Old Primary',
+            primaryButtonLink: '/old-primary',
+            secondaryButtonText: 'Old Secondary',
+            secondaryButtonLink: '/old-secondary'
           }
         ]
       }
     }
-  }),
-  ContentProvider: ({ children }: { children: React.ReactNode }) => <div>{children}</div>
-}));
+  };
 
-// Mock toast hook
-vi.mock('@/hooks/use-toast', () => ({
-  useToast: () => ({
-    toast: vi.fn()
-  })
-}));
-
-// Mock Header and Footer components
-vi.mock('../Header', () => ({
-  default: () => <div data-testid="header">Header</div>
-}));
-
-vi.mock('../Footer', () => ({
-  default: () => <div data-testid="footer">Footer</div>
-}));
-
-// Mock scrollIntoView
-const mockScrollIntoView = vi.fn();
-Object.defineProperty(Element.prototype, 'scrollIntoView', {
-  value: mockScrollIntoView,
-  writable: true,
-});
-
-const TestApp = ({ initialRoute = '/' }: { initialRoute?: string }) => {
-  return (
-    <BrowserRouter>
-      <ContentProvider>
-        <Routes>
-          <Route path="/" element={<Hero />} />
-          <Route path="/contact" element={<Contact />} />
-        </Routes>
-      </ContentProvider>
-    </BrowserRouter>
-  );
-};
-
-describe('Hero Integration Tests', () => {
   beforeEach(() => {
-    mockScrollIntoView.mockClear();
-    // Mock window.location.hash
-    Object.defineProperty(window, 'location', {
-      value: {
-        hash: '',
-        pathname: '/'
-      },
-      writable: true,
+    jest.clearAllMocks();
+    (useContent as jest.Mock).mockReturnValue({
+      content: mockContent
     });
   });
 
-  it('navigates to contact page when CALL NOW button is clicked', async () => {
-    render(<TestApp />);
+  const renderHero = () => {
+    return render(
+      <BrowserRouter>
+        <Hero />
+      </BrowserRouter>
+    );
+  };
+
+  it('should render all enabled buttons with correct text', () => {
+    renderHero();
+
+    expect(screen.getAllByText('CALL NOW')).toHaveLength(2); // Desktop and mobile
+    expect(screen.getAllByText('GET DIRECTIONS')).toHaveLength(2);
+    expect(screen.getAllByText('REQUEST CALLBACK')).toHaveLength(2);
+  });
+
+  it('should navigate to correct target when navigation buttons are clicked', async () => {
+    const user = userEvent.setup();
+    renderHero();
+
+    // Click CALL NOW button (desktop version)
+    const callNowButtons = screen.getAllByText('CALL NOW');
+    await user.click(callNowButtons[1]); // Desktop version
+
+    expect(mockNavigate).toHaveBeenCalledWith('/contact#phone');
+
+    // Click GET DIRECTIONS button
+    const getDirectionsButtons = screen.getAllByText('GET DIRECTIONS');
+    await user.click(getDirectionsButtons[1]); // Desktop version
+
+    expect(mockNavigate).toHaveBeenCalledWith('/contact#map');
+  });
+
+  it('should open callback dialog when REQUEST CALLBACK button is clicked', async () => {
+    const user = userEvent.setup();
+    renderHero();
+
+    // Click REQUEST CALLBACK button
+    const callbackButtons = screen.getAllByText('REQUEST CALLBACK');
+    await user.click(callbackButtons[1]); // Desktop version
+
+    expect(screen.getByTestId('callback-dialog')).toBeInTheDocument();
+  });
+
+  it('should close callback dialog when close button is clicked', async () => {
+    const user = userEvent.setup();
+    renderHero();
+
+    // Open dialog
+    const callbackButtons = screen.getAllByText('REQUEST CALLBACK');
+    await user.click(callbackButtons[0]); // Mobile version
+
+    expect(screen.getByTestId('callback-dialog')).toBeInTheDocument();
+
+    // Close dialog
+    const closeButton = screen.getByText('Close Dialog');
+    await user.click(closeButton);
+
+    expect(screen.queryByTestId('callback-dialog')).not.toBeInTheDocument();
+  });
+
+  it('should only show enabled buttons', () => {
+    const contentWithDisabledButton = {
+      ...mockContent,
+      home: {
+        ...mockContent.home,
+        heroButtons: {
+          ...mockContent.home.heroButtons,
+          getDirections: {
+            ...mockContent.home.heroButtons.getDirections,
+            enabled: false
+          }
+        }
+      }
+    };
+
+    (useContent as jest.Mock).mockReturnValue({
+      content: contentWithDisabledButton
+    });
+
+    renderHero();
+
+    expect(screen.getAllByText('CALL NOW')).toHaveLength(2);
+    expect(screen.queryByText('GET DIRECTIONS')).not.toBeInTheDocument();
+    expect(screen.getAllByText('REQUEST CALLBACK')).toHaveLength(2);
+  });
+
+  it('should handle empty button configuration gracefully', () => {
+    const contentWithNoButtons = {
+      ...mockContent,
+      home: {
+        ...mockContent.home,
+        heroButtons: {
+          callNow: { ...mockContent.home.heroButtons.callNow, enabled: false },
+          getDirections: { ...mockContent.home.heroButtons.getDirections, enabled: false },
+          requestCallback: { ...mockContent.home.heroButtons.requestCallback, enabled: false }
+        }
+      }
+    };
+
+    (useContent as jest.Mock).mockReturnValue({
+      content: contentWithNoButtons
+    });
+
+    renderHero();
+
+    // Should render without buttons but not crash
+    expect(screen.getByText('Test Title')).toBeInTheDocument();
+    expect(screen.queryByText('CALL NOW')).not.toBeInTheDocument();
+  });
+
+  it('should apply correct styling based on button variant', () => {
+    renderHero();
+
+    const callNowButtons = screen.getAllByText('CALL NOW');
+    const getDirectionsButtons = screen.getAllByText('GET DIRECTIONS');
+
+    // Check that buttons have different styling classes based on variant
+    // Default variant should have gradient-accent class
+    expect(callNowButtons[1]).toHaveClass('gradient-accent');
     
-    const callNowButton = screen.getByText('CALL NOW');
-    fireEvent.click(callNowButton);
+    // Outline variant should have different styling
+    expect(getDirectionsButtons[1]).toHaveClass('bg-white/10');
+  });
+
+  it('should handle carousel navigation', async () => {
+    const user = userEvent.setup();
     
-    // Should navigate to contact page
+    const contentWithMultipleSlides = {
+      ...mockContent,
+      home: {
+        ...mockContent.home,
+        heroCarousel: {
+          slides: [
+            mockContent.home.heroCarousel.slides[0],
+            {
+              imageUrl: '/test-image-2.jpg',
+              title: 'Test Title 2',
+              subtitle: 'Test Subtitle 2',
+              primaryButtonText: 'Old Primary 2',
+              primaryButtonLink: '/old-primary-2',
+              secondaryButtonText: 'Old Secondary 2',
+              secondaryButtonLink: '/old-secondary-2'
+            }
+          ]
+        }
+      }
+    };
+
+    (useContent as jest.Mock).mockReturnValue({
+      content: contentWithMultipleSlides
+    });
+
+    renderHero();
+
+    // Should show first slide initially
+    expect(screen.getByText('Test Title')).toBeInTheDocument();
+
+    // Click next button
+    const nextButton = screen.getByLabelText('Next slide');
+    await user.click(nextButton);
+
+    // Should show second slide
     await waitFor(() => {
-      expect(screen.getByText('Contact Us')).toBeInTheDocument();
+      expect(screen.getByText('Test Title 2')).toBeInTheDocument();
     });
+
+    // Buttons should still be the same (from admin configuration, not slide-specific)
+    expect(screen.getAllByText('CALL NOW')).toHaveLength(2);
   });
 
-  it('navigates to contact page when GET DIRECTION button is clicked', async () => {
-    render(<TestApp />);
-    
-    const getDirectionButton = screen.getByText('GET DIRECTION');
-    fireEvent.click(getDirectionButton);
-    
-    // Should navigate to contact page
-    await waitFor(() => {
-      expect(screen.getByText('Contact Us')).toBeInTheDocument();
-    });
+  it('should handle responsive layout correctly', () => {
+    renderHero();
+
+    // Mobile layout should have different structure
+    const mobileContainer = screen.getByText('CALL NOW').closest('.md\\:hidden');
+    const desktopContainer = screen.getByText('CALL NOW').closest('.hidden.md\\:flex');
+
+    expect(mobileContainer).toBeInTheDocument();
+    expect(desktopContainer).toBeInTheDocument();
   });
 
-  it('scrolls to phone section when navigating with #phone hash', async () => {
-    // Mock getElementById to return an element
-    const mockElement = { scrollIntoView: mockScrollIntoView };
-    const originalGetElementById = document.getElementById;
-    document.getElementById = vi.fn().mockReturnValue(mockElement);
-    
-    // Set hash before rendering
-    Object.defineProperty(window, 'location', {
-      value: {
-        hash: '#phone',
-        pathname: '/contact'
-      },
-      writable: true,
+  it('should handle custom button text from admin configuration', () => {
+    const contentWithCustomText = {
+      ...mockContent,
+      home: {
+        ...mockContent.home,
+        heroButtons: {
+          ...mockContent.home.heroButtons,
+          callNow: {
+            ...mockContent.home.heroButtons.callNow,
+            text: 'CONTACT US NOW'
+          }
+        }
+      }
+    };
+
+    (useContent as jest.Mock).mockReturnValue({
+      content: contentWithCustomText
     });
-    
-    render(<TestApp initialRoute="/contact" />);
-    
-    // Wait for useEffect to run
-    await waitFor(() => {
-      expect(document.getElementById).toHaveBeenCalledWith('phone');
-    }, { timeout: 200 });
-    
-    // Restore original function
-    document.getElementById = originalGetElementById;
+
+    renderHero();
+
+    expect(screen.getAllByText('CONTACT US NOW')).toHaveLength(2);
+    expect(screen.queryByText('CALL NOW')).not.toBeInTheDocument();
   });
 
-  it('scrolls to map section when navigating with #map hash', async () => {
-    // Mock getElementById to return an element
-    const mockElement = { scrollIntoView: mockScrollIntoView };
-    const originalGetElementById = document.getElementById;
-    document.getElementById = vi.fn().mockReturnValue(mockElement);
-    
-    // Set hash before rendering
-    Object.defineProperty(window, 'location', {
-      value: {
-        hash: '#map',
-        pathname: '/contact'
-      },
-      writable: true,
-    });
-    
-    render(<TestApp initialRoute="/contact" />);
-    
-    // Wait for useEffect to run
-    await waitFor(() => {
-      expect(document.getElementById).toHaveBeenCalledWith('map');
-    }, { timeout: 200 });
-    
-    // Restore original function
-    document.getElementById = originalGetElementById;
-  });
+  it('should handle different button actions correctly', async () => {
+    const user = userEvent.setup();
+    renderHero();
 
-  it('opens and closes RequestCallbackDialog correctly', async () => {
-    render(<TestApp />);
-    
-    const requestCallbackButton = screen.getByText('REQUEST CALL BACK');
-    
-    // Dialog should not be visible initially
-    expect(screen.queryByText('Request a call back')).not.toBeInTheDocument();
-    
-    // Click to open dialog
-    fireEvent.click(requestCallbackButton);
-    
-    // Dialog should be visible
-    await waitFor(() => {
-      expect(screen.getByText('Request a call back')).toBeInTheDocument();
-    });
-    
-    // Find and click close button (X button in dialog)
-    const dialog = screen.getByRole('dialog');
-    expect(dialog).toBeInTheDocument();
-  });
+    // Test navigation action
+    const callNowButton = screen.getAllByText('CALL NOW')[0];
+    await user.click(callNowButton);
+    expect(mockNavigate).toHaveBeenCalledWith('/contact#phone');
 
-  it('maintains hero functionality across different slides', () => {
-    render(<TestApp />);
-    
-    // All three buttons should be present regardless of slide
-    expect(screen.getByText('CALL NOW')).toBeInTheDocument();
-    expect(screen.getByText('GET DIRECTION')).toBeInTheDocument();
-    expect(screen.getByText('REQUEST CALL BACK')).toBeInTheDocument();
-    
-    // Buttons should maintain their functionality
-    const callNowButton = screen.getByText('CALL NOW');
-    expect(callNowButton).toBeEnabled();
+    // Test modal action
+    const callbackButton = screen.getAllByText('REQUEST CALLBACK')[0];
+    await user.click(callbackButton);
+    expect(screen.getByTestId('callback-dialog')).toBeInTheDocument();
   });
 });

@@ -29,6 +29,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Target, Users, Award, BookOpen, Phone, Menu, Facebook, Twitter, Instagram, Linkedin, Mail, MapPin, Clock, Calendar, CheckCircle, TrendingUp, Heart, Star, Image as ImageIcon, HelpCircle, Briefcase } from "lucide-react";
 import tpLogo from "@/assets/cropped-cropped-cropped-Blue-Dark-Minimalist-Initial-T-Letter-Logo-512-x-512-px-1-removebg-preview.png";
 import RequestCallbackDialog from "@/components/RequestCallbackDialog";
+import FinalCtaBanner from "@/components/FinalCtaBanner";
 import heroClassroom from "@/assets/hero-classroom.jpg";
 import speakingConfidence from "@/assets/speaking-confidence.jpg";
 import studentSuccess from "@/assets/student-success.jpg";
@@ -423,20 +424,10 @@ const LivePreview = ({ selectedSectionId, activeSubSection }: LivePreviewProps) 
                 <div ref={activityImagesRef}>
                   <ActivityImages />
                 </div>
-                {/* Final CTA (same as Home.tsx bottom section) */}
+                {/* Final CTA (same as Home/Admissions bottom section) */}
                 <section ref={admissionsCtaRef} className="py-20">
                   <div className="container mx-auto px-4 text-center">
-                    <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-3">{content.admissions.cta.title}</h2>
-                    <p className="text-lg text-muted-foreground max-w-3xl mx-auto mb-3">{content.admissions.cta.subtitle}</p>
-                    <p className="text-sm text-muted-foreground mb-6">{content.admissions.cta.tagline}</p>
-                    <div className="inline-flex items-center gap-3 bg-secondary/30 rounded-full p-2">
-                      <a href={`tel:${content.admissions.cta.phoneNumber}`}>
-                        <Button size="lg" className="gradient-accent">{content.admissions.cta.phoneLabel}</Button>
-                      </a>
-                      <a href={content.admissions.cta.directionsUrl} target="_blank" rel="noopener noreferrer">
-                        <Button size="lg" variant="outline">{content.admissions.cta.directionsLabel}</Button>
-                      </a>
-                    </div>
+                    <FinalCtaBanner />
                   </div>
                 </section>
 
@@ -936,21 +927,9 @@ const LivePreview = ({ selectedSectionId, activeSubSection }: LivePreviewProps) 
                   </div>
                 </section>
 
-                <section ref={admissionsCtaRef} className="py-12 sm:py-20 bg-secondary/30">
-                  <div className="container mx-auto px-2 sm:px-4">
-                    <div className="max-w-4xl mx-auto text-center">
-                      <h2 className="text-xl sm:text-2xl md:text-3xl font-bold mb-4 sm:mb-6">{admissions.cta.title}</h2>
-                      <p className="text-sm sm:text-base text-muted-foreground mb-6 sm:mb-8">{admissions.cta.subtitle}</p>
-                      <p className="text-xs sm:text-sm text-muted-foreground mb-4 sm:mb-6">{admissions.cta.tagline}</p>
-                      <div className="flex flex-wrap justify-center gap-3 sm:gap-4">
-                        <Button size="lg" className="gradient-accent" asChild>
-                          <a href={`tel:${admissions.cta.phoneNumber}`}>{admissions.cta.phoneLabel}</a>
-                        </Button>
-                        <Button size="lg" variant="outline" asChild>
-                          <a href={admissions.cta.directionsUrl}>{admissions.cta.directionsLabel}</a>
-                        </Button>
-                      </div>
-                    </div>
+                <section ref={admissionsCtaRef} className="py-12 sm:py-20">
+                  <div className="container mx-auto px-2 sm:px-4 text-center">
+                    <FinalCtaBanner />
                   </div>
                 </section>
               </div>

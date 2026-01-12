@@ -1,3 +1,4 @@
+import { useState } from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -5,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { CheckCircle } from "lucide-react";
 import { DEFAULT_CONTENT, useContent } from "@/lib/content";
 import CourseDetails from "@/components/CourseDetails";
+import FinalCtaBanner from "@/components/FinalCtaBanner";
 
 const Admissions = () => {
   return (
@@ -52,7 +54,7 @@ const Admissions = () => {
 
         <section className="py-20">
           <div className="container mx-auto px-4">
-            <FinalCta />
+            <FinalCtaBanner />
           </div>
         </section>
       </main>
@@ -133,21 +135,4 @@ const WhyChooseList = () => {
   );
 };
 
-const FinalCta = () => {
-  const { cta } = useAdmissionsContent();
-  return (
-    <div className="max-w-4xl mx-auto text-center">
-      <h2 className="text-3xl md:text-4xl font-bold mb-4">{cta.title}</h2>
-      <p className="text-lg text-muted-foreground mb-6">{cta.subtitle}</p>
-      <p className="text-sm text-muted-foreground mb-6">{cta.tagline}</p>
-      <div className="flex flex-wrap justify-center gap-4">
-        <a href={`tel:${cta.phoneNumber}`}>
-          <Button size="lg" className="gradient-accent">{cta.phoneLabel}</Button>
-        </a>
-        <a href={cta.directionsUrl} target="_blank" rel="noopener noreferrer">
-          <Button size="lg" variant="outline">{cta.directionsLabel}</Button>
-        </a>
-      </div>
-    </div>
-  );
-};
+// Final CTA content is now rendered via shared <FinalCtaBanner /> component

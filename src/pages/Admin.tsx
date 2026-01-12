@@ -684,46 +684,6 @@ const Admin = () => {
                     rows={2}
                   />
                 </div>
-                <div className="space-y-2">
-                  <Label>Primary Button Text</Label>
-                  <Input
-                    value={slide.primaryButtonText}
-                    onChange={(e) => {
-                      setContent((prev) => ({
-                        ...prev,
-                        home: {
-                          ...prev.home,
-                          heroCarousel: {
-                            ...prev.home.heroCarousel,
-                            slides: prev.home.heroCarousel.slides.map((s, i) =>
-                              i === index ? { ...s, primaryButtonText: e.target.value } : s,
-                            ),
-                          },
-                        },
-                      }));
-                    }}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label>Secondary Button Text</Label>
-                  <Input
-                    value={slide.secondaryButtonText}
-                    onChange={(e) => {
-                      setContent((prev) => ({
-                        ...prev,
-                        home: {
-                          ...prev.home,
-                          heroCarousel: {
-                            ...prev.home.heroCarousel,
-                            slides: prev.home.heroCarousel.slides.map((s, i) =>
-                              i === index ? { ...s, secondaryButtonText: e.target.value } : s,
-                            ),
-                          },
-                        },
-                      }));
-                    }}
-                  />
-                </div>
               </div>
             ))}
           </div>
@@ -740,10 +700,12 @@ const Admin = () => {
                       imageUrl: "",
                       title: "",
                       subtitle: "",
-                      primaryButtonText: "Enroll Now",
-                      primaryButtonLink: "/admissions",
-                      secondaryButtonText: "Learn More",
-                      secondaryButtonLink: "/about",
+                      primaryButtonText: "Call Now",
+                      primaryButtonLink: "/contact#phone",
+                      secondaryButtonText: "Get Directions",
+                      secondaryButtonLink: "/contact#map",
+                      thirdButtonText: "Request Call Back",
+                      thirdButtonLink: "#callback",
                     },
                   ],
                 },
@@ -753,6 +715,103 @@ const Admin = () => {
             <Plus className="h-4 w-4" />
             Add Slide
           </Button>
+        </CardContent>
+      </Card>
+
+      {/* Hero Buttons Configuration */}
+      <Card 
+        className="shadow-soft"
+        onMouseEnter={() => setActiveSubSection('hero-buttons')}
+        onFocus={() => setActiveSubSection('hero-buttons')}
+      >
+        <CardHeader>
+          <CardTitle>Hero Section Buttons</CardTitle>
+          <CardDescription>Configure the three action buttons displayed in the hero section carousel.</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {/* Button 1: Call Now */}
+          <div className="space-y-2 p-4 border rounded-lg">
+            <Label className="text-sm font-medium">Button 1: Call Now</Label>
+            <div className="space-y-2">
+              <div>
+                <Label className="text-xs">Button Text</Label>
+                <Input
+                  value={content.home.heroButtons.callNow.text}
+                  onChange={(e) => {
+                    setContent((prev) => ({
+                      ...prev,
+                      home: {
+                        ...prev.home,
+                        heroButtons: {
+                          ...prev.home.heroButtons,
+                          callNow: {
+                            ...prev.home.heroButtons.callNow,
+                            text: e.target.value
+                          }
+                        }
+                      }
+                    }));
+                  }}
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Button 2: Get Directions */}
+          <div className="space-y-2 p-4 border rounded-lg">
+            <Label className="text-sm font-medium">Button 2: Get Directions</Label>
+            <div className="space-y-2">
+              <div>
+                <Label className="text-xs">Button Text</Label>
+                <Input
+                  value={content.home.heroButtons.getDirections.text}
+                  onChange={(e) => {
+                    setContent((prev) => ({
+                      ...prev,
+                      home: {
+                        ...prev.home,
+                        heroButtons: {
+                          ...prev.home.heroButtons,
+                          getDirections: {
+                            ...prev.home.heroButtons.getDirections,
+                            text: e.target.value
+                          }
+                        }
+                      }
+                    }));
+                  }}
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Button 3: Request Callback */}
+          <div className="space-y-2 p-4 border rounded-lg">
+            <Label className="text-sm font-medium">Button 3: Request Callback</Label>
+            <div className="space-y-2">
+              <div>
+                <Label className="text-xs">Button Text</Label>
+                <Input
+                  value={content.home.heroButtons.requestCallback.text}
+                  onChange={(e) => {
+                    setContent((prev) => ({
+                      ...prev,
+                      home: {
+                        ...prev.home,
+                        heroButtons: {
+                          ...prev.home.heroButtons,
+                          requestCallback: {
+                            ...prev.home.heroButtons.requestCallback,
+                            text: e.target.value
+                          }
+                        }
+                      }
+                    }));
+                  }}
+                />
+              </div>
+            </div>
+          </div>
         </CardContent>
       </Card>
       <Card 
@@ -1113,7 +1172,7 @@ const Admin = () => {
 
               {(content.home.courseOverview?.schedule?.[0]?.items || []).map((item, ii)=> (
                 <div key={ii} className="md:col-span-4">
-                  <div className="grid gap-3 md:grid-cols-2">
+                  <div className="grid gap-3 md:grid-cols-[repeat(2,minmax(0,1fr))_auto] items-end">
                     <div className="space-y-2">
                       <Label>Item {ii+1} Label</Label>
                       <Input
@@ -1183,6 +1242,43 @@ const Admin = () => {
                           });
                         }}
                       />
+                    </div>
+                    <div className="flex justify-end items-center pb-1">
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => {
+                          setContent(prev => {
+                            const prevSchedule = prev.home.courseOverview?.schedule || [
+                              { heading:"", color:"primary", items:[] as {label:string; time:string}[] },
+                              { heading:"", color:"primary", items:[] as {label:string; time:string}[] },
+                              { heading:"", color:"accent", items:[] as {label:string; time:string}[] },
+                            ];
+                            const morning = prevSchedule[0] || { heading:"", color:"primary", items:[] as {label:string; time:string}[] };
+                            const afternoon = prevSchedule[1] || { heading:"", color:"primary", items:[] as {label:string; time:string}[] };
+                            const evening = prevSchedule[2] || { heading:"", color:"accent", items:[] as {label:string; time:string}[] };
+                            const updatedMorningItems = (morning.items || []).filter((_, j) => j !== ii);
+                            return {
+                              ...prev,
+                              home: {
+                                ...prev.home,
+                                courseOverview: {
+                                  ...(prev.home.courseOverview || {}),
+                                  schedule: [
+                                    { ...morning, items: updatedMorningItems },
+                                    afternoon,
+                                    evening,
+                                  ],
+                                },
+                              },
+                            };
+                          });
+                        }}
+                        aria-label={`Delete Morning Batch ${ii + 1}`}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
                     </div>
                   </div>
                 </div>
@@ -1249,7 +1345,7 @@ const Admin = () => {
 
               {(content.home.courseOverview?.schedule?.[1]?.items || []).map((item, ii)=> (
                 <div key={ii} className="md:col-span-4">
-                  <div className="grid gap-3 md:grid-cols-2">
+                  <div className="grid gap-3 md:grid-cols-[repeat(2,minmax(0,1fr))_auto] items-end">
                     <div className="space-y-2">
                       <Label>Item {ii+1} Label</Label>
                       <Input
@@ -1319,6 +1415,43 @@ const Admin = () => {
                           });
                         }}
                       />
+                    </div>
+                    <div className="flex justify-end items-center pb-1">
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => {
+                          setContent(prev => {
+                            const prevSchedule = prev.home.courseOverview?.schedule || [
+                              { heading:"", color:"primary", items:[] as {label:string; time:string}[] },
+                              { heading:"", color:"primary", items:[] as {label:string; time:string}[] },
+                              { heading:"", color:"accent", items:[] as {label:string; time:string}[] },
+                            ];
+                            const morning = prevSchedule[0] || { heading:"", color:"primary", items:[] as {label:string; time:string}[] };
+                            const afternoon = prevSchedule[1] || { heading:"", color:"primary", items:[] as {label:string; time:string}[] };
+                            const evening = prevSchedule[2] || { heading:"", color:"accent", items:[] as {label:string; time:string}[] };
+                            const updatedAfternoonItems = (afternoon.items || []).filter((_, j) => j !== ii);
+                            return {
+                              ...prev,
+                              home: {
+                                ...prev.home,
+                                courseOverview: {
+                                  ...(prev.home.courseOverview || {}),
+                                  schedule: [
+                                    morning,
+                                    { ...afternoon, items: updatedAfternoonItems },
+                                    evening,
+                                  ],
+                                },
+                              },
+                            };
+                          });
+                        }}
+                        aria-label={`Delete Afternoon Batch ${ii + 1}`}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
                     </div>
                   </div>
                 </div>
@@ -1388,7 +1521,7 @@ const Admin = () => {
 
               {(content.home.courseOverview?.schedule?.[2]?.items || []).map((item, ii)=> (
                 <div key={ii} className="md:col-span-4">
-                  <div className="grid gap-3 md:grid-cols-2">
+                  <div className="grid gap-3 md:grid-cols-[repeat(2,minmax(0,1fr))_auto] items-end">
                     <div className="space-y-2">
                       <Label>Item {ii+1} Label</Label>
                       <Input
@@ -1458,6 +1591,43 @@ const Admin = () => {
                           });
                         }}
                       />
+                    </div>
+                    <div className="flex justify-end items-center pb-1">
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => {
+                          setContent(prev => {
+                            const prevSchedule = prev.home.courseOverview?.schedule || [
+                              { heading:"", color:"primary", items:[] as {label:string; time:string}[] },
+                              { heading:"", color:"primary", items:[] as {label:string; time:string}[] },
+                              { heading:"", color:"accent", items:[] as {label:string; time:string}[] },
+                            ];
+                            const morning = prevSchedule[0] || { heading:"", color:"primary", items:[] as {label:string; time:string}[] };
+                            const afternoon = prevSchedule[1] || { heading:"", color:"primary", items:[] as {label:string; time:string}[] };
+                            const evening = prevSchedule[2] || { heading:"", color:"accent", items:[] as {label:string; time:string}[] };
+                            const updatedEveningItems = (evening.items || []).filter((_, j) => j !== ii);
+                            return {
+                              ...prev,
+                              home: {
+                                ...prev.home,
+                                courseOverview: {
+                                  ...(prev.home.courseOverview || {}),
+                                  schedule: [
+                                    morning,
+                                    afternoon,
+                                    { ...evening, items: updatedEveningItems },
+                                  ],
+                                },
+                              },
+                            };
+                          });
+                        }}
+                        aria-label={`Delete Evening Batch ${ii + 1}`}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
                     </div>
                   </div>
                 </div>
@@ -1528,6 +1698,83 @@ const Admin = () => {
               />
             </div>
           
+          </div>
+        </CardContent>
+      </Card>
+
+       {/* Marquee Section */}
+      <Card
+        className="shadow-soft"
+        onMouseEnter={() => setActiveSubSection('marquee')}
+        onFocus={() => setActiveSubSection('marquee')}
+      >
+        <CardHeader>
+          <CardTitle> Banner</CardTitle>
+          <CardDescription>Endless scrolling text banner displayed below the course section</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {/* Visibility Toggle */}
+          <div className="flex items-center justify-between p-4 rounded-lg border">
+            <div>
+              <Label className="text-sm font-medium">Marquee Visibility</Label>
+              <p className="text-xs text-muted-foreground">Show or hide the marquee banner on the home page</p>
+            </div>
+            <Button
+              type="button"
+              variant={content.home.marquee?.isVisible ? "default" : "outline"}
+              size="sm"
+              onClick={() => {
+                setContent((prev) => ({
+                  ...prev,
+                  home: {
+                    ...prev.home,
+                    marquee: {
+                      ...(prev.home.marquee || { isVisible: false, text: "" }),
+                      isVisible: !prev.home.marquee?.isVisible,
+                    },
+                  },
+                }));
+              }}
+              aria-label={`Turn marquee ${content.home.marquee?.isVisible ? 'off' : 'on'}`}
+              aria-pressed={content.home.marquee?.isVisible}
+            >
+              {content.home.marquee?.isVisible ? "ON" : "OFF"}
+            </Button>
+          </div>
+
+          {/* Marquee Text */}
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <Label htmlFor="marquee-text">Marquee Text</Label>
+              <span
+                className="text-xs text-muted-foreground"
+                aria-live="polite"
+                aria-label={`Character count: ${(content.home.marquee?.text || "").length}`}
+              >
+                {(content.home.marquee?.text || "").length} characters
+              </span>
+            </div>
+            <Textarea
+              id="marquee-text"
+              placeholder="Enter the text that will scroll continuously in the marquee... Use bullet points (•) to separate sections"
+              value={content.home.marquee?.text || ""}
+              onChange={(e) => {
+                const newText = e.target.value;
+                setContent((prev) => ({
+                  ...prev,
+                  home: {
+                    ...prev.home,
+                    marquee: {
+                      ...(prev.home.marquee || { isVisible: false, text: "" }),
+                      text: newText,
+                    },
+                  },
+                }));
+              }}
+              rows={3}
+              aria-describedby="marquee-text-help"
+            />
+           
           </div>
         </CardContent>
       </Card>
@@ -2563,84 +2810,11 @@ const Admin = () => {
         </CardContent>
       </Card>
 
-      {/* Marquee Section */}
-      <Card
-        className="shadow-soft"
-        onMouseEnter={() => setActiveSubSection('marquee')}
-        onFocus={() => setActiveSubSection('marquee')}
-      >
-        <CardHeader>
-          <CardTitle> Banner</CardTitle>
-          <CardDescription>Endless scrolling text banner displayed below the course section</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {/* Visibility Toggle */}
-          <div className="flex items-center justify-between p-4 rounded-lg border">
-            <div>
-              <Label className="text-sm font-medium">Marquee Visibility</Label>
-              <p className="text-xs text-muted-foreground">Show or hide the marquee banner on the home page</p>
-            </div>
-            <Button
-              type="button"
-              variant={content.home.marquee?.isVisible ? "default" : "outline"}
-              size="sm"
-              onClick={() => {
-                setContent((prev) => ({
-                  ...prev,
-                  home: {
-                    ...prev.home,
-                    marquee: {
-                      ...(prev.home.marquee || { isVisible: false, text: "" }),
-                      isVisible: !prev.home.marquee?.isVisible,
-                    },
-                  },
-                }));
-              }}
-              aria-label={`Turn marquee ${content.home.marquee?.isVisible ? 'off' : 'on'}`}
-              aria-pressed={content.home.marquee?.isVisible}
-            >
-              {content.home.marquee?.isVisible ? "ON" : "OFF"}
-            </Button>
-          </div>
+       <p className="text-sm text-muted-foreground">
+              <strong>Note:</strong> Ready to get started is editable in  <strong>Admissions</strong> page.
+            </p>
 
-          {/* Marquee Text */}
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <Label htmlFor="marquee-text">Marquee Text</Label>
-              <span
-                className="text-xs text-muted-foreground"
-                aria-live="polite"
-                aria-label={`Character count: ${(content.home.marquee?.text || "").length}`}
-              >
-                {(content.home.marquee?.text || "").length} characters
-              </span>
-            </div>
-            <Textarea
-              id="marquee-text"
-              placeholder="Enter the text that will scroll continuously in the marquee... Use bullet points (•) to separate sections"
-              value={content.home.marquee?.text || ""}
-              onChange={(e) => {
-                const newText = e.target.value;
-                setContent((prev) => ({
-                  ...prev,
-                  home: {
-                    ...prev.home,
-                    marquee: {
-                      ...(prev.home.marquee || { isVisible: false, text: "" }),
-                      text: newText,
-                    },
-                  },
-                }));
-              }}
-              rows={3}
-              aria-describedby="marquee-text-help"
-            />
-            <div id="marquee-text-help" className="text-xs text-muted-foreground">
-              This text will scroll continuously across the page. Use bullet points (•) to separate different messages for visual clarity.
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+     
 
 
     </>
@@ -2813,42 +2987,84 @@ const Admin = () => {
         <CardContent className="space-y-4">
           <div className="space-y-4">
             {content.footer.quickLinks.map((link, index) => (
-              <div key={index} className="flex items-center gap-2">
-                <Input
-                  className="flex-1"
-                  placeholder="Label"
-                  value={link.label}
-                  onChange={(e) => {
-                    setContent((prev) => ({
-                      ...prev,
-                      footer: {
-                        ...prev.footer,
-                        quickLinks: prev.footer.quickLinks.map((l, i) =>
-                          i === index ? { ...l, label: e.target.value } : l
-                        ),
-                      },
-                    }));
-                  }}
-                />
-                <Button
-                  type="button"
-                  size="icon"
-                  variant="ghost"
-                  onClick={() => {
-                    setContent((prev) => ({
-                      ...prev,
-                      footer: {
-                        ...prev.footer,
-                        quickLinks: prev.footer.quickLinks.filter((_, i) => i !== index),
-                      },
-                    }));
-                  }}
-                >
-                  <Trash2 className="h-4 w-4" />
-                </Button>
+              <div key={index} className="space-y-2 rounded-lg border p-3">
+                <div className="flex items-center justify-between gap-2">
+                  <Label className="text-xs uppercase tracking-wide text-muted-foreground">Link {index + 1}</Label>
+                  <Button
+                    type="button"
+                    size="icon"
+                    variant="ghost"
+                    onClick={() => {
+                      setContent((prev) => ({
+                        ...prev,
+                        footer: {
+                          ...prev.footer,
+                          quickLinks: prev.footer.quickLinks.filter((_, i) => i !== index),
+                        },
+                      }));
+                    }}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
+                <div className="grid gap-2 md:grid-cols-2">
+                  <div className="space-y-1">
+                    <Label>Label</Label>
+                    <Input
+                      placeholder="Link Label"
+                      value={link.label}
+                      onChange={(e) => {
+                        setContent((prev) => ({
+                          ...prev,
+                          footer: {
+                            ...prev.footer,
+                            quickLinks: prev.footer.quickLinks.map((l, i) =>
+                              i === index ? { ...l, label: e.target.value } : l
+                            ),
+                          },
+                        }));
+                      }}
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <Label>URL Path</Label>
+                    <Input
+                      placeholder="/page-url"
+                      value={link.to}
+                      onChange={(e) => {
+                        setContent((prev) => ({
+                          ...prev,
+                          footer: {
+                            ...prev.footer,
+                            quickLinks: prev.footer.quickLinks.map((l, i) =>
+                              i === index ? { ...l, to: e.target.value } : l
+                            ),
+                          },
+                        }));
+                      }}
+                    />
+                  </div>
+                </div>
               </div>
             ))}
           </div>
+          <Button
+            type="button"
+            variant="outline"
+            className="flex items-center gap-2"
+            onClick={() => {
+              setContent((prev) => ({
+                ...prev,
+                footer: {
+                  ...prev.footer,
+                  quickLinks: [...prev.footer.quickLinks, { label: "New Link", to: "/" }],
+                },
+              }));
+            }}
+          >
+            <Plus className="h-4 w-4" />
+            Add Quick Link
+          </Button>
         </CardContent>
       </Card>
 
@@ -3791,6 +4007,8 @@ const Admin = () => {
         true
       )}
 
+      
+
       <Card 
         className="shadow-soft"
         onMouseEnter={() => setActiveSubSection('admissions-cta')}
@@ -3813,6 +4031,13 @@ const Admin = () => {
               placeholder="Directions Button Text"
               value={content.admissions.cta.directionsLabel}
               onChange={(e) => handleAdmissionBannerChange("directionsLabel", e.target.value)}
+            />
+          </div>
+          <div className="grid gap-4 md:grid-cols-2">
+            <Input
+              placeholder="Third Button Text (e.g. Request Call Back)"
+              value={content.admissions.cta.callbackLabel}
+              onChange={(e) => handleAdmissionBannerChange("callbackLabel", e.target.value)}
             />
           </div>
         </CardContent>

@@ -21,27 +21,30 @@ const Hero = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isCallbackDialogOpen, setIsCallbackDialogOpen] = useState(false);
 
-  // Static button configuration
+  // Use admin-configured buttons from content
   const heroButtons = [
     {
-      text: 'CALL NOW',
-      action: 'navigate' as const,
-      target: '/contact#phone',
-      variant: 'default' as const
+      text: content.home.heroButtons.callNow.text,
+      action: content.home.heroButtons.callNow.action,
+      target: content.home.heroButtons.callNow.target,
+      variant: content.home.heroButtons.callNow.variant,
+      enabled: content.home.heroButtons.callNow.enabled
     },
     {
-      text: 'GET DIRECTIONS',
-      action: 'navigate' as const,
-      target: '/contact#map',
-      variant: 'outline' as const
+      text: content.home.heroButtons.getDirections.text,
+      action: content.home.heroButtons.getDirections.action,
+      target: content.home.heroButtons.getDirections.target,
+      variant: content.home.heroButtons.getDirections.variant,
+      enabled: content.home.heroButtons.getDirections.enabled
     },
     {
-      text: 'REQUEST A CALL BACK',
-      action: 'modal' as const,
-      target: 'RequestCallbackDialog',
-      variant: 'outline' as const
+      text: content.home.heroButtons.requestCallback.text,
+      action: content.home.heroButtons.requestCallback.action,
+      target: content.home.heroButtons.requestCallback.target,
+      variant: content.home.heroButtons.requestCallback.variant,
+      enabled: content.home.heroButtons.requestCallback.enabled
     }
-  ];
+  ].filter(button => button.enabled); // Only show enabled buttons
 
   const slides = content.home.heroCarousel.slides.map((slide) => ({
     ...slide,
@@ -106,22 +109,56 @@ const Hero = () => {
                   <p className="text-xl md:text-2xl text-white/90 mb-8">
                     {slide.subtitle}
                   </p>
-                  <div className="flex flex-wrap justify-center md:justify-start gap-2 sm:gap-3 md:gap-4">
+                  {/* Mobile Layout: Dynamic button arrangement based on enabled buttons */}
+                  <div className="flex flex-col items-center gap-3 md:hidden">
+                    {heroButtons.length > 0 && (
+                      <>
+                        {/* First button - full width on top */}
+                        <Button
+                          size="sm"
+                          variant={heroButtons[0].variant as any}
+                          onClick={() => handleButtonClick(heroButtons[0])}
+                          className={`text-xs sm:text-sm font-semibold px-4 py-2 min-w-[200px] transition-all duration-200 ease-in-out ${
+                            heroButtons[0].variant === 'default' ? 'gradient-accent' : 'bg-white/10 backdrop-blur-sm border-white text-white hover:bg-white hover:text-primary hover:border-primary'
+                          }`}
+                        >
+                          {heroButtons[0].text}
+                        </Button>
+                        
+                        {/* Remaining buttons - side by side if more than one */}
+                        {heroButtons.length > 1 && (
+                          <div className="flex gap-3 items-center">
+                            {heroButtons.slice(1).map((button, index) => (
+                              <Button
+                                key={index + 1}
+                                size="sm"
+                                variant={button.variant as any}
+                                onClick={() => handleButtonClick(button)}
+                                className={`text-xs sm:text-sm font-semibold px-4 py-2 min-w-[140px] transition-all duration-200 ease-in-out ${
+                                  button.variant === 'default' ? 'gradient-accent' : 'bg-white/10 backdrop-blur-sm border-white text-white hover:bg-white hover:text-primary hover:border-primary'
+                                }`}
+                              >
+                                {button.text}
+                              </Button>
+                            ))}
+                          </div>
+                        )}
+                      </>
+                    )}
+                  </div>
+
+                  {/* Desktop Layout: All buttons in one line */}
+                  <div className="hidden md:flex items-center gap-4 justify-start">
                     {heroButtons.map((button, buttonIndex) => (
                       <Button
                         key={buttonIndex}
                         size="sm"
-                        variant={button.variant}
+                        variant={button.variant as any}
                         onClick={() => handleButtonClick(button)}
-                        className={`text-[11px] sm:text-sm md:text-base font-semibold px-3 sm:px-4 md:px-6 py-2 sm:py-3 md:py-4 transition-all duration-200 ease-in-out ${
-                          // Mobile: first two buttons share the top row (side by side), third takes full row below
-                          buttonIndex === 2
-                            ? 'w-full sm:w-auto'
-                            : 'w-[calc(50%-0.25rem)] sm:w-auto'
-                        } ${
-                          button.variant === 'outline'
-                            ? "bg-white/10 backdrop-blur-sm border-white text-white hover:bg-white hover:text-primary hover:border-primary"
-                            : "gradient-accent"
+                        className={`text-sm font-semibold px-6 py-3 min-w-[140px] transition-all duration-200 ease-in-out ${
+                          button.variant === 'default'
+                            ? "gradient-accent"
+                            : "bg-white/10 backdrop-blur-sm border-white text-white hover:bg-white hover:text-primary hover:border-primary"
                         }`}
                       >
                         {button.text}

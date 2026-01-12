@@ -15,6 +15,7 @@ import Contact from "./pages/Contact";
 import Faculty from "./pages/Faculty";
 import FAQ from "./pages/FAQ";
 import Admissions from "./pages/Admissions";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
 import NotFound from "./pages/NotFound";
 import Admin from "./pages/Admin";
 
@@ -36,6 +37,7 @@ const AppRoutes = () => (
     <Route path="/admissions" element={<Admissions />} />
     <Route path="/faq" element={<FAQ />} />
     <Route path="/contact" element={<Contact />} />
+    <Route path="/privacy-policy" element={<PrivacyPolicy />} />
     <Route path="/admin" element={<Admin />} />
     {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
     <Route path="*" element={<NotFound />} />
