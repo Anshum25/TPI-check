@@ -81,12 +81,7 @@ const LivePreview = ({ selectedSectionId, activeSubSection }: LivePreviewProps) 
   const coursesBenefitsRef = useRef<HTMLDivElement>(null);
   const coursesLearningRef = useRef<HTMLDivElement>(null);
   
-  // Admissions page refs
-  const admissionsHeroRef = useRef<HTMLDivElement>(null);
-  const admissionsStepsRef = useRef<HTMLDivElement>(null);
-  const admissionsDetailsRef = useRef<HTMLDivElement>(null);
-  const admissionsTargetGroupsRef = useRef<HTMLDivElement>(null);
-  const admissionsWhyChooseRef = useRef<HTMLDivElement>(null);
+  // Admissions page refs (no longer used, but keep admissionsCtaRef for shared CTA scroll)
   const admissionsCtaRef = useRef<HTMLDivElement>(null);
   
   // Success Stories page refs
@@ -202,13 +197,6 @@ const LivePreview = ({ selectedSectionId, activeSubSection }: LivePreviewProps) 
       'courses-grid': coursesGridRef,
       'courses-benefits': coursesBenefitsRef,
       'courses-learning': coursesLearningRef,
-      // Admissions page
-      'admissions-hero': admissionsHeroRef,
-      'admissions-steps': admissionsStepsRef,
-      'admissions-details': admissionsDetailsRef,
-      'admissions-target-groups': admissionsTargetGroupsRef,
-      'admissions-why-choose': admissionsWhyChooseRef,
-      'admissions-cta': admissionsCtaRef,
       
       // Success Stories page
       'success-hero': successHeroRef,
@@ -432,7 +420,7 @@ const LivePreview = ({ selectedSectionId, activeSubSection }: LivePreviewProps) 
                 </section>
 
                 <a
-                  href={`tel:${content.admissions.cta.phoneNumber}`}
+                  href={`tel:${content.home.finalCta.phoneNumber}`}
                   className="md:hidden absolute bottom-6 right-4 z-50 h-14 w-14 rounded-full gradient-accent shadow-lg flex items-center justify-center"
                   aria-label="Call"
                 >
@@ -840,96 +828,6 @@ const LivePreview = ({ selectedSectionId, activeSubSection }: LivePreviewProps) 
                         ))}
                       </div>
                     </div>
-                  </div>
-                </section>
-              </div>
-            </div>
-          );
-        case "admissions":
-          // Preview-safe Admissions page
-          const { admissions } = content;
-          return (
-            <div ref={previewRef} className="h-full w-full bg-background overflow-y-auto overflow-x-hidden">
-              <div className="w-full max-w-full min-w-0">
-                <section ref={admissionsHeroRef} className="gradient-hero py-12 sm:py-20 text-primary-foreground">
-                  <div className="container mx-auto px-2 sm:px-4 text-center">
-                    <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-3 sm:mb-4">{admissions.hero.title}</h1>
-                    <p className="text-sm sm:text-base md:text-lg lg:text-xl max-w-3xl mx-auto text-primary-foreground/90 mb-4 sm:mb-6">{admissions.hero.subtitle}</p>
-                    <div className="flex flex-wrap justify-center gap-3 sm:gap-4">
-                      <Button size="lg" className="gradient-accent" asChild>
-                        <a href={`tel:${admissions.contactCtas.phoneNumber}`}>{admissions.contactCtas.phoneLabel}</a>
-                      </Button>
-                      <Button size="lg" variant="outline" className="bg-white/10 backdrop-blur-sm border-white text-white hover:bg-white hover:text-primary" asChild>
-                        <a href={admissions.contactCtas.secondaryLink}>{admissions.contactCtas.secondaryText}</a>
-                      </Button>
-                    </div>
-                  </div>
-                </section>
-
-                <section ref={admissionsStepsRef} className="py-12 sm:py-20">
-                  <div className="container mx-auto px-2 sm:px-4">
-                    <h2 className="text-xl sm:text-2xl md:text-3xl font-bold mb-8 sm:mb-12 text-center">Admission Process</h2>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 max-w-6xl mx-auto">
-                      {admissions.steps.map((step, index) => (
-                        <div key={index} className="text-center p-4 sm:p-6 rounded-lg bg-secondary/30">
-                          <div className="inline-flex h-12 w-12 sm:h-16 sm:w-16 items-center justify-center rounded-full gradient-accent text-accent-foreground mb-3 sm:mb-4 text-xl sm:text-2xl font-bold">
-                            {step.step}
-                          </div>
-                          <h3 className="text-base sm:text-lg font-bold mb-2">{step.title}</h3>
-                          <p className="text-xs sm:text-sm text-muted-foreground">{step.description}</p>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </section>
-
-                <section ref={admissionsDetailsRef} className="py-12 sm:py-20 bg-secondary/30">
-                  <CourseDetails />
-                </section>
-
-                <section ref={admissionsTargetGroupsRef} className="py-12 sm:py-20">
-                  <div className="container mx-auto px-2 sm:px-4">
-                    <h2 className="text-xl sm:text-2xl md:text-3xl font-bold mb-8 sm:mb-12 text-center">Who Should Join?</h2>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 max-w-6xl mx-auto">
-                      {admissions.targetGroups.map((group, index) => (
-                        <Card key={index} className="shadow-soft">
-                          <CardHeader>
-                            <CardTitle className="text-base sm:text-lg">{group.title}</CardTitle>
-                          </CardHeader>
-                          <CardContent>
-                            <ul className="space-y-2 text-xs sm:text-sm text-muted-foreground list-disc list-inside">
-                              {group.benefits.map((benefit, benefitIndex) => (
-                                <li key={benefitIndex}>{benefit}</li>
-                              ))}
-                            </ul>
-                          </CardContent>
-                        </Card>
-                      ))}
-                    </div>
-                  </div>
-                </section>
-
-                <section ref={admissionsWhyChooseRef} className="py-12 sm:py-20 bg-secondary/30">
-                  <div className="container mx-auto px-2 sm:px-4">
-                    <h2 className="text-xl sm:text-2xl md:text-3xl font-bold mb-8 sm:mb-12 text-center">Why Choose Us?</h2>
-                    <Card className="max-w-4xl mx-auto shadow-medium">
-                      <CardContent className="pt-6">
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
-                          {admissions.whyChoose.map((reason, index) => (
-                            <div key={index} className="flex items-start space-x-2 sm:space-x-3">
-                              <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-accent flex-shrink-0 mt-0.5" />
-                              <span className="text-xs sm:text-sm text-muted-foreground">{reason}</span>
-                            </div>
-                          ))}
-                        </div>
-                      </CardContent>
-                    </Card>
-                  </div>
-                </section>
-
-                <section ref={admissionsCtaRef} className="py-12 sm:py-20">
-                  <div className="container mx-auto px-2 sm:px-4 text-center">
-                    <FinalCtaBanner />
                   </div>
                 </section>
               </div>

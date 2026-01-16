@@ -12,6 +12,7 @@ const Reviews = () => {
   const reviews = content.reviews ?? DEFAULT_CONTENT.reviews;
 
   const testimonials = reviews.testimonials ?? [];
+  const videoReviews = reviews.videoReviews ?? [];
 
   // Group testimonials by source (google / facebook / justdial) with sensible fallbacks
   const googleTestimonials = (() => {
@@ -55,6 +56,8 @@ const Reviews = () => {
             </p>
           </div>
         </section>
+
+       
 
         {/* Google Reviews */}
         <section className="py-16 md:py-20 relative overflow-hidden bg-gradient-to-br from-rose-50/60 via-blue-50/50 to-purple-50/60 dark:from-rose-950/15 dark:via-blue-950/10 dark:to-purple-950/15">
@@ -183,6 +186,42 @@ const Reviews = () => {
             </div>
           </div>
         </section>
+
+         {videoReviews.length > 0 && (
+          <section className="py-16 bg-secondary/20">
+            <div className="container mx-auto px-4">
+              <div className="text-center mb-8">
+                <h2 className="text-2xl md:text-3xl font-bold text-foreground">Video Reviews</h2>
+                <p className="text-muted-foreground max-w-2xl mx-auto">
+                  Hear directly from our students and parents in their own words.
+                </p>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {videoReviews.map((video, index) => (
+                  <div
+                    key={index}
+                    className="bg-card rounded-lg overflow-hidden shadow-soft hover:shadow-medium hover:scale-105 hover:-translate-y-2 transition-all duration-300 cursor-pointer"
+                  >
+                    <div className="aspect-video w-full bg-black/80">
+                      <iframe
+                        className="w-full h-full"
+                        src={video.url}
+                        title={video.title}
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                        allowFullScreen
+                      />
+                    </div>
+                    <div className="p-4">
+                      <h3 className="font-semibold text-foreground text-sm md:text-base truncate" title={video.title}>
+                        {video.title}
+                      </h3>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
+        )}
 
       
 

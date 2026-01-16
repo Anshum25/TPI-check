@@ -46,7 +46,6 @@ const Header = () => {
     { path: "/about", label: "About Us" },
     // { path: "/courses", label: "Courses" },
     { path: "/faculty", label: "Faculty" },
-    { path: "/admissions", label: "Admissions" },
     { path: "/gallery", label: "Gallery" },
     { path: "/reviews", label: "Reviews" },
     { path: "/faq", label: "FAQ" },

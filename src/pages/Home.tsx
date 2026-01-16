@@ -26,8 +26,15 @@ const Home = () => {
   const navigate = useNavigate();
   const { content } = useContent();
   const home = content.home ?? DEFAULT_CONTENT.home;
-  const admissions = content.admissions ?? DEFAULT_CONTENT.admissions;
-  
+  const joinUs = home.joinUs;
+  const bottomTitle = joinUs?.bottom?.title || "You belong here.";
+  const bottomDescription =
+    joinUs?.bottom?.description ||
+    "The real strength of any institute is its teachers. At Turning Point, you're not just a student – you're part of a community led by the founders themselves. Your success is our responsibility. You'll experience a teaching method that's proven effective for making students fluent, confident, and genuinely interested in learning English.";
+  const bottomPoints = bottomDescription
+    .split(".")
+    .map((point) => point.trim())
+    .filter(Boolean);
 
   const featureIcons = [
     <Target key="icon-0" className="h-6 w-6" />,
@@ -45,6 +52,22 @@ const Home = () => {
         <Differentiators />
         <JoinUsSection showJourney={false} />
         <CourseDetails />
+        <section className="py-6">
+          <div className="container mx-auto px-4">
+            <div className="mt-8 bg-gradient-to-r from-primary/10 via-transparent to-accent/10 border border-primary/20 rounded-xl p-6 md:p-12">
+              <div className="w-full">
+                <h3 className="text-xl md:text-2xl font-bold text-foreground mb-4">
+                  {bottomTitle}
+                </h3>
+                <ul className="list-disc md:list-outside space-y-2 text-muted-foreground text-sm md:text-base pl-5 marker:text-primary">
+                  {bottomPoints.map((point, index) => (
+                    <li key={index}>{point}.</li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </div>
+        </section>
         <Marquee />
 
         {/* Learn English + Director's Desk */}
@@ -156,9 +179,9 @@ const Home = () => {
         </section>
 
         <a
-          href={`tel:${admissions.cta.phoneNumber}`}
+          href={`tel:${home.finalCta.phoneNumber}`}
           className="md:hidden fixed bottom-6 right-4 z-50 h-14 w-14 rounded-full gradient-accent shadow-lg flex items-center justify-center"
-          aria-label={`Call ${admissions.cta.phoneNumber}`}
+          aria-label={`Call ${home.finalCta.phoneNumber}`}
         >
           <i
             aria-hidden="true"
