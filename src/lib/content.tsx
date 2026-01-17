@@ -56,7 +56,7 @@ type JoinUs = {
   reasonsHeading?: string;
   statCard?: { metric: string; heading: string; description: string };
   infoCard?: { title: string; description: string };
-  bottom?: { title: string; description: string };
+  bottom?: { title: string; description?: string; points?: string[] };
 };
 type Question = { q: string; a: string };
 type FAQCategory = { category: string; questions: Question[] };
@@ -415,6 +415,12 @@ export const DEFAULT_CONTENT: SiteContent = {
         title: "You belong here.",
         description:
           "The real strength of any institute is its teachers. At Turning Point, you're not just a student – you're part of a community led by the founders themselves. Your success is our responsibility. You'll experience a teaching method that's proven effective for making students fluent, confident, and genuinely interested in learning English.",
+        points: [
+          "The real strength of any institute is its teachers",
+          "At Turning Point, you're not just a student – you're part of a community led by the founders themselves",
+          "Your success is our responsibility",
+          "You'll experience a teaching method that's proven effective for making students fluent, confident, and genuinely interested in learning English",
+        ],
       },
     },
     courseOverview: {

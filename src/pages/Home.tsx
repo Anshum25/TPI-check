@@ -17,6 +17,12 @@ import HomeReviewsSection from "@/components/HomeReviewsSection";
 import TestimonialCard from "@/components/TestimonialCard";
 import RequestCallbackDialog from "@/components/RequestCallbackDialog";
 import { Button } from "@/components/ui/button";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 import { Target, Users, Award, BookOpen } from "lucide-react";
 import { DEFAULT_CONTENT, useContent } from "@/lib/content";
 import FinalCtaBanner from "@/components/FinalCtaBanner";
@@ -27,7 +33,19 @@ const Home = () => {
   const { content } = useContent();
   const home = content.home ?? DEFAULT_CONTENT.home;
   const admissions = content.admissions ?? DEFAULT_CONTENT.admissions;
-  
+  const joinUs = home.joinUs;
+  const bottomTitle = joinUs?.bottom?.title || "You belong here.";
+  const bottomDescription =
+    joinUs?.bottom?.description ||
+    "The real strength of any institute is its teachers. At Turning Point, you're not just a student – you're part of a community led by the founders themselves. Your success is our responsibility. You'll experience a teaching method that's proven effective for making students fluent, confident, and genuinely interested in learning English.";
+  const bottomPointsRaw = joinUs?.bottom?.points;
+  const bottomPoints =
+    bottomPointsRaw && bottomPointsRaw.length > 0
+      ? bottomPointsRaw
+      : bottomDescription
+          .split(".")
+          .map((point) => point.trim())
+          .filter(Boolean);
 
   const featureIcons = [
     <Target key="icon-0" className="h-6 w-6" />,
@@ -45,6 +63,33 @@ const Home = () => {
         <Differentiators />
         <JoinUsSection showJourney={false} />
         <CourseDetails />
+        <section className="py-6">
+          <div className="container mx-auto px-4">
+            <div className="mt-8 bg-gradient-to-r from-primary/10 via-transparent to-accent/10 border border-primary/20 rounded-xl p-4 md:p-6">
+              <Accordion
+                type="single"
+                collapsible
+                defaultValue="you-belong-here"
+                className="w-full"
+              >
+                <AccordionItem value="you-belong-here" className="border-none">
+                  <AccordionTrigger className="text-left px-0">
+                    <h3 className="text-xl md:text-2xl font-bold text-foreground">
+                      {bottomTitle}
+                    </h3>
+                  </AccordionTrigger>
+                  <AccordionContent className="px-0">
+                    <ul className="list-disc md:list-outside space-y-2 text-muted-foreground text-sm md:text-base pl-5 marker:text-primary">
+                      {bottomPoints.map((point, index) => (
+                        <li key={index}>{point}.</li>
+                      ))}
+                    </ul>
+                  </AccordionContent>
+                </AccordionItem>
+              </Accordion>
+            </div>
+          </div>
+        </section>
         <Marquee />
 
         {/* Learn English + Director's Desk */}
