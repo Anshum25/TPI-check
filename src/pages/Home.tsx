@@ -17,6 +17,12 @@ import HomeReviewsSection from "@/components/HomeReviewsSection";
 import TestimonialCard from "@/components/TestimonialCard";
 import RequestCallbackDialog from "@/components/RequestCallbackDialog";
 import { Button } from "@/components/ui/button";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 import { Target, Users, Award, BookOpen } from "lucide-react";
 import { DEFAULT_CONTENT, useContent } from "@/lib/content";
 import FinalCtaBanner from "@/components/FinalCtaBanner";

@@ -56,6 +56,7 @@ const LivePreview = ({ selectedSectionId, activeSubSection }: LivePreviewProps) 
   const heroVideoRef = useRef<HTMLDivElement>(null);
   const featuresRef = useRef<HTMLDivElement>(null);
   const testimonialsRef = useRef<HTMLDivElement>(null);
+  const youBelongHereRef = useRef<HTMLDivElement>(null);
   const ctaRef = useRef<HTMLDivElement>(null);
   const facultyHighlightRef = useRef<HTMLDivElement>(null);
   const homeAchievementsRef = useRef<HTMLDivElement>(null);
@@ -175,6 +176,7 @@ const LivePreview = ({ selectedSectionId, activeSubSection }: LivePreviewProps) 
       'hero-video': heroVideoRef,
       'features': featuresRef,
       'testimonials': testimonialsRef,
+      'you-belong-here': youBelongHereRef,
       'cta': ctaRef,
       'faculty-highlight': facultyHighlightRef,
       'home-achievements': homeAchievementsRef,
@@ -281,85 +283,128 @@ const LivePreview = ({ selectedSectionId, activeSubSection }: LivePreviewProps) 
         <BookOpen key="icon-3" className="h-6 w-6" />,
       ];
 
-      switch (selectedSectionId) {
-        case "home":
-          return (
-            <div ref={previewRef} className="live-preview relative h-full w-full bg-background overflow-y-auto overflow-x-auto">
-              <div className="w-full max-w-full min-w-0">
-                <div ref={heroCarouselRef}>
-                  <div className="preview-hero-carousel">
-                    <Hero />
+      const joinUs = home.joinUs;
+      const bottomTitle = joinUs?.bottom?.title || "You belong here.";
+      const bottomDescription =
+        joinUs?.bottom?.description ||
+        "The real strength of any institute is its teachers. At Turning Point, you're not just a student – you're part of a community led by the founders themselves. Your success is our responsibility. You'll experience a teaching method that's proven effective for making students fluent, confident, and genuinely interested in learning English.";
+      const bottomPointsRaw = joinUs?.bottom?.points;
+      const bottomPoints =
+        bottomPointsRaw && bottomPointsRaw.length > 0
+          ? bottomPointsRaw
+          : bottomDescription
+              .split(".")
+              .map((point) => point.trim())
+              .filter(Boolean);
+
+    switch (selectedSectionId) {
+      case "home":
+        return (
+          <div ref={previewRef} className="live-preview relative h-full w-full bg-background overflow-y-auto overflow-x-auto">
+            <div className="w-full max-w-full min-w-0">
+              <div ref={heroCarouselRef}>
+                <div className="preview-hero-carousel">
+                  <Hero />
+                </div>
+              </div>
+              <div ref={featuresRef}>
+                <Differentiators />
+              </div>
+              <div ref={heroVideoRef}>
+                <JoinUsSection showJourney={false} />
+              </div>
+              <div ref={testimonialsRef}>
+                <CourseDetails />
+              </div>
+
+              <div ref={youBelongHereRef} className="py-6">
+                <div className="container mx-auto px-4">
+                  <div className="mt-8 bg-gradient-to-r from-primary/10 via-transparent to-accent/10 border border-primary/20 rounded-xl p-4 md:p-6">
+                    <Accordion
+                      type="single"
+                      collapsible
+                      defaultValue="you-belong-here"
+                      className="w-full"
+                    >
+                      <AccordionItem value="you-belong-here" className="border-none">
+                        <AccordionTrigger className="text-left px-0">
+                          <h3 className="text-xl md:text-2xl font-bold text-foreground">
+                            {bottomTitle}
+                          </h3>
+                        </AccordionTrigger>
+                        <AccordionContent className="px-0">
+                          <ul className="list-disc md:list-outside space-y-2 text-muted-foreground text-sm md:text-base pl-5 marker:text-primary">
+                            {bottomPoints.map((point, index) => (
+                              <li key={index}>{point}.</li>
+                            ))}
+                          </ul>
+                        </AccordionContent>
+                      </AccordionItem>
+                    </Accordion>
                   </div>
                 </div>
-                <div ref={featuresRef}>
-                  <Differentiators />
-                </div>
-                <div ref={heroVideoRef}>
-                  <JoinUsSection showJourney={false} />
-                </div>
-                <div ref={testimonialsRef}>
-                  <CourseDetails />
-                </div>
+              </div>
 
-                <div ref={marqueeRef}>
-                  <Marquee />
-                </div>
+              <div ref={marqueeRef}>
+                <Marquee />
+              </div>
 
-                {/* Our Methodology Section with Video */}
-                <div ref={methodologyVideoRef}>
-                  <section className="pt-12 pb-20 md:pt-16 md:pb-24 relative">
-                    <div className="container mx-auto px-4">
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-16 items-center">
-                        {/* Left Content */}
-                        <div className="space-y-6">
-                          <div>
-                            {home.methodologyBadge && (
-                              <span className="inline-block px-3 py-1 bg-primary/10 text-primary text-xs font-semibold uppercase tracking-wider rounded-full mb-4">
-                                {home.methodologyBadge}
-                              </span>
-                            )}
-                            <h2 className="text-3xl md:text-4xl font-bold text-foreground leading-tight">
-                              {home.heroTitle}
-                            </h2>
-                          </div>
-                          <p className="text-lg text-muted-foreground leading-relaxed">
-                            {home.heroSubtitle}
-                          </p>
-                          {home.methodologyKeyPoint && (
-                            <div className="pt-6 border-t border-border">
-                              <p className="text-sm font-semibold text-primary mb-3 uppercase tracking-wider">Key Point</p>
-                              <p className="text-foreground font-semibold text-lg">
-                                {home.methodologyKeyPoint}
-                              </p>
-                            </div>
+              {/* Our Methodology Section with Video */}
+              <div ref={methodologyVideoRef}>
+                <section className="pt-12 pb-20 md:pt-16 md:pb-24 relative">
+                  <div className="container mx-auto px-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-16 items-center">
+                      {/* Left Content */}
+                      <div className="space-y-6">
+                        <div>
+                          {home.methodologyBadge && (
+                            <span className="inline-block px-3 py-1 bg-primary/10 text-primary text-xs font-semibold uppercase tracking-wider rounded-full mb-4">
+                              {home.methodologyBadge}
+                            </span>
                           )}
+                          <h2 className="text-3xl md:text-4xl font-bold text-foreground leading-tight">
+                            {home.heroTitle}
+                          </h2>
                         </div>
+                        <p className="text-lg text-muted-foreground leading-relaxed">
+                          {home.heroSubtitle}
+                        </p>
+                        {home.methodologyKeyPoint && (
+                          <div className="pt-6 border-t border-border">
+                            <p className="text-sm font-semibold text-primary mb-3 uppercase tracking-wider">Key Point</p>
+                            <p className="text-foreground font-semibold text-lg">
+                              {home.methodologyKeyPoint}
+                            </p>
+                          </div>
+                        )}
+                      </div>
 
-                        {/* Right - Video */}
-                        <div className="relative">
-                          <div className="absolute -top-6 -right-6 w-24 h-24 bg-accent/10 rounded-3xl blur-2xl" />
-                          <div className="absolute -bottom-10 -left-10 w-32 h-32 bg-primary/10 rounded-3xl blur-3xl" />
+                      {/* Right - Video */}
+                      <div className="relative">
+                        <div className="absolute -top-6 -right-6 w-24 h-24 bg-accent/10 rounded-3xl blur-2xl" />
+                        <div className="absolute -bottom-10 -left-10 w-32 h-32 bg-primary/10 rounded-3xl blur-3xl" />
 
-                          <div className="relative bg-white dark:bg-slate-950 rounded-2xl shadow-medium overflow-hidden border border-border/50 hover:shadow-lg transition-shadow duration-300">
-                            <div className="absolute top-4 right-4 z-10 bg-background/80 backdrop-blur px-3 py-1 rounded-full">
-                              <p className="text-xs font-semibold text-foreground uppercase tracking-wider">Director's Desk</p>
-                            </div>
-                            <div className="aspect-video w-full bg-muted">
-                              <iframe
-                                src={home.directorVideoUrl}
-                                title="Director's desk video"
-                                className="w-full h-full"
-                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                                allowFullScreen
-                              />
-                            </div>
+                        <div className="relative bg-white dark:bg-slate-950 rounded-2xl shadow-medium overflow-hidden border border-border/50 hover:shadow-lg transition-shadow duration-300">
+                          <div className="absolute top-4 right-4 z-10 bg-background/80 backdrop-blur px-3 py-1 rounded-full">
+                            <p className="text-xs font-semibold text-foreground uppercase tracking-wider">Director's Desk</p>
+                          </div>
+                          <div className="aspect-video w-full bg-muted">
+                            <iframe
+                              src={home.directorVideoUrl}
+                              title="Director's desk video"
+                              className="w-full h-full"
+                              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                              allowFullScreen
+                            />
                           </div>
                         </div>
                       </div>
                     </div>
-                  </section>
-                </div>
-                <MethodologySection />
+                  </div>
+                </section>
+              </div>
+
+              <MethodologySection />
                 <div ref={gainFromCourseRef}>
                   <GainFromCourse />
                 </div>

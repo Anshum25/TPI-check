@@ -968,7 +968,7 @@ const Admin = () => {
       >
         <CardHeader>
           <CardTitle>Start Your Journey (Join Us)</CardTitle>
-          <CardDescription>Control the Home Join Us texts: header, steps, reasons, highlight cards, and bottom message.</CardDescription>
+          <CardDescription>Control the Home Join Us texts: header, steps, reasons, and highlight cards.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="grid gap-4 md:grid-cols-3">
@@ -1077,26 +1077,106 @@ const Admin = () => {
             ))}
           </div>
 
+        </CardContent>
+      </Card>
+
+      <Card 
+        className="shadow-soft"
+        onMouseEnter={() => setActiveSubSection('you-belong-here')}
+        onFocus={() => setActiveSubSection('you-belong-here')}
+      >
+        <CardHeader>
+          <CardTitle>"You belong here" Section</CardTitle>
+         
+        </CardHeader>
+        <CardContent className="space-y-4">
           <div className="space-y-2">
-            <Label>Bottom Title</Label>
+            <Label>Title</Label>
             <Input
-              value={content.home.joinUs?.bottom.title || ""}
+              value={content.home.joinUs?.bottom?.title || ""}
               onChange={(e)=> setContent((prev)=> ({
                 ...prev,
-                home: { ...prev.home, joinUs: { ...(prev.home.joinUs||{}), bottom: { ...(prev.home.joinUs?.bottom||{ title:"", description:""}), title: e.target.value } } },
+                home: {
+                  ...prev.home,
+                  joinUs: {
+                    ...(prev.home.joinUs || {}),
+                    bottom: { ...(prev.home.joinUs?.bottom || { title: "", description: "" }), title: e.target.value },
+                  },
+                },
               }))}
             />
           </div>
+        
           <div className="space-y-2">
-            <Label>Bottom Description</Label>
-            <Textarea
-              value={content.home.joinUs?.bottom.description || ""}
-              onChange={(e)=> setContent((prev)=> ({
-                ...prev,
-                home: { ...prev.home, joinUs: { ...(prev.home.joinUs||{}), bottom: { ...(prev.home.joinUs?.bottom||{ title:"", description:""}), description: e.target.value } } },
-              }))}
-              rows={3}
-            />
+            <Label>Bottom Points</Label>
+            <div className="space-y-2">
+              {(content.home.joinUs?.bottom?.points || []).map((point, index) => (
+                <div key={index} className="flex gap-2">
+                  <Input
+                    value={point}
+                    onChange={(e)=> setContent((prev)=> {
+                      const prevBottom = prev.home.joinUs?.bottom || { title: "", description: "" };
+                      const prevPoints = prevBottom.points || [];
+                      const nextPoints = prevPoints.map((p, i)=> i === index ? e.target.value : p);
+                      return {
+                        ...prev,
+                        home: {
+                          ...prev.home,
+                          joinUs: {
+                            ...(prev.home.joinUs || {}),
+                            bottom: { ...prevBottom, points: nextPoints },
+                          },
+                        },
+                      };
+                    })}
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="icon"
+                    onClick={()=> setContent((prev)=> {
+                      const prevBottom = prev.home.joinUs?.bottom || { title: "", description: "" };
+                      const prevPoints = prevBottom.points || [];
+                      const nextPoints = prevPoints.filter((_, i)=> i !== index);
+                      return {
+                        ...prev,
+                        home: {
+                          ...prev.home,
+                          joinUs: {
+                            ...(prev.home.joinUs || {}),
+                            bottom: { ...prevBottom, points: nextPoints },
+                          },
+                        },
+                      };
+                    })}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
+              ))}
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={()=> setContent((prev)=> {
+                  const prevBottom = prev.home.joinUs?.bottom || { title: "", description: "" };
+                  const prevPoints = prevBottom.points || [];
+                  return {
+                    ...prev,
+                    home: {
+                      ...prev.home,
+                      joinUs: {
+                        ...(prev.home.joinUs || {}),
+                        bottom: { ...prevBottom, points: [...prevPoints, ""] },
+                      },
+                    },
+                  };
+                })}
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                Add Point
+              </Button>
+            </div>
           </div>
         </CardContent>
       </Card>
