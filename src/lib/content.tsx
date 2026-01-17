@@ -159,6 +159,16 @@ export type SiteContent = {
     marquee?: Marquee;
     ctaTitle: string;
     ctaText: string;
+    finalCta: {
+      title: string;
+      subtitle: string;
+      tagline: string;
+      phoneLabel: string;
+      phoneNumber: string;
+      directionsLabel: string;
+      directionsUrl: string;
+      callbackLabel: string;
+    };
   };
   header: {
     siteTitle: string;
@@ -218,30 +228,6 @@ export type SiteContent = {
     benefits: string[];
     learningSections: BenefitSection[];
   };
-  admissions: {
-    hero: HeroContent & { subtitle: string };
-    contactCtas: {
-      phoneLabel: string;
-      phoneNumber: string;
-      secondaryLabel: string;
-      secondaryLink: string;
-      secondaryText: string;
-    };
-    steps: { step: string; title: string; description: string }[];
-    courseDetails: { label: string; value: string; icon: "clock" | "calendar" | "map" | "award" | "users" }[];
-    targetGroups: { title: string; benefits: string[] }[];
-    whyChoose: string[];
-    cta: {
-      title: string;
-      subtitle: string;
-      tagline: string;
-      phoneLabel: string;
-      phoneNumber: string;
-      directionsLabel: string;
-      directionsUrl: string;
-      callbackLabel: string;
-    };
-  };
   successStories: {
     hero: HeroContent;
     stats: Stat[];
@@ -265,6 +251,7 @@ export type SiteContent = {
     hero: HeroContent;
     ratingSummary: { score: string; label: string; count: string };
     testimonials: Testimonial[];
+    videoReviews: { title: string; url: string }[];
     sections?: {
       google: { title: string; description: string; watchMoreUrl: string };
       facebook: { title: string; description: string; watchMoreUrl: string };
@@ -718,6 +705,17 @@ export const DEFAULT_CONTENT: SiteContent = {
     },
     ctaTitle: "Ready to Transform Your Future?",
     ctaText: "Join thousands of successful students and start your journey towards excellence today",
+    finalCta: {
+      title: "Ready to Get Started?",
+      subtitle: "From basic to the advance level - Be fluent and confident in English!",
+      tagline: "Your Performance is Our Responsibility!!",
+      phoneLabel: "Call Now: 9725500435",
+      phoneNumber: "9725500435",
+      directionsLabel: "Get Directions",
+      directionsUrl:
+        "https://www.google.com/maps/place/Turning+Point+Institute/@23.0131818,72.518835,17z/data=!3m1!4b1!4m6!3m5!1s0x395e84cf0a8203a1:0xd1a3ec8eb1a3e77e!8m2!3d23.0131818!4d72.5210237!16s%2Fg%2F1v42d5nt",
+      callbackLabel: "Request Call Back",
+    },
   },
   header: {
     siteTitle: "TURNING POINT INSTITUTE",
@@ -725,7 +723,6 @@ export const DEFAULT_CONTENT: SiteContent = {
       { label: "Home", to: "/" },
       { label: "About Us", to: "/about" },
       { label: "Faculty", to: "/faculty" },
-      { label: "Admissions", to: "/admissions" },
       { label: "Gallery", to: "/gallery" },
       { label: "Reviews", to: "/reviews" },
       { label: "FAQ", to: "/faq" },
@@ -765,7 +762,7 @@ export const DEFAULT_CONTENT: SiteContent = {
       phone: "+91 98765 43210",
       email: "info@excellence.edu",
     },
-    copyright: "© 2025 TPI. All rights reserved.",
+    copyright: " 2025 TPI. All rights reserved.",
   },
   about: {
     hero: {
@@ -923,83 +920,6 @@ export const DEFAULT_CONTENT: SiteContent = {
         ],
       },
     ],
-  },
-  admissions: {
-    hero: {
-      title: "Admissions Open",
-      subtitle: "Join us and bring a Turning Point in your life",
-    },
-    contactCtas: {
-      phoneLabel: "Call: 9725500435",
-      phoneNumber: "9725500435",
-      secondaryLabel: "Request Callback",
-      secondaryLink: "/contact",
-      secondaryText: "Request Callback",
-    },
-    steps: [
-      { step: "1", title: "Contact Us", description: "Call us at 9725500435 or visit our institute to learn about available batches and course details" },
-      { step: "2", title: "Counseling", description: "Discuss your goals with our founders. We'll help you understand the course structure and choose the right program" },
-      { step: "3", title: "Select Batch", description: "Choose a batch timing that suits your schedule - morning, afternoon, or evening options available" },
-      { step: "4", title: "Enrollment", description: "Complete the simple enrollment process and start your journey with the next available batch" },
-    ],
-    courseDetails: [
-      { label: "Duration", value: "2 Months", icon: "clock" },
-      { label: "Schedule", value: "Monday to Friday", icon: "calendar" },
-      { label: "Session Length", value: "90 minutes per session", icon: "clock" },
-      { label: "Seminars", value: "Personality Development & GK seminars twice a month", icon: "award" },
-      { label: "Batch Size", value: "Small batches for personalized attention", icon: "users" },
-      { label: "Location", value: "Satellite, Ahmedabad", icon: "map" },
-    ],
-    targetGroups: [
-      {
-        title: "Working Professionals",
-        benefits: [
-          "Improve presentation and communication skills",
-          "Enhance written business communication",
-          "Boost career growth opportunities",
-          "Read faster and understand better",
-        ],
-      },
-      {
-        title: "Students",
-        benefits: [
-          "Build strong foundation in English",
-          "Excel in higher education",
-          "Develop confident personality",
-          "Improve academic performance",
-        ],
-      },
-      {
-        title: "Homemakers",
-        benefits: [
-          "Support children's English education",
-          "Communicate confidently in social circles",
-          "Become fluent like native speakers",
-          "Be the best teacher for your child",
-        ],
-      },
-    ],
-    whyChoose: [
-      "Coaching by Founders - 25+ years experience",
-      "No Franchises, No Branches - Quality maintained",
-      "10,000+ students trained since 1999",
-      "Highly interactive and practical method",
-      "Personal support to every student",
-      "Small batch sizes",
-      "Flexible timing options",
-      "Lifetime alumni support",
-    ],
-    cta: {
-      title: "Ready to Get Started?",
-      subtitle: "From basic to the advance level - Be fluent and confident in English!",
-      tagline: "Your Performance is Our Responsibility!!",
-      phoneLabel: "Call Now: 9725500435",
-      phoneNumber: "9725500435",
-      directionsLabel: "Get Directions",
-      directionsUrl:
-        "https://www.google.com/maps/place/Turning+Point+Institute/@23.0131818,72.518835,17z/data=!3m1!4b1!4m6!3m5!1s0x395e84cf0a8203a1:0xd1a3ec8eb1a3e77e!8m2!3d23.0131818!4d72.5210237!16s%2Fg%2F1v42d5nt",
-      callbackLabel: "Request Call Back",
-    },
   },
 
   successStories: {
@@ -1188,6 +1108,20 @@ export const DEFAULT_CONTENT: SiteContent = {
         content: "Fantastic learning experience! The interview preparation course helped me crack multiple job interviews. Highly recommended!",
         rating: 5,
         source: "justdial",
+      },
+    ],
+    videoReviews: [
+      {
+        title: "Student Feedback Compilation",
+        url: "https://www.youtube.com/embed/sLMm9trcZYc",
+      },
+      {
+        title: "Parent Review Highlight",
+        url: "https://www.youtube.com/embed/sLMm9trcZYc",
+      },
+      {
+        title: "Alumni Success Story",
+        url: "https://www.youtube.com/embed/sLMm9trcZYc",
       },
     ],
     sections: {
@@ -1506,6 +1440,16 @@ const migrateContent = (stored: any): SiteContent => {
     };
   }
 
+  // Ensure finalCta exists on home content
+  if (!stored?.home?.finalCta || typeof stored.home.finalCta !== "object") {
+    migrated.home.finalCta = DEFAULT_CONTENT.home.finalCta;
+  } else {
+    migrated.home.finalCta = {
+      ...DEFAULT_CONTENT.home.finalCta,
+      ...(stored.home.finalCta || {}),
+    };
+  }
+
   // Ensure joinUs has videoUrl even for older content
   if (migrated.home?.joinUs) {
     migrated.home.joinUs = {
@@ -1598,35 +1542,6 @@ const migrateContent = (stored: any): SiteContent => {
         reviewLinks: Array.isArray(stored.successStories.cta?.reviewLinks)
           ? stored.successStories.cta.reviewLinks
           : DEFAULT_CONTENT.successStories.cta.reviewLinks,
-      },
-    };
-  }
-
-  if (!stored?.admissions || typeof stored.admissions !== "object") {
-    migrated.admissions = DEFAULT_CONTENT.admissions;
-  } else {
-    migrated.admissions = {
-      ...DEFAULT_CONTENT.admissions,
-      ...stored.admissions,
-      hero: {
-        ...DEFAULT_CONTENT.admissions.hero,
-        ...(stored.admissions.hero || {}),
-      },
-      contactCtas: {
-        ...DEFAULT_CONTENT.admissions.contactCtas,
-        ...(stored.admissions.contactCtas || {}),
-      },
-      steps: Array.isArray(stored.admissions.steps) ? stored.admissions.steps : DEFAULT_CONTENT.admissions.steps,
-      courseDetails: Array.isArray(stored.admissions.courseDetails)
-        ? stored.admissions.courseDetails
-        : DEFAULT_CONTENT.admissions.courseDetails,
-      targetGroups: Array.isArray(stored.admissions.targetGroups)
-        ? stored.admissions.targetGroups
-        : DEFAULT_CONTENT.admissions.targetGroups,
-      whyChoose: Array.isArray(stored.admissions.whyChoose) ? stored.admissions.whyChoose : DEFAULT_CONTENT.admissions.whyChoose,
-      cta: {
-        ...DEFAULT_CONTENT.admissions.cta,
-        ...(stored.admissions.cta || {}),
       },
     };
   }

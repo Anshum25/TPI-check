@@ -5,8 +5,8 @@ import { useContent, DEFAULT_CONTENT } from "@/lib/content";
 
 const FinalCtaBanner = () => {
   const { content } = useContent();
-  const admissions = content.admissions ?? DEFAULT_CONTENT.admissions;
-  const cta = admissions.cta;
+  const home = content.home ?? DEFAULT_CONTENT.home;
+  const cta = home.finalCta ?? DEFAULT_CONTENT.home.finalCta;
   const [isCallbackDialogOpen, setIsCallbackDialogOpen] = useState(false);
 
   const handleCallNow = () => {

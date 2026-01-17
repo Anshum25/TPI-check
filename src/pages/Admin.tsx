@@ -121,20 +121,6 @@ const adminSections: AdminSection[] = [
     ],
   },
   {
-    id: "admissions",
-    label: "Admissions",
-    description: "Process overview and lead capture CTAs.",
-    icon: ClipboardCheck,
-    type: "static",
-    route: "/admissions",
-    filePath: "src/pages/Admissions.tsx",
-    summary: [
-      "Hero includes tap-to-call and request-callback actions.",
-      "Four-step admission journey and detailed cards for duration, schedule, seminars, and location.",
-      "Audience-specific benefits, reasons to choose us, and final CTA banner with phone + map links.",
-    ],
-  },
-  {
     id: "gallery",
     label: "Gallery",
     description: "Image tabs with lightbox experience.",
@@ -447,8 +433,6 @@ const Admin = () => {
         return "about";
       case "courses":
         return "courses";
-      case "admissions":
-        return "admissions";
       case "success":
         return "successStories";
       case "gallery":
@@ -2890,9 +2874,39 @@ const Admin = () => {
         </CardContent>
       </Card>
 
-       <p className="text-sm text-muted-foreground">
-              <strong>Note:</strong> Ready to get started is editable in  <strong>Admissions</strong> page.
-            </p>
+             <Card 
+        className="shadow-soft"
+        onMouseEnter={() => setActiveSubSection('home-final-cta')}
+        onFocus={() => setActiveSubSection('home-final-cta')}
+      >
+        <CardHeader>
+          <CardTitle>Final CTA Banner</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          <Input placeholder="Title" value={content.home.finalCta.title} onChange={(e) => handleFinalCtaChange("title", e.target.value)} />
+          <Textarea rows={2} placeholder="Subtitle" value={content.home.finalCta.subtitle} onChange={(e) => handleFinalCtaChange("subtitle", e.target.value)} />
+          <Input placeholder="Tagline" value={content.home.finalCta.tagline} onChange={(e) => handleFinalCtaChange("tagline", e.target.value)} />
+          <div className="grid gap-4 md:grid-cols-2">
+            <Input
+              placeholder="Call Button Text"
+              value={content.home.finalCta.phoneLabel}
+              onChange={(e) => handleFinalCtaChange("phoneLabel", e.target.value)}
+            />
+            <Input
+              placeholder="Directions Button Text"
+              value={content.home.finalCta.directionsLabel}
+              onChange={(e) => handleFinalCtaChange("directionsLabel", e.target.value)}
+            />
+          </div>
+          <div className="grid gap-4 md:grid-cols-2">
+            <Input
+              placeholder="Third Button Text (e.g. Request Call Back)"
+              value={content.home.finalCta.callbackLabel}
+              onChange={(e) => handleFinalCtaChange("callbackLabel", e.target.value)}
+            />
+          </div>
+        </CardContent>
+      </Card>
 
      
 
@@ -2921,6 +2935,22 @@ const Admin = () => {
         achievementsSection: {
           ...(prev.home.achievementsSection || { title: '', subtitle: '', items: [] }),
           items: (prev.home.achievementsSection?.items || []).filter((_, i) => i !== index),
+        },
+      },
+    }));
+  };
+
+  const handleFinalCtaChange = (
+    field: keyof SiteContent["home"]["finalCta"],
+    value: string,
+  ) => {
+    setContent((prev) => ({
+      ...prev,
+      home: {
+        ...prev.home,
+        finalCta: {
+          ...prev.home.finalCta,
+          [field]: value,
         },
       },
     }));
@@ -3903,227 +3933,7 @@ const Admin = () => {
     }));
   };
 
-  const renderAdmissionsEditor = () => (
-    <>
-      <Card 
-        className="shadow-soft"
-        onMouseEnter={() => setActiveSubSection('admissions-hero')}
-        onFocus={() => setActiveSubSection('admissions-hero')}
-      >
-        <CardHeader>
-          <CardTitle>Admissions Hero & CTA</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <Input
-            placeholder="Hero Title"
-            value={content.admissions.hero.title}
-            onChange={(e) => handleAdmissionsHeroChange("title", e.target.value)}
-          />
-          <Textarea
-            rows={2}
-            placeholder="Hero Subtitle"
-            value={content.admissions.hero.subtitle}
-            onChange={(e) => handleAdmissionsHeroChange("subtitle", e.target.value)}
-          />
-          <div className="grid gap-4 md:grid-cols-2">
-            <Input
-              placeholder="Call Button Text"
-              value={content.admissions.contactCtas.phoneLabel}
-              onChange={(e) => handleAdmissionsCtaChange("phoneLabel", e.target.value)}
-            />
-            <Input
-              placeholder="Request Callback Button Text"
-              value={content.admissions.contactCtas.secondaryText}
-              onChange={(e) => handleAdmissionsCtaChange("secondaryText", e.target.value)}
-            />
-          </div>
-        </CardContent>
-      </Card>
-
-      {renderListEditor("Admission Steps", content.admissions.steps, {
-        fieldRender: (step, index) => (
-          <>
-            <Input placeholder="Step Number" value={step.step} onChange={(e) => handleAdmissionStepChange(index, "step", e.target.value)} />
-            <Input placeholder="Title" value={step.title} onChange={(e) => handleAdmissionStepChange(index, "title", e.target.value)} />
-            <Textarea rows={2} placeholder="Description" value={step.description} onChange={(e) => handleAdmissionStepChange(index, "description", e.target.value)} />
-          </>
-        ),
-        onAdd: () =>
-          setContent((prev) => ({
-            ...prev,
-            admissions: { ...prev.admissions, steps: [...prev.admissions.steps, { step: "", title: "", description: "" }] },
-          })),
-        onRemove: (index) =>
-          setContent((prev) => ({
-            ...prev,
-            admissions: { ...prev.admissions, steps: prev.admissions.steps.filter((_, i) => i !== index) },
-          })),
-        subsectionId: 'admissions-steps',
-        disableAddButton: true,
-      })}
-
-      <Card 
-        className="shadow-soft"
-        onMouseEnter={() => setActiveSubSection('admissions-details')}
-        onFocus={() => setActiveSubSection('admissions-details')}
-      >
-        <CardHeader>
-          <CardTitle>The Course (Preview Only)</CardTitle>
-          <CardDescription>This section is rendered from the Home page “The Course” content. Edit it in Home.</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-2">
-          <p className="text-sm text-muted-foreground">
-            The Course layout and data are shared with the Home page. Update it in Home &gt; The Course to see changes here.
-          </p>
-        </CardContent>
-      </Card>
-
-      {renderListEditor("Who Should Join", content.admissions.targetGroups, {
-        fieldRender: (group, groupIndex) => (
-          <>
-            <div className="space-y-2">
-              <Label>Card Title</Label>
-              <Input
-                value={group.title}
-                onChange={(e) =>
-                  setContent((prev) => ({
-                    ...prev,
-                    admissions: {
-                      ...prev.admissions,
-                      targetGroups: prev.admissions.targetGroups.map((g, i) =>
-                        i === groupIndex ? { ...g, title: e.target.value } : g,
-                      ),
-                    },
-                  }))
-                }
-              />
-            </div>
-            <div className="space-y-2 mt-4">
-              <Label>Benefits</Label>
-              {group.benefits.map((benefit, benefitIndex) => (
-                <div key={benefitIndex} className="flex gap-2">
-                  <Input
-                    value={benefit}
-                    onChange={(e) =>
-                      setContent((prev) => ({
-                        ...prev,
-                        admissions: {
-                          ...prev.admissions,
-                          targetGroups: prev.admissions.targetGroups.map((g, i) =>
-                            i === groupIndex
-                              ? {
-                                  ...g,
-                                  benefits: g.benefits.map((b, bi) =>
-                                    bi === benefitIndex ? e.target.value : b,
-                                  ),
-                                }
-                              : g,
-                          ),
-                        },
-                      }))
-                    }
-                  />
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon"
-                    onClick={() =>
-                      setContent((prev) => ({
-                        ...prev,
-                        admissions: {
-                          ...prev.admissions,
-                          targetGroups: prev.admissions.targetGroups.map((g, i) =>
-                            i === groupIndex
-                              ? {
-                                  ...g,
-                                  benefits: g.benefits.filter((_, bi) => bi !== benefitIndex),
-                                }
-                              : g,
-                          ),
-                        },
-                      }))
-                    }
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                </div>
-              ))}
-             
-            </div>
-          </>
-        ),
-        onAdd: () =>
-          setContent((prev) => ({
-            ...prev,
-            admissions: {
-              ...prev.admissions,
-              targetGroups: [
-                ...prev.admissions.targetGroups,
-                { title: "New Group", benefits: [""] },
-              ],
-            },
-          })),
-        onRemove: (groupIndex) =>
-          setContent((prev) => ({
-            ...prev,
-            admissions: {
-              ...prev.admissions,
-              targetGroups: prev.admissions.targetGroups.filter((_, i) => i !== groupIndex),
-            },
-          })),
-        subsectionId: 'admissions-target-groups',
-      })}
-
-      {renderSimpleStringList(
-        "Why Choose Us",
-        "Reasons shown in the highlighted list.",
-        content.admissions.whyChoose,
-        (next) =>
-          setContent((prev) => ({
-            ...prev,
-            admissions: { ...prev.admissions, whyChoose: next },
-          })),
-        'admissions-why-choose',
-        true
-      )}
-
-      
-
-      <Card 
-        className="shadow-soft"
-        onMouseEnter={() => setActiveSubSection('admissions-cta')}
-        onFocus={() => setActiveSubSection('admissions-cta')}
-      >
-        <CardHeader>
-          <CardTitle>Final CTA Banner</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-3">
-          <Input placeholder="Title" value={content.admissions.cta.title} onChange={(e) => handleAdmissionBannerChange("title", e.target.value)} />
-          <Textarea rows={2} placeholder="Subtitle" value={content.admissions.cta.subtitle} onChange={(e) => handleAdmissionBannerChange("subtitle", e.target.value)} />
-          <Input placeholder="Tagline" value={content.admissions.cta.tagline} onChange={(e) => handleAdmissionBannerChange("tagline", e.target.value)} />
-          <div className="grid gap-4 md:grid-cols-2">
-            <Input
-              placeholder="Call Button Text"
-              value={content.admissions.cta.phoneLabel}
-              onChange={(e) => handleAdmissionBannerChange("phoneLabel", e.target.value)}
-            />
-            <Input
-              placeholder="Directions Button Text"
-              value={content.admissions.cta.directionsLabel}
-              onChange={(e) => handleAdmissionBannerChange("directionsLabel", e.target.value)}
-            />
-          </div>
-          <div className="grid gap-4 md:grid-cols-2">
-            <Input
-              placeholder="Third Button Text (e.g. Request Call Back)"
-              value={content.admissions.cta.callbackLabel}
-              onChange={(e) => handleAdmissionBannerChange("callbackLabel", e.target.value)}
-            />
-          </div>
-        </CardContent>
-      </Card>
-    </>
-  );
+ 
 
   const renderListEditor = <T,>(
     title: string,
@@ -4198,89 +4008,6 @@ const Admin = () => {
       </CardContent>
     </Card>
   );
-
-  const handleAdmissionsHeroChange = (field: "title" | "subtitle", value: string) => {
-    setContent((prev) => ({
-      ...prev,
-      admissions: { ...prev.admissions, hero: { ...prev.admissions.hero, [field]: value } },
-    }));
-  };
-
-  const handleAdmissionsCtaChange = (
-    field: keyof typeof content.admissions.contactCtas,
-    value: string,
-  ) => {
-    setContent((prev) => ({
-      ...prev,
-      admissions: { ...prev.admissions, contactCtas: { ...prev.admissions.contactCtas, [field]: value } },
-    }));
-  };
-
-  const handleAdmissionBannerChange = (
-    field: keyof typeof content.admissions.cta,
-    value: string,
-  ) => {
-    setContent((prev) => ({
-      ...prev,
-      admissions: { ...prev.admissions, cta: { ...prev.admissions.cta, [field]: value } },
-    }));
-  };
-
-  const handleAdmissionStepChange = (index: number, field: "step" | "title" | "description", value: string) => {
-    setContent((prev) => ({
-      ...prev,
-      admissions: {
-        ...prev.admissions,
-        steps: prev.admissions.steps.map((step, i) => (i === index ? { ...step, [field]: value } : step)),
-      },
-    }));
-  };
-
-  const handleTargetGroupChange = (index: number, title: string) => {
-    setContent((prev) => ({
-      ...prev,
-      admissions: {
-        ...prev.admissions,
-        targetGroups: prev.admissions.targetGroups.map((group, i) =>
-          i === index ? { ...group, title } : group,
-        ),
-      },
-    }));
-  };
-
-  const handleTargetGroupBenefitsChange = (index: number, benefits: string[]) => {
-    setContent((prev) => ({
-      ...prev,
-      admissions: {
-        ...prev.admissions,
-        targetGroups: prev.admissions.targetGroups.map((group, i) =>
-          i === index ? { ...group, benefits } : group,
-        ),
-      },
-    }));
-  };
-
-  const handleAddTargetGroup = () => {
-    setContent((prev) => ({
-      ...prev,
-      admissions: {
-        ...prev.admissions,
-        targetGroups: [...prev.admissions.targetGroups, { title: "", benefits: [""] }],
-      },
-    }));
-  };
-
-  const handleRemoveTargetGroup = (index: number) => {
-    setContent((prev) => ({
-      ...prev,
-      admissions: {
-        ...prev.admissions,
-        targetGroups: prev.admissions.targetGroups.filter((_, i) => i !== index),
-      },
-    }));
-  };
-
-
 
   const renderGalleryEditor = () => {
     const categoryKeys = Object.keys(content.gallery.categories) as Array<keyof typeof content.gallery.categories>;
@@ -4830,6 +4557,53 @@ const Admin = () => {
           </CardContent>
         </Card>
 
+        {/* Video Reviews (YouTube URLs) */}
+        <Card
+          className="shadow-soft"
+          onMouseEnter={() => setActiveSubSection("reviews-videos")}
+          onFocus={() => setActiveSubSection("reviews-videos")}
+        >
+          <CardHeader>
+            <CardTitle>Video Reviews</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="space-y-4">
+              {(content.reviews.videoReviews || []).map((video, index) => (
+                <div key={index} className="border rounded-lg p-4 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <Label>Video {index + 1}</Label>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => handleRemoveReviewVideo(index)}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                  <Input
+                    placeholder="Title"
+                    value={video.title}
+                    onChange={(e) => handleReviewVideoChange(index, "title", e.target.value)}
+                  />
+                  <Input
+                    placeholder="YouTube Embed URL (https://www.youtube.com/embed/...) "
+                    value={video.url}
+                    onChange={(e) => handleReviewVideoChange(index, "url", e.target.value)}
+                  />
+                </div>
+              ))}
+              <Button
+                variant="outline"
+                className="flex items-center gap-2"
+                onClick={handleAddReviewVideo}
+              >
+                <Plus className="h-4 w-4" />
+                Add Video
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+
         {/* Call to Action */}
         <Card
           className="shadow-soft"
@@ -4861,7 +4635,6 @@ const Admin = () => {
       </>
     );
   };
-  
 
   const handleReviewsHeroChange = (field: "title" | "subtitle", value: string) => {
     setContent((prev) => ({
@@ -4927,6 +4700,45 @@ const Admin = () => {
     setContent((prev) => ({
       ...prev,
       reviews: { ...prev.reviews, testimonials: prev.reviews.testimonials.filter((_, i) => i !== index) },
+    }));
+  };
+
+  const handleReviewVideoChange = (
+    index: number,
+    field: "title" | "url",
+    value: string,
+  ) => {
+    setContent((prev) => ({
+      ...prev,
+      reviews: {
+        ...prev.reviews,
+        videoReviews: (prev.reviews.videoReviews || []).map((video, i) =>
+          i === index ? { ...video, [field]: value } : video,
+        ),
+      },
+    }));
+  };
+
+  const handleAddReviewVideo = () => {
+    setContent((prev) => ({
+      ...prev,
+      reviews: {
+        ...prev.reviews,
+        videoReviews: [
+          ...(prev.reviews.videoReviews || []),
+          { title: "", url: "" },
+        ],
+      },
+    }));
+  };
+
+  const handleRemoveReviewVideo = (index: number) => {
+    setContent((prev) => ({
+      ...prev,
+      reviews: {
+        ...prev.reviews,
+        videoReviews: (prev.reviews.videoReviews || []).filter((_, i) => i !== index),
+      },
     }));
   };
 
@@ -5693,8 +5505,6 @@ const Admin = () => {
         return renderAboutEditor();
       case "courses":
         return renderCoursesEditor();
-      case "admissions":
-        return renderAdmissionsEditor();
       case "success":
         return renderStaticOverview(selectedSection);
       case "gallery":

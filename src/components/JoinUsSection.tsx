@@ -98,7 +98,7 @@ const JoinUsSection = ({ showJourney = true }: JoinUsSectionProps) => {
             </div>
           </div>
 
-          {/* Bottom message moved to dedicated Home/LivePreview section below Course */}
+          {/* Bottom Full Width Message - text only */}
         </div>
       </div>
     </section>
