@@ -16,7 +16,7 @@ const InformationBanner: React.FC<InformationBannerProps> = ({
   const [imageError, setImageError] = useState(false);
 
   // Extract banner properties with fallbacks
-  const isVisible = bannerData?.isVisible ?? false;
+  const isEnabled = bannerData?.isEnabled ?? bannerData?.isVisible ?? false; // Support both for migration
   const bannerContent = bannerData?.content ?? "";
   const imageUrl = bannerData?.imageUrl;
 
@@ -25,7 +25,7 @@ const InformationBanner: React.FC<InformationBannerProps> = ({
     window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   useEffect(() => {
-    if (isVisible && bannerContent.trim()) {
+    if (isEnabled && bannerContent.trim()) {
       setShouldRender(true);
       // Reset image error state when banner becomes visible
       setImageError(false);
@@ -40,7 +40,7 @@ const InformationBanner: React.FC<InformationBannerProps> = ({
       const timer = setTimeout(() => setShouldRender(false), animationDuration);
       return () => clearTimeout(timer);
     }
-  }, [isVisible, bannerContent, prefersReducedMotion]);
+  }, [isEnabled, bannerContent, prefersReducedMotion]);
 
   // Don't render anything if not visible or no content
   if (!shouldRender) {

@@ -7,6 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
+import { emailAPI } from "@/lib/api";
 
 interface Props {
   open: boolean;
@@ -27,17 +28,50 @@ const RequestCallbackDialog = ({ open, onOpenChange }: Props) => {
       evening: false,
     },
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const onChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setForm((f) => ({ ...f, [name]: value }));
   };
 
-  const onSubmit = (e: FormEvent) => {
+  const onSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    toast({ title: "Request submitted", description: "We'll call you back shortly." });
-    setForm({ firstName: "", lastName: "", workingPerson: "", phone: "", area: "", times: { morning: false, afternoon: false, evening: false } });
-    onOpenChange(false);
+    setIsSubmitting(true);
+    
+    try {
+      await emailAPI.sendCallbackRequest({
+        firstName: form.firstName,
+        lastName: form.lastName,
+        workingPerson: form.workingPerson,
+        phone: form.phone,
+        area: form.area,
+        times: form.times,
+      });
+      
+      toast({ 
+        title: "Request submitted", 
+        description: "We'll call you back shortly." 
+      });
+      setForm({ 
+        firstName: "", 
+        lastName: "", 
+        workingPerson: "", 
+        phone: "", 
+        area: "", 
+        times: { morning: false, afternoon: false, evening: false } 
+      });
+      onOpenChange(false);
+    } catch (error: any) {
+      console.error("Failed to send callback request:", error);
+      toast({
+        title: "Submission failed",
+        description: error.message || "Failed to submit request. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -120,7 +154,9 @@ const RequestCallbackDialog = ({ open, onOpenChange }: Props) => {
                 </div>
               </div>
 
-              <Button type="submit" className="w-full gradient-accent">Submit</Button>
+              <Button type="submit" className="w-full gradient-accent" disabled={isSubmitting}>
+                {isSubmitting ? "Submitting..." : "Submit"}
+              </Button>
             </form>
           </CardContent>
         </Card>

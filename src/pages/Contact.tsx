@@ -10,6 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 import { MapPin, Phone, Mail, Clock } from "lucide-react";
+import { emailAPI } from "@/lib/api";
 
 const Contact = () => {
   const { toast } = useToast();
@@ -22,11 +23,41 @@ const Contact = () => {
     area: "",
     times: { morning: false, afternoon: false, evening: false },
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    toast({ title: "Request submitted", description: "We'll call you back shortly." });
-    setForm({ firstName: "", lastName: "", workingPerson: "", phone: "", area: "", times: { morning: false, afternoon: false, evening: false } });
+    setIsSubmitting(true);
+    
+    try {
+      await emailAPI.sendCallbackRequest({
+        firstName: form.firstName,
+        lastName: form.lastName,
+        workingPerson: form.workingPerson,
+        phone: form.phone,
+        area: form.area,
+        times: form.times,
+      });
+      
+      toast({ title: "Request submitted", description: "We'll call you back shortly." });
+      setForm({ 
+        firstName: "", 
+        lastName: "", 
+        workingPerson: "", 
+        phone: "", 
+        area: "", 
+        times: { morning: false, afternoon: false, evening: false } 
+      });
+    } catch (error: any) {
+      console.error("Failed to send callback request:", error);
+      toast({
+        title: "Submission failed",
+        description: error.message || "Failed to submit request. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -149,7 +180,9 @@ const Contact = () => {
                         </div>
                       </div>
 
-                      <Button type="submit" className="w-full gradient-accent">Submit</Button>
+                      <Button type="submit" className="w-full gradient-accent" disabled={isSubmitting}>
+                        {isSubmitting ? "Submitting..." : "Submit"}
+                      </Button>
                     </form>
                   </CardContent>
                 </Card>

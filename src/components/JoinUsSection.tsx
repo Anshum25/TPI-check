@@ -69,7 +69,7 @@ const JoinUsSection = ({ showJourney = true }: JoinUsSectionProps) => {
                     { title: "Established Since 1999", description: "Founded by Ashish Bhatt and Pragna Bhatt, we've been the ultimate solution for effective English communication skills in Ahmedabad for over 25 years." },
                     { title: "Learn Directly from Founders", description: "Study with Mr Ashish Bhatt and Mrs Pragna Bhatt themselves. Their rich experience in making students fluent and confident is unmatched." },
                     { title: "Out of the Box Teaching", description: "Our unique approach is completely unconventional and highly effective. You'll find learning Spoken English easy and genuinely interesting." },
-                  ]).map((r, i) => (
+                  ]).slice(0, 3).map((r, i) => (
                     <div key={i} className={`border-l-4 ${i % 2 === 0 ? 'border-primary' : 'border-accent'} pl-6 py-2`}>
                       <p className="font-semibold text-foreground mb-2">{r.title}</p>
                       <p className="text-muted-foreground text-sm">{r.description}</p>

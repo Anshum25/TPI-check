@@ -29,7 +29,6 @@ type DifferentiatorCard = {
 };
 export type Testimonial = {
   name: string;
-  role: string;
   content: string;
   rating?: number;
   achievement?: string;
@@ -71,7 +70,7 @@ type MethodologySection = {
 };
 
 type InformationBanner = {
-  isVisible: boolean;
+  isEnabled: boolean;
   content: string;
   imageUrl?: string;
 };
@@ -184,9 +183,8 @@ export type SiteContent = {
       instagram: string;
       linkedin: string;
     };
-    quickLinks: { label: string; to: string }[];
-    courses: string[];
-    whatWeDo?: string[];
+    quickLinks: string[];
+    whatWeDo: string[];
     contact: {
       address: string;
       phone: string;
@@ -209,7 +207,7 @@ export type SiteContent = {
       carouselImages: string[];
     };
     community?: {
-      title: string;
+      heading: string;
       description: string;
     };
     story: string[];
@@ -244,12 +242,11 @@ export type SiteContent = {
   };
   gallery: {
     hero: HeroContent;
-    categories: Record<"all" | "classroom" | "events" | "students", { src: string; title: string; category: string }[]>;
+    categories: Record<"all", { src: string; title: string; category: string }[]>;
     videos: { title: string; url: string }[];
   };
   reviews: {
     hero: HeroContent;
-    ratingSummary: { score: string; label: string; count: string };
     testimonials: Testimonial[];
     videoReviews: { title: string; url: string }[];
     sections?: {
@@ -363,13 +360,10 @@ export const DEFAULT_CONTENT: SiteContent = {
       kicker: "Start Your Journey",
       titleBefore: "Bring a",
       titleHighlight: "Turning Point",
+      titleAfter: "in your life",
       subtitle: "Be fluent and confident in English, from basic to advanced level",
       videoUrl: "https://www.youtube.com/embed/sLMm9trcZYc",
-      steps: [
-        { label: "Basics" },
-        { label: "Intermediate" },
-        { label: "Fluent" },
-      ],
+      reasonsHeading: "",
       reasons: [
         {
           title: "Established Since 1999",
@@ -489,19 +483,16 @@ export const DEFAULT_CONTENT: SiteContent = {
     testimonials: [
       {
         name: "Priya Sharma",
-        role: "Software Engineer",
         content: "This institute transformed my communication skills completely. I'm now confident in presentations and team meetings.",
         rating: 5,
       },
       {
         name: "Rahul Patel",
-        role: "Business Owner",
         content: "The personality development course helped me become a better leader. Highly recommend to everyone!",
         rating: 5,
       },
       {
         name: "Anjali Desai",
-        role: "HR Manager",
         content: "Excellent teaching methods and supportive instructors. Worth every penny invested in my growth.",
         rating: 5,
       },
@@ -695,7 +686,7 @@ export const DEFAULT_CONTENT: SiteContent = {
       subtitle: "Read authentic reviews from students who transformed their English and personality with us.",
     },
     informationBanner: {
-      isVisible: false,
+      isEnabled: false,
       content: "",
       imageUrl: undefined,
     },
@@ -740,17 +731,11 @@ export const DEFAULT_CONTENT: SiteContent = {
       linkedin: "#",
     },
     quickLinks: [
-      { label: "Home", to: "/" },
-      { label: "About Us", to: "/about" },
-      { label: "Courses", to: "/courses" },
-      { label: "Gallery", to: "/gallery" },
-      { label: "Privacy Policy", to: "/privacy-policy" },
-    ],
-    courses: [
-      "Spoken English",
-      "Personality Development",
-      "Business Communication",
-      "Interview Preparation",
+      "Home",
+      "About Us",
+      "Courses",
+      "Gallery",
+      "Privacy Policy",
     ],
     whatWeDo: [
       "Coaching by Founders",
@@ -814,7 +799,7 @@ export const DEFAULT_CONTENT: SiteContent = {
       ],
     },
     community: {
-      title: "Serving the community for more than two decades",
+      heading: "Serving the community for more than two decades",
       description:
         "Turning Point Institute is the best English speaking coaching class in Ahmedabad, situated beside Sima hall of Satellite it caters to the needs of all the people residing in Anand nagar, Prahlad nagar, shymal, jivraj park, Vejalpur, sarkhej, juhapura, Prernatirth derasar road, ramdev nagar, bodakdev cross roads, Ambawadi, Shreyas Tekra, Manek baugh, Ayojan nagar, SG road, Iscon cross roads, Himmatlal park, bodakdev, Vastrapur and more where people find English Speaking class near me. Apart from these areas Working professionals, students, housewives and also foreign study aspirants join our course from far areas like Drive in, bopal, south bopal, Shilaj, Thaltej, Science city, Chand kheda, Naroda, Narol, Bapunagar, Shahibagh, Naranpura, Paldi, Maninagar, Vatva and more as Turning Point Institute is one of the oldest and among the top ten institutes in Ahmedabad. The students join our course to get perfection in grammar as it's helpful for Govt exams, gpsc, staff selection, banking along with IELTS, SAT and PTE. Apart from this our course is extremely helpful to working professionals as it develops corporate communication skills along with email writing and client communication.",
     },
@@ -944,7 +929,6 @@ export const DEFAULT_CONTENT: SiteContent = {
       },
       {
         name: "Rahul Patel",
-        role: "Business Owner",
         content:
           "The course helped me become a better leader and communicator. The founders' guidance is truly valuable.",
         rating: 5,
@@ -953,7 +937,6 @@ export const DEFAULT_CONTENT: SiteContent = {
       },
       {
         name: "Anjali Desai",
-        role: "HR Manager",
         content:
           "Excellent teaching methods and supportive instructors. Worth every penny invested in my growth.",
         rating: 5,
@@ -1002,23 +985,13 @@ export const DEFAULT_CONTENT: SiteContent = {
     },
     categories: {
       all: [
-        { src: heroClassroom, title: "Group Discussion Session", category: "classroom" },
-        { src: speakingConfidence, title: "Public Speaking Practice", category: "events" },
-        { src: studentSuccess, title: "Successful Students Batch", category: "students" },
-        { src: heroClassroom, title: "Interactive Learning", category: "classroom" },
-        { src: speakingConfidence, title: "Presentation Skills", category: "events" },
-        { src: studentSuccess, title: "Achievement Ceremony", category: "events" },
+        { src: heroClassroom, title: "Group Discussion Session", category: "all" },
+        { src: speakingConfidence, title: "Public Speaking Practice", category: "all" },
+        { src: studentSuccess, title: "Successful Students Batch", category: "all" },
+        { src: heroClassroom, title: "Interactive Learning", category: "all" },
+        { src: speakingConfidence, title: "Presentation Skills", category: "all" },
+        { src: studentSuccess, title: "Achievement Ceremony", category: "all" },
       ],
-      classroom: [
-        { src: heroClassroom, title: "Group Discussion Session", category: "classroom" },
-        { src: heroClassroom, title: "Interactive Learning", category: "classroom" },
-      ],
-      events: [
-        { src: speakingConfidence, title: "Public Speaking Practice", category: "events" },
-        { src: speakingConfidence, title: "Presentation Skills", category: "events" },
-        { src: studentSuccess, title: "Achievement Ceremony", category: "events" },
-      ],
-      students: [{ src: studentSuccess, title: "Successful Students Batch", category: "students" }],
     },
     videos: [
       {
@@ -1040,71 +1013,57 @@ export const DEFAULT_CONTENT: SiteContent = {
       title: "Student Reviews",
       subtitle: "Read what our students have to say about their learning experience",
     },
-    ratingSummary: {
-      score: "4.9",
-      label: "out of 5 stars",
-      count: "Based on 500+ reviews",
-    },
     testimonials: [
       {
         name: "Priya Sharma",
-        role: "Software Engineer",
         content: "This institute transformed my communication skills completely. I'm now confident in presentations and team meetings. The practical approach really works!",
         rating: 5,
         source: "google",
       },
       {
         name: "Rahul Patel",
-        role: "Business Owner",
         content: "The personality development course helped me become a better leader. Highly recommend to everyone who wants to grow professionally!",
         rating: 5,
         source: "google",
       },
       {
         name: "Anjali Desai",
-        role: "HR Manager",
         content: "Excellent teaching methods and supportive instructors. Worth every penny invested in my growth. The batch size is perfect for individual attention.",
         rating: 5,
         source: "google",
       },
       {
         name: "Vikram Singh",
-        role: "Marketing Executive",
         content: "I was hesitant about my English speaking skills, but after completing the course, I feel like a different person. Thank you for building my confidence!",
         rating: 5,
         source: "facebook",
       },
       {
         name: "Neha Gupta",
-        role: "Teacher",
         content: "The founders personally conduct classes which makes a huge difference. Their experience and dedication towards students is remarkable.",
         rating: 5,
         source: "facebook",
       },
       {
         name: "Amit Kumar",
-        role: "Student",
         content: "Best institute for spoken English in the city. The interactive sessions and group discussions helped me overcome my fear of speaking.",
         rating: 5,
         source: "facebook",
       },
       {
         name: "Pooja Mehta",
-        role: "Customer Service Executive",
         content: "My workplace communication improved significantly after joining here. The business communication module was especially helpful for my career.",
         rating: 5,
         source: "justdial",
       },
       {
         name: "Karan Shah",
-        role: "Entrepreneur",
         content: "I've attended many institutes before, but this one stands out. The practical tips for personality development are applicable in real life situations.",
         rating: 4,
         source: "justdial",
       },
       {
         name: "Sneha Joshi",
-        role: "Bank Manager",
         content: "Fantastic learning experience! The interview preparation course helped me crack multiple job interviews. Highly recommended!",
         rating: 5,
         source: "justdial",
@@ -1404,6 +1363,53 @@ const ContentContext = createContext<ContentContextValue | undefined>(undefined)
 const migrateContent = (stored: any): SiteContent => {
   const migrated = { ...DEFAULT_CONTENT, ...stored };
 
+  // Migrate About page content
+  if (stored?.about && typeof stored.about === "object") {
+    // Migrate community.title to community.heading if needed
+    if (migrated.about.community && migrated.about.community.title && !migrated.about.community.heading) {
+      migrated.about.community.heading = migrated.about.community.title;
+      delete migrated.about.community.title;
+    }
+    
+    // Ensure coreValues has exactly 3 items
+    if (migrated.about.coreValues && Array.isArray(migrated.about.coreValues)) {
+      while (migrated.about.coreValues.length < 3) {
+        migrated.about.coreValues.push({ title: "", description: "" });
+      }
+      migrated.about.coreValues = migrated.about.coreValues.slice(0, 3);
+    }
+    
+    // Ensure differentiators has exactly 3 items
+    if (migrated.about.differentiators && Array.isArray(migrated.about.differentiators)) {
+      while (migrated.about.differentiators.length < 3) {
+        migrated.about.differentiators.push({ title: "", description: "" });
+      }
+      migrated.about.differentiators = migrated.about.differentiators.slice(0, 3);
+    }
+    
+    // Ensure story has at least 3 paragraphs
+    if (migrated.about.story && Array.isArray(migrated.about.story)) {
+      while (migrated.about.story.length < 3) {
+        migrated.about.story.push("");
+      }
+    }
+    
+    // Ensure highlight.paragraphs has at least 2 paragraphs
+    if (migrated.about.highlight && migrated.about.highlight.paragraphs && Array.isArray(migrated.about.highlight.paragraphs)) {
+      while (migrated.about.highlight.paragraphs.length < 2) {
+        migrated.about.highlight.paragraphs.push("");
+      }
+    }
+    
+    // Ensure amenities.amenitiesList has exactly 6 items
+    if (migrated.about.amenities && migrated.about.amenities.amenitiesList && Array.isArray(migrated.about.amenities.amenitiesList)) {
+      while (migrated.about.amenities.amenitiesList.length < 6) {
+        migrated.about.amenities.amenitiesList.push("");
+      }
+      migrated.about.amenities.amenitiesList = migrated.about.amenities.amenitiesList.slice(0, 6);
+    }
+  }
+  
   // Ensure About hero title uses the updated institute name even if older content is cached
   if (migrated.about && migrated.about.hero) {
     migrated.about.hero.title = DEFAULT_CONTENT.about.hero.title;
@@ -1511,6 +1517,40 @@ const migrateContent = (stored: any): SiteContent => {
         },
       };
     }
+    
+    // Ensure all cards have icons set (first = "award", second = "users")
+    migrated.home.differentiators.cards = migrated.home.differentiators.cards.map((card, idx) => ({
+      ...card,
+      icon: card.icon || (idx === 0 ? "award" : "users"),
+    }));
+  } else if (!migrated.home.differentiators?.cards || migrated.home.differentiators.cards.length === 0) {
+    // If no cards exist, use default cards with icons
+    migrated.home.differentiators = DEFAULT_CONTENT.home.differentiators;
+  }
+
+  // Ensure methodology sections exist and have 3 images each
+  if (!migrated.home.methodologySections || !Array.isArray(migrated.home.methodologySections) || migrated.home.methodologySections.length === 0) {
+    // Initialize with default sections if none exist
+    migrated.home.methodologySections = DEFAULT_CONTENT.home.methodologySections || [];
+  }
+  
+  if (migrated.home.methodologySections && Array.isArray(migrated.home.methodologySections)) {
+    migrated.home.methodologySections = migrated.home.methodologySections.map((section) => {
+      const images = section.images || [];
+      // Ensure exactly 3 image slots
+      while (images.length < 3) {
+        images.push({ src: "", alt: "" });
+      }
+      return { ...section, images: images.slice(0, 3) };
+    });
+  }
+
+  // Migrate informationBanner.isVisible to isEnabled
+  if (migrated.home?.informationBanner) {
+    if (migrated.home.informationBanner.isVisible !== undefined && migrated.home.informationBanner.isEnabled === undefined) {
+      migrated.home.informationBanner.isEnabled = migrated.home.informationBanner.isVisible;
+      delete migrated.home.informationBanner.isVisible;
+    }
   }
 
   if (!stored?.successStories || typeof stored.successStories !== "object") {
@@ -1556,10 +1596,6 @@ const migrateContent = (stored: any): SiteContent => {
         ...DEFAULT_CONTENT.reviews.hero,
         ...(stored.reviews.hero || {}),
       },
-      ratingSummary: {
-        ...DEFAULT_CONTENT.reviews.ratingSummary,
-        ...(stored.reviews.ratingSummary || {}),
-      },
       testimonials: Array.isArray(stored.reviews.testimonials)
         ? stored.reviews.testimonials
         : DEFAULT_CONTENT.reviews.testimonials,
@@ -1595,24 +1631,29 @@ const migrateContent = (stored: any): SiteContent => {
 
   // Migrate footer if it exists but is missing new fields
   if (stored.footer && typeof stored.footer === 'object') {
-    // Ensure Privacy Policy link is always included in quickLinks
-    const defaultQuickLinks = DEFAULT_CONTENT.footer.quickLinks;
     const storedQuickLinks = stored.footer.quickLinks || [];
     
-    // Check if Privacy Policy link exists, if not add it
-    const hasPrivacyPolicy = storedQuickLinks.some((link: any) => 
-      link.to === '/privacy-policy' || link.label === 'Privacy Policy'
-    );
+    // Convert old format (objects with label/to) to new format (strings)
+    const convertedQuickLinks = storedQuickLinks.map((link: any) => {
+      if (typeof link === 'string') return link;
+      if (link && typeof link === 'object') return link.label || "";
+      return "";
+    });
     
-    let mergedQuickLinks = storedQuickLinks;
-    if (!hasPrivacyPolicy) {
-      const privacyPolicyLink = defaultQuickLinks.find(link => link.to === '/privacy-policy');
-      if (privacyPolicyLink) {
-        mergedQuickLinks = [...storedQuickLinks, privacyPolicyLink];
-      }
+    // Ensure exactly 5 items
+    const mergedQuickLinks = [...convertedQuickLinks];
+    while (mergedQuickLinks.length < 5) {
+      mergedQuickLinks.push("");
     }
 
-    const mergedFooter = {
+    // Ensure whatWeDo has exactly 3 items
+    const storedWhatWeDo = stored.footer.whatWeDo || [];
+    const mergedWhatWeDo = [...storedWhatWeDo];
+    while (mergedWhatWeDo.length < 3) {
+      mergedWhatWeDo.push("");
+    }
+
+    const mergedFooter: any = {
       ...DEFAULT_CONTENT.footer,
       ...stored.footer,
       // Ensure nested objects are properly merged
@@ -1620,13 +1661,18 @@ const migrateContent = (stored: any): SiteContent => {
         ...DEFAULT_CONTENT.footer.socialMedia,
         ...(stored.footer.socialMedia || {}),
       },
-      quickLinks: mergedQuickLinks,
-      courses: stored.footer.courses || DEFAULT_CONTENT.footer.courses,
+      quickLinks: mergedQuickLinks.slice(0, 5),
+      whatWeDo: mergedWhatWeDo.slice(0, 3),
       contact: {
         ...DEFAULT_CONTENT.footer.contact,
         ...(stored.footer.contact || {}),
       },
     };
+    
+    // Remove courses field if it exists
+    if (mergedFooter.courses !== undefined) {
+      delete mergedFooter.courses;
+    }
 
     const rawName = (stored.footer as any).instituteName as string | undefined;
     if (!rawName || /excellence/i.test(rawName)) {
@@ -1636,6 +1682,76 @@ const migrateContent = (stored: any): SiteContent => {
     migrated.footer = mergedFooter;
   }
   
+  // Migrate faculty if it exists
+  if (stored?.faculty && typeof stored.faculty === "object") {
+    // Ensure methodology has exactly 4 items
+    if (migrated.faculty.methodology && Array.isArray(migrated.faculty.methodology)) {
+      while (migrated.faculty.methodology.length < 4) {
+        migrated.faculty.methodology.push({ title: "", description: "" });
+      }
+      migrated.faculty.methodology = migrated.faculty.methodology.slice(0, 4);
+    }
+    
+    // Filter out empty strings from specializations
+    if (migrated.faculty.members && Array.isArray(migrated.faculty.members)) {
+      migrated.faculty.members = migrated.faculty.members.map((member: any) => {
+        if (!member.specialization || !Array.isArray(member.specialization)) {
+          member.specialization = [];
+        }
+        // Filter out empty strings
+        member.specialization = member.specialization.filter((spec: string) => spec && spec.trim() !== "");
+        return member;
+      });
+    }
+  }
+  
+  // Migrate reviews testimonials - ensure exactly 9 items (3 per section)
+  if (stored?.reviews && typeof stored.reviews === "object" && stored.reviews.testimonials) {
+    const neededLength = 9;
+    const testimonials = migrated.reviews.testimonials || [];
+    
+    // Pad or trim to exactly 9 items
+    while (testimonials.length < neededLength) {
+      const nextIdx = testimonials.length;
+      const defaultSource = nextIdx < 3 ? "google" : nextIdx < 6 ? "facebook" : "justdial";
+      testimonials.push({ name: "", content: "", rating: 5, source: defaultSource } as any);
+    }
+    if (testimonials.length > neededLength) {
+      testimonials.splice(neededLength);
+    }
+    
+    // Ensure source and rating are set for each testimonial, remove role field
+    testimonials.forEach((testimonial: any, idx: number) => {
+      if (!testimonial.source) {
+        testimonial.source = idx < 3 ? "google" : idx < 6 ? "facebook" : "justdial";
+      }
+      // Ensure rating defaults to 5 if not set
+      if (!testimonial.rating || testimonial.rating === 0) {
+        testimonial.rating = 5;
+      }
+      // Remove role field if it exists (migration)
+      if (testimonial.role !== undefined) {
+        delete testimonial.role;
+      }
+    });
+    
+    migrated.reviews.testimonials = testimonials;
+  }
+  
+  // Migrate gallery - remove unwanted categories (classroom, events, students)
+  if (stored?.gallery && typeof stored.gallery === "object" && stored.gallery.categories) {
+    // Remove unwanted categories
+    if (migrated.gallery.categories) {
+      delete migrated.gallery.categories.classroom;
+      delete migrated.gallery.categories.events;
+      delete migrated.gallery.categories.students;
+      // Ensure only 'all' category exists
+      if (!migrated.gallery.categories.all) {
+        migrated.gallery.categories.all = [];
+      }
+    }
+  }
+  
   // Migrate home carousel if it exists but is missing new fields
   // NOTE: handled above with a safer merge that also protects against null/invalid cached values.
   
@@ -1643,34 +1759,84 @@ const migrateContent = (stored: any): SiteContent => {
 };
 
 export const ContentProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [content, setContentState] = useState<SiteContent>(() => {
-    try {
-      const raw = localStorage.getItem("site_content");
-      if (raw) {
-        const parsed = JSON.parse(raw) as SiteContent;
-        return migrateContent(parsed);
+  // Initialize with migrated default content to ensure all fields exist
+  const [content, setContentState] = useState<SiteContent>(() => migrateContent(DEFAULT_CONTENT));
+  const [loading, setLoading] = useState(true);
+
+  // Fetch content from API on mount
+  useEffect(() => {
+    let isMounted = true;
+
+    const fetchContent = async () => {
+      try {
+        // Import contentAPI dynamically to avoid circular dependencies
+        const { contentAPI } = await import("./api");
+        
+        // Fetch all page content from API
+        const [home, about, faculty, gallery, reviews, faq, contact, footer] = await Promise.allSettled([
+          contentAPI.get("home").catch(() => null),
+          contentAPI.get("about").catch(() => null),
+          contentAPI.get("faculty").catch(() => null),
+          contentAPI.get("gallery").catch(() => null),
+          contentAPI.get("reviews").catch(() => null),
+          contentAPI.get("faq").catch(() => null),
+          contentAPI.get("contact").catch(() => null),
+          contentAPI.get("footer").catch(() => null),
+        ]);
+
+        if (!isMounted) return;
+
+        // Merge fetched content with defaults using migrateContent for proper structure
+        const fetchedContent: SiteContent = {
+          ...DEFAULT_CONTENT,
+          home: home.status === "fulfilled" && home.value 
+            ? migrateContent({ home: home.value } as any).home 
+            : DEFAULT_CONTENT.home,
+          about: about.status === "fulfilled" && about.value 
+            ? migrateContent({ about: about.value } as any).about 
+            : DEFAULT_CONTENT.about,
+          faculty: faculty.status === "fulfilled" && faculty.value 
+            ? migrateContent({ faculty: faculty.value } as any).faculty 
+            : DEFAULT_CONTENT.faculty,
+          gallery: gallery.status === "fulfilled" && gallery.value 
+            ? migrateContent({ gallery: gallery.value } as any).gallery 
+            : DEFAULT_CONTENT.gallery,
+          reviews: reviews.status === "fulfilled" && reviews.value 
+            ? migrateContent({ reviews: reviews.value } as any).reviews 
+            : DEFAULT_CONTENT.reviews,
+          faq: faq.status === "fulfilled" && faq.value 
+            ? migrateContent({ faq: faq.value } as any).faq 
+            : DEFAULT_CONTENT.faq,
+          contact: contact.status === "fulfilled" && contact.value 
+            ? migrateContent({ contact: contact.value } as any).contact 
+            : DEFAULT_CONTENT.contact,
+          footer: footer.status === "fulfilled" && footer.value 
+            ? migrateContent({ footer: footer.value } as any).footer 
+            : DEFAULT_CONTENT.footer,
+        };
+
+        // Migrate and set content
+        const migratedContent = migrateContent(fetchedContent);
+        setContentState(migratedContent);
+      } catch (error) {
+        console.error("Failed to fetch content from API:", error);
+        // Fall back to default content if API fails
+        if (isMounted) {
+          setContentState(migrateContent(DEFAULT_CONTENT));
+        }
+      } finally {
+        if (isMounted) {
+          setLoading(false);
+        }
       }
-    } catch (e) {
-      console.error("Failed to parse stored content", e);
-    }
-    return DEFAULT_CONTENT;
-  });
+    };
 
-  // One-time migration for existing in-memory content so new fields
-  // (like home.achievementsSection and home.facultyHighlight) are
-  // always present even if localStorage was created before they existed.
-  useEffect(() => {
-    setContentState(prev => migrateContent(prev));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    fetchContent();
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
-
-  useEffect(() => {
-    try {
-      localStorage.setItem("site_content", JSON.stringify(content));
-    } catch (e) {
-      console.error("Failed to save content to localStorage", e);
-    }
-  }, [content]);
 
   const setContent = (updater: Partial<SiteContent> | ((prev: SiteContent) => SiteContent)) => {
     setContentState((prev) =>
