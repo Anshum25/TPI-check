@@ -4,6 +4,7 @@ import type { LucideIcon } from "lucide-react";
 import { useContent, DEFAULT_CONTENT } from "@/lib/content";
 import { useToast } from "@/hooks/use-toast";
 import type { SiteContent } from "@/lib/content";
+import { authAPI, contentAPI, imageAPI, isAuthenticated } from "@/lib/api";
 import heroClassroom from "@/assets/hero-classroom.jpg";
 import speakingConfidence from "@/assets/speaking-confidence.jpg";
 import studentSuccess from "@/assets/student-success.jpg";
@@ -207,6 +208,7 @@ const Admin = () => {
   const [activeSection, setActiveSection] = useState<AdminSection["id"]>("home");
   const [activeSubSection, setActiveSubSection] = useState<string | null>(null);
   const [isAuthed, setIsAuthed] = useState(false);
+  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
   const [loginPassword, setLoginPassword] = useState("");
   const [oldPassword, setOldPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
@@ -217,6 +219,31 @@ const Admin = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [hasExistingPassword, setHasExistingPassword] = useState(false);
   const selectedSection = adminSections.find((section) => section.id === activeSection) ?? adminSections[0];
+
+  // Helper function to upload image to Cloudinary
+  const uploadImageToCloudinary = async (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onloadend = async () => {
+        try {
+          const base64String = reader.result as string;
+          // Upload to Cloudinary via API
+          const result = await imageAPI.upload(base64String);
+          resolve(result.secureUrl);
+        } catch (error: any) {
+          console.error("Image upload error:", error);
+          toast({
+            title: "Upload failed",
+            description: error.message || "Failed to upload image to Cloudinary",
+            variant: "destructive" as any,
+          });
+          reject(error);
+        }
+      };
+      reader.onerror = () => reject(new Error("Failed to read file"));
+      reader.readAsDataURL(file);
+    });
+  };
 
   // Hide webkit scrollbar for sidebar
   useEffect(() => {
@@ -244,6 +271,33 @@ const Admin = () => {
     };
   }, []);
 
+  // Check authentication status on mount
+  useEffect(() => {
+    const checkAuth = async () => {
+      setIsCheckingAuth(true);
+      if (isAuthenticated()) {
+        try {
+          const valid = await authAPI.verify();
+          if (valid) {
+            setIsAuthed(true);
+          } else {
+            setIsAuthed(false);
+            authAPI.logout();
+          }
+        } catch {
+          setIsAuthed(false);
+          authAPI.logout();
+        }
+      } else {
+        // No token found, ensure user is not authenticated
+        setIsAuthed(false);
+        authAPI.logout(); // Clear any stale tokens
+      }
+      setIsCheckingAuth(false);
+    };
+    checkAuth();
+  }, []);
+
   useEffect(() => {
     const defaultVideos = DEFAULT_CONTENT.home.activityVideos?.videos || [];
     const currentVideos = content.home.activityVideos?.videos || [];
@@ -263,35 +317,80 @@ const Admin = () => {
     }));
   }, [content.home.activityVideos?.videos?.length, setContent]);
 
-  const handleAdminLogin = (e: FormEvent<HTMLFormElement>) => {
+  const handleAdminLogin = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // Frontend-only check against a hardcoded demo password.
-    const demoPassword = "tpi-admin";
-    if (loginPassword === demoPassword) {
+    try {
+      await authAPI.login(loginPassword);
       setIsAuthed(true);
       setLoginPassword("");
       toast({ title: "Access granted", description: "You can now edit the site content." });
-    } else {
-      toast({ title: "Incorrect password", description: "Please try again.", variant: "destructive" as any });
+    } catch (error: any) {
+      setIsAuthed(false);
+      setLoginPassword("");
+      toast({ 
+        title: "Login failed", 
+        description: error.message || "Incorrect password. Please try again.", 
+        variant: "destructive" as any 
+      });
     }
   };
 
-  const handleChangePasswordSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const handleChangePasswordSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // Frontend-only validation; does not persist anywhere.
+    
+    // Validation
+    if (!oldPassword) {
+      toast({ 
+        title: "Old password required", 
+        description: "Please enter your current password.", 
+        variant: "destructive" as any 
+      });
+      return;
+    }
+    
     if (!newPassword) {
-      toast({ title: "New password required", description: "Please enter a new password.", variant: "destructive" as any });
+      toast({ 
+        title: "New password required", 
+        description: "Please enter a new password.", 
+        variant: "destructive" as any 
+      });
       return;
     }
+    
+    if (newPassword.length < 6) {
+      toast({ 
+        title: "Password too short", 
+        description: "New password must be at least 6 characters long.", 
+        variant: "destructive" as any 
+      });
+      return;
+    }
+    
     if (newPassword !== confirmPassword) {
-      toast({ title: "Passwords do not match", description: "New password and confirmation must match.", variant: "destructive" as any });
+      toast({ 
+        title: "Passwords do not match", 
+        description: "New password and confirmation must match.", 
+        variant: "destructive" as any 
+      });
       return;
     }
-    setOldPassword("");
-    setNewPassword("");
-    setConfirmPassword("");
-    setHasExistingPassword(true);
-    toast({ title: "Password updated (demo only)", description: "This change is not persisted; backend logic is not yet implemented." });
+
+    try {
+      await authAPI.changePassword(oldPassword, newPassword);
+      setOldPassword("");
+      setNewPassword("");
+      setConfirmPassword("");
+      toast({ 
+        title: "Password updated", 
+        description: "Your password has been successfully changed." 
+      });
+    } catch (error: any) {
+      toast({ 
+        title: "Password change failed", 
+        description: error.message || "Failed to change password. Please try again.", 
+        variant: "destructive" as any 
+      });
+    }
   };
 
     const handleFeatureChange = (index: number, field: "title" | "description", value: string) => {
@@ -452,20 +551,31 @@ const Admin = () => {
     }
   };
 
-  const handleSaveChanges = () => {
+  const handleSaveChanges = async () => {
+    if (!isAuthenticated()) {
+      toast({ 
+        title: "Authentication required", 
+        description: "Please login to save changes.", 
+        variant: "destructive" as any 
+      });
+      return;
+    }
+
     try {
       const key = getSectionKey(selectedSection.id);
-      const storedRaw = localStorage.getItem("site_content");
-      let stored: Partial<SiteContent> = {};
-      if (storedRaw) {
-        try { stored = JSON.parse(storedRaw); } catch {}
-      }
       const slice = (content as any)[key];
-      const next = { ...stored, [key]: slice } as SiteContent;
-      localStorage.setItem("site_content", JSON.stringify(next));
-      toast({ title: "Changes saved", description: `${selectedSection.label} content updated.` });
-    } catch (e) {
-      toast({ title: "Save failed", description: "Could not persist changes.", variant: "destructive" as any });
+      
+      // Save to backend API
+      await contentAPI.update(key, slice);
+      
+      toast({ title: "Changes saved", description: `${selectedSection.label} content updated successfully.` });
+    } catch (error: any) {
+      console.error("Save error:", error);
+      toast({ 
+        title: "Save failed", 
+        description: error.message || "Could not persist changes to database.", 
+        variant: "destructive" as any 
+      });
     }
   };
   const renderStaticOverview = (section: AdminSection) => (
@@ -588,12 +698,12 @@ const Admin = () => {
                       accept="image/*"
                       className="hidden"
                       id={`carousel-image-upload-${index}`}
-                      onChange={(e) => {
+                      onChange={async (e) => {
                         const file = e.target.files?.[0];
                         if (file) {
-                          const reader = new FileReader();
-                          reader.onloadend = () => {
-                            const base64String = reader.result as string;
+                          try {
+                            toast({ title: "Uploading image...", description: "Please wait while we upload to Cloudinary." });
+                            const cloudinaryUrl = await uploadImageToCloudinary(file);
                             setContent((prev) => ({
                               ...prev,
                               home: {
@@ -601,13 +711,15 @@ const Admin = () => {
                                 heroCarousel: {
                                   ...prev.home.heroCarousel,
                                   slides: prev.home.heroCarousel.slides.map((s, i) =>
-                                    i === index ? { ...s, imageUrl: base64String } : s,
+                                    i === index ? { ...s, imageUrl: cloudinaryUrl } : s,
                                   ),
                                 },
                               },
                             }));
-                          };
-                          reader.readAsDataURL(file);
+                            toast({ title: "Image uploaded", description: "Image successfully uploaded to Cloudinary." });
+                          } catch (error) {
+                            // Error already handled in uploadImageToCloudinary
+                          }
                         }
                         // Reset input
                         e.target.value = '';
@@ -809,7 +921,11 @@ const Admin = () => {
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="space-y-6">
-            {content.home.differentiators?.cards.map((card, cIdx) => (
+            {content.home.differentiators?.cards.map((card, cIdx) => {
+              // Ensure icon is set automatically based on index (first = "award", second = "users")
+              const cardIcon = card.icon || (cIdx === 0 ? "award" : "users");
+              
+              return (
               <div key={cIdx} className="space-y-4 rounded-lg border p-4">
                 <div className="flex items-center justify-between gap-2">
                   <Label className="text-xs uppercase tracking-wide text-muted-foreground">Card {cIdx + 1}</Label>
@@ -823,7 +939,10 @@ const Admin = () => {
                         home: {
                           ...prev.home,
                           differentiators: {
-                            cards: (prev.home.differentiators?.cards || []).filter((_, i) => i !== cIdx),
+                            cards: (prev.home.differentiators?.cards || []).filter((_, i) => i !== cIdx).map((c, idx) => ({
+                              ...c,
+                              icon: idx === 0 ? "award" : "users", // Reassign icons after deletion
+                            })),
                           },
                         },
                       }));
@@ -836,20 +955,24 @@ const Admin = () => {
                   <div className="space-y-2 md:col-span-1">
                     <Label>Title</Label>
                     <Input
-                      value={card.title}
-                                        onChange={(e) =>
-                                            setContent((prev) => ({
-                                                ...prev,
+                      value={card.title || ""}
+                      onChange={(e) =>
+                        setContent((prev) => ({
+                          ...prev,
                           home: {
                             ...prev.home,
                             differentiators: {
-                              cards: (prev.home.differentiators?.cards || []).map((c, i) => (i === cIdx ? { ...c, title: e.target.value } : c)),
+                              cards: (prev.home.differentiators?.cards || []).map((c, i) => 
+                                i === cIdx 
+                                  ? { ...c, title: e.target.value, icon: cardIcon } 
+                                  : c
+                              ),
                             },
                           },
-                                            }))
-                                        }
-                                    />
-                                </div>
+                        }))
+                      }
+                    />
+                  </div>
                 </div>
 
                 <div className="space-y-3">
@@ -861,25 +984,26 @@ const Admin = () => {
                                 <div className="space-y-2">
                         <Label>Item Title</Label>
                                     <Input
-                          value={it.title}
-                                        onChange={(e) =>
-                                            setContent((prev) => ({
-                                                ...prev,
-                              home: {
-                                ...prev.home,
-                                differentiators: {
-                                  cards: (prev.home.differentiators?.cards || []).map((c, x) =>
-                                    x === cIdx
-                                      ? {
-                                          ...c,
-                                          items: (c.items || []).map((y, yi) => (yi === iIdx ? { ...y, title: e.target.value } : y)),
-                                        }
-                                      : c,
-                                  ),
-                                },
-                              },
-                                            }))
-                                        }
+                          value={it.title || ""}
+                      onChange={(e) =>
+                        setContent((prev) => ({
+                          ...prev,
+                          home: {
+                            ...prev.home,
+                            differentiators: {
+                              cards: (prev.home.differentiators?.cards || []).map((c, x) =>
+                                x === cIdx
+                                  ? {
+                                      ...c,
+                                      icon: cardIcon,
+                                      items: (c.items || []).map((y, yi) => (yi === iIdx ? { ...y, title: e.target.value } : y)),
+                                    }
+                                  : c,
+                              ),
+                            },
+                          },
+                        }))
+                      }
                                     />
                                 </div>
                       {cIdx !== 0 && (
@@ -887,24 +1011,25 @@ const Admin = () => {
                           <Label>Item Description (optional)</Label>
                                     <Input
                             value={it.description || ""}
-                                        onChange={(e) =>
-                                            setContent((prev) => ({
-                                                ...prev,
-                                home: {
-                                  ...prev.home,
-                                  differentiators: {
-                                    cards: (prev.home.differentiators?.cards || []).map((c, x) =>
-                                      x === cIdx
-                                        ? {
-                                            ...c,
-                                            items: (c.items || []).map((y, yi) => (yi === iIdx ? { ...y, description: e.target.value } : y)),
-                                          }
-                                        : c,
-                                    ),
-                                  },
-                                },
-                                            }))
-                                        }
+                      onChange={(e) =>
+                        setContent((prev) => ({
+                          ...prev,
+                          home: {
+                            ...prev.home,
+                            differentiators: {
+                              cards: (prev.home.differentiators?.cards || []).map((c, x) =>
+                                x === cIdx
+                                  ? {
+                                      ...c,
+                                      icon: cardIcon,
+                                      items: (c.items || []).map((y, yi) => (yi === iIdx ? { ...y, description: e.target.value } : y)),
+                                    }
+                                  : c,
+                              ),
+                            },
+                          },
+                        }))
+                      }
                                     />
                                 </div>
                       )}
@@ -946,7 +1071,11 @@ const Admin = () => {
                           home: {
                             ...prev.home,
                             differentiators: {
-                              cards: (prev.home.differentiators?.cards || []).map((c, i) => (i === cIdx ? { ...c, footerText: e.target.value } : c)),
+                              cards: (prev.home.differentiators?.cards || []).map((c, i) => 
+                                i === cIdx 
+                                  ? { ...c, footerText: e.target.value, icon: cardIcon } 
+                                  : c
+                              ),
                             },
                           },
                         }))
@@ -956,7 +1085,8 @@ const Admin = () => {
                   </div>
                 )}
               </div>
-            ))}
+              );
+            })}
           </div>
           {/* Add Card button intentionally removed as per requirements */}
                             </CardContent>
@@ -1050,31 +1180,35 @@ const Admin = () => {
                 }))}
               />
             </div>
-            {(content.home.joinUs?.reasons || []).map((r, i) => (
-              <div key={i} className="grid gap-3 md:grid-cols-2 p-3 border rounded">
-                <div className="space-y-2">
-                  <Label>Reason {i+1} Title</Label>
-                  <Input
-                    value={r.title}
-                    onChange={(e) => setContent((prev)=>({
-                      ...prev,
-                      home: { ...prev.home, joinUs: { ...(prev.home.joinUs||{}), reasons: (prev.home.joinUs?.reasons||[]).map((x,xi)=> xi===i? {...x, title: e.target.value}: x) } },
-                    }))}
-                  />
+            <div className="space-y-4">
+              {(content.home.joinUs?.reasons || []).slice(0, 3).map((r, i) => (
+                <div key={i} className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                  <div className="space-y-2">
+                    <Label>Reason {i+1} Title</Label>
+                    <Input
+                      value={r.title}
+                      onChange={(e) => setContent((prev)=>({
+                        ...prev,
+                        home: { ...prev.home, joinUs: { ...(prev.home.joinUs||{}), reasons: (prev.home.joinUs?.reasons||[]).map((x,xi)=> xi===i? {...x, title: e.target.value}: x) } },
+                      }))}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Reason {i+1} Description</Label>
+                    <Textarea
+                      value={r.description}
+                      onChange={(e) => setContent((prev)=>(
+                        {
+                          ...prev,
+                          home: { ...prev.home, joinUs: { ...(prev.home.joinUs||{}), reasons: (prev.home.joinUs?.reasons||[]).map((x,xi)=> xi===i? {...x, description: e.target.value}: x) } },
+                        }
+                      ))}
+                      rows={2}
+                    />
+                  </div>
                 </div>
-                <div className="space-y-2">
-                  <Label>Reason {i+1} Description</Label>
-                  <Textarea
-                    value={r.description}
-                    onChange={(e) => setContent((prev)=>({
-                      ...prev,
-                      home: { ...prev.home, joinUs: { ...(prev.home.joinUs||{}), reasons: (prev.home.joinUs?.reasons||[]).map((x,xi)=> xi===i? {...x, description: e.target.value}: x) } },
-                    }))}
-                    rows={2}
-                  />
-                </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
 
         </CardContent>
@@ -1961,7 +2095,7 @@ const Admin = () => {
             </div>
           </div>
                                 <div className="space-y-4">
-            {content.home.methodologySections.map((section, index) => (
+            {(content.home.methodologySections || []).map((section, index) => (
               <div key={index} className="space-y-4 rounded-lg border p-4">
                 <div className="flex items-center justify-between">
                   <Label className="text-xs uppercase tracking-wide text-muted-foreground">Section {index + 1}</Label>
@@ -2026,7 +2160,9 @@ const Admin = () => {
                 <div className="space-y-3 border-t pt-4">
                   <Label className="text-sm font-medium">Section Images</Label>
                   <div className="grid grid-cols-3 gap-3">
-                    {(section.images || []).map((image, imgIdx) => (
+                    {Array.from({ length: 3 }, (_, i) => i).map((imgIdx) => {
+                      const image = (section.images || [])[imgIdx] || { src: "", alt: "" };
+                      return (
                       <div key={imgIdx} className="space-y-2">
                         {image.src && (
                           <div className="relative mb-2">
@@ -2053,9 +2189,10 @@ const Admin = () => {
                                         i === index
                                           ? {
                                               ...s,
-                                              images: (s.images || []).map((img, j) =>
-                                                j === imgIdx ? { ...img, src: "" } : img
-                                              ),
+                                              images: Array.from({ length: 3 }, (_, idx) => {
+                                                if (idx === imgIdx) return { src: "", alt: "" };
+                                                return (s.images || [])[idx] || { src: "", alt: "" };
+                                              }),
                                             }
                                           : s
                                       ),
@@ -2074,12 +2211,12 @@ const Admin = () => {
                             accept="image/*"
                             className="hidden"
                             id={`methodology-image-${index}-${imgIdx}`}
-                            onChange={(e) => {
+                            onChange={async (e) => {
                               const file = e.target.files?.[0];
                               if (file) {
-                                const reader = new FileReader();
-                                reader.onloadend = () => {
-                                  const base64String = reader.result as string;
+                                try {
+                                  toast({ title: "Uploading image...", description: "Please wait while we upload to Cloudinary." });
+                                  const cloudinaryUrl = await uploadImageToCloudinary(file);
                                   setContent((prev) => ({
                                     ...prev,
                                     home: {
@@ -2088,9 +2225,10 @@ const Admin = () => {
                                         i === index
                                           ? {
                                               ...s,
-                                              images: (s.images || []).map((img, j) =>
-                                                j === imgIdx ? { ...img, src: base64String } : img
-                                              ),
+                                              images: Array.from({ length: 3 }, (_, idx) => {
+                                                if (idx === imgIdx) return { src: cloudinaryUrl, alt: "" };
+                                                return (s.images || [])[idx] || { src: "", alt: "" };
+                                              }),
                                             }
                                           : s
                                       ),
@@ -2098,10 +2236,11 @@ const Admin = () => {
                                   }));
                                   toast({
                                     title: "Image uploaded",
-                                    description: "Section image has been successfully uploaded.",
+                                    description: "Image successfully uploaded to Cloudinary.",
                                   });
-                                };
-                                reader.readAsDataURL(file);
+                                } catch (error) {
+                                  // Error already handled in uploadImageToCloudinary
+                                }
                               }
                               e.target.value = '';
                             }}
@@ -2120,7 +2259,8 @@ const Admin = () => {
                           </Button>
                         </div>
                       </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 </div>
 
@@ -2185,6 +2325,24 @@ const Admin = () => {
                           </Button>
                                         </div>
                                     ))}
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        className="flex items-center gap-2 mt-2"
+                        onClick={() => setContent(prev => ({
+                          ...prev,
+                          home: {
+                            ...prev.home,
+                            methodologySections: prev.home.methodologySections.map((s, i) =>
+                              i === index ? { ...s, objectives: [...(s.objectives || []), ""] } : s
+                            ),
+                          },
+                        }))}
+                      >
+                        <Plus className="h-3 w-3" />
+                        Add Objective
+                      </Button>
                                 </div>
                     
                   </div>
@@ -2349,11 +2507,43 @@ const Admin = () => {
                                                 />
                     </div>
                   ))}
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className="flex items-center gap-2 mt-2"
+                    onClick={() => setContent(prev => ({
+                      ...prev,
+                      home: {
+                        ...prev.home,
+                        gainGroups: (prev.home.gainGroups || []).map((g, i) =>
+                          i === index ? { ...g, items: [...(g.items || []), { title: "", description: "" }] } : g
+                        ),
+                      },
+                    }))}
+                  >
+                    <Plus className="h-3 w-3" />
+                    Add Item
+                  </Button>
                  
                                             </div>
                                         </div>
                                     ))}
-           
+            <Button
+              type="button"
+              variant="outline"
+              className="flex items-center gap-2 mt-4"
+              onClick={() => setContent(prev => ({
+                ...prev,
+                home: {
+                  ...prev.home,
+                  gainGroups: [...(prev.home.gainGroups || []), { title: "", subtitle: "", items: [] }],
+                },
+              }))}
+            >
+              <Plus className="h-4 w-4" />
+              Add Group
+            </Button>
                                 </div>
 
          
@@ -2548,6 +2738,24 @@ const Admin = () => {
                 </div>
               </div>
             ))}
+            <Button
+              type="button"
+              variant="outline"
+              className="flex items-center gap-2 mt-4"
+              onClick={() => setContent(prev => ({
+                ...prev,
+                home: {
+                  ...prev.home,
+                  achievementsSection: {
+                    ...(prev.home.achievementsSection || { title: '', subtitle: '', items: [] }),
+                    items: [...(prev.home.achievementsSection?.items || []), { title: "", description: "" }],
+                  },
+                },
+              }))}
+            >
+              <Plus className="h-4 w-4" />
+              Add Row
+            </Button>
           </div>
           
         </CardContent>
@@ -2793,12 +3001,12 @@ const Admin = () => {
                   <Input
                     type="file"
                     accept="image/*"
-                    onChange={(e) => {
+                    onChange={async (e) => {
                       const file = e.target.files?.[0];
                       if (!file) return;
-                      const reader = new FileReader();
-                      reader.onloadend = () => {
-                        const result = reader.result as string;
+                      try {
+                        toast({ title: "Uploading image...", description: "Please wait while we upload to Cloudinary." });
+                        const cloudinaryUrl = await uploadImageToCloudinary(file);
                         setContent(prev => ({
                           ...prev,
                           home: {
@@ -2806,13 +3014,15 @@ const Admin = () => {
                             activityImages: {
                               ...(prev.home.activityImages || { title: '', subtitle: '', images: [] }),
                               images: (prev.home.activityImages?.images || []).map((img, i) =>
-                                i === index ? { ...img, src: result } : img
+                                i === index ? { ...img, src: cloudinaryUrl } : img
                               ),
                             },
                           },
                         }));
-                      };
-                      reader.readAsDataURL(file);
+                        toast({ title: "Image uploaded", description: "Image successfully uploaded to Cloudinary." });
+                      } catch (error) {
+                        // Error already handled in uploadImageToCloudinary
+                      }
                       e.target.value = '';
                     }}
                   />
@@ -2820,7 +3030,24 @@ const Admin = () => {
               </div>
             ))}
             
-            
+            <Button
+              type="button"
+              variant="outline"
+              className="flex items-center gap-2 mt-4"
+              onClick={() => setContent(prev => ({
+                ...prev,
+                home: {
+                  ...prev.home,
+                  activityImages: {
+                    ...(prev.home.activityImages || { title: '', subtitle: '', images: [] }),
+                    images: [...(prev.home.activityImages?.images || []), { title: '', src: '' }],
+                  },
+                },
+              }))}
+            >
+              <Plus className="h-4 w-4" />
+              Add Image
+            </Button>
           </div>
         </CardContent>
       </Card>
@@ -3086,97 +3313,79 @@ const Admin = () => {
       </Card>
 
       <Card
-        className="shadow-soft w-full"
-        onMouseEnter={() => setActiveSubSection('footer-quick-links')}
-        onFocus={() => setActiveSubSection('footer-quick-links')}
-      >
-        <CardHeader>
-          <CardTitle>Quick Links</CardTitle>
-          <CardDescription>Navigation link labels displayed in the footer.</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="space-y-4">
-            {content.footer.quickLinks.map((link, index) => (
-              <div key={index} className="space-y-2 rounded-lg border p-3">
-                <div className="flex items-center justify-between gap-2">
-                  <Label className="text-xs uppercase tracking-wide text-muted-foreground">Link {index + 1}</Label>
-                  <Button
-                    type="button"
-                    size="icon"
-                    variant="ghost"
-                    onClick={() => {
-                      setContent((prev) => ({
-                        ...prev,
-                        footer: {
-                          ...prev.footer,
-                          quickLinks: prev.footer.quickLinks.filter((_, i) => i !== index),
-                        },
-                      }));
-                    }}
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                </div>
-                <div className="grid gap-2 md:grid-cols-2">
-                  <div className="space-y-1">
-                    <Label>Label</Label>
-                    <Input
-                      placeholder="Link Label"
-                      value={link.label}
-                      onChange={(e) => {
-                        setContent((prev) => ({
-                          ...prev,
-                          footer: {
-                            ...prev.footer,
-                            quickLinks: prev.footer.quickLinks.map((l, i) =>
-                              i === index ? { ...l, label: e.target.value } : l
-                            ),
-                          },
-                        }));
-                      }}
-                    />
-                  </div>
-                  <div className="space-y-1">
-                    <Label>URL Path</Label>
-                    <Input
-                      placeholder="/page-url"
-                      value={link.to}
-                      onChange={(e) => {
-                        setContent((prev) => ({
-                          ...prev,
-                          footer: {
-                            ...prev.footer,
-                            quickLinks: prev.footer.quickLinks.map((l, i) =>
-                              i === index ? { ...l, to: e.target.value } : l
-                            ),
-                          },
-                        }));
-                      }}
-                    />
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-          <Button
+  className="shadow-soft w-full"
+  onMouseEnter={() => setActiveSubSection('footer-quick-links')}
+  onFocus={() => setActiveSubSection('footer-quick-links')}
+>
+  <CardHeader>
+    <CardTitle>Quick Links</CardTitle>
+    <CardDescription>
+      Navigation link labels displayed in the footer.
+    </CardDescription>
+  </CardHeader>
+
+  <CardContent className="space-y-3">
+    {Array.from({ length: 5 }, (_, i) => i).map((index) => {
+      const linkValue = content.footer.quickLinks?.[index];
+      const link =
+        typeof linkValue === "string"
+          ? linkValue
+          : typeof linkValue === "object" && linkValue !== null && "label" in linkValue
+          ? (linkValue as { label: string }).label
+          : "";
+
+      return (
+        <div key={index} className="flex items-center gap-3">
+          <Input
+            placeholder={`Link ${index + 1}`}
+            value={link}
+            className="flex-1"
+            onChange={(e) => {
+              setContent((prev) => {
+                const newLinks = [...(prev.footer.quickLinks || [])];
+                newLinks[index] = e.target.value;
+
+                while (newLinks.length < 5) {
+                  newLinks.push("");
+                }
+
+                return {
+                  ...prev,
+                  footer: {
+                    ...prev.footer,
+                    quickLinks: newLinks.slice(0, 5),
+                  },
+                };
+              });
+            }}
+          />
+
+          {/* <Button
             type="button"
-            variant="outline"
-            className="flex items-center gap-2"
+            size="icon"
+            variant="ghost"
             onClick={() => {
-              setContent((prev) => ({
-                ...prev,
-                footer: {
-                  ...prev.footer,
-                  quickLinks: [...prev.footer.quickLinks, { label: "New Link", to: "/" }],
-                },
-              }));
+              setContent((prev) => {
+                const newLinks = [...(prev.footer.quickLinks || [])];
+                newLinks[index] = "";
+                return {
+                  ...prev,
+                  footer: {
+                    ...prev.footer,
+                    quickLinks: newLinks.slice(0, 5),
+                  },
+                };
+              });
             }}
           >
-            <Plus className="h-4 w-4" />
-            Add Quick Link
-          </Button>
-        </CardContent>
-      </Card>
+            <Trash2 className="h-4 w-4" />
+          </Button> */}
+        </div>
+      );
+    })}
+  </CardContent>
+</Card>
+
 
       <Card
         className="shadow-soft w-full"
@@ -3189,23 +3398,36 @@ const Admin = () => {
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-3">
-            {(content.footer.whatWeDo || []).map((item, index) => (
+            {Array.from({ length: 3 }, (_, i) => i).map((index) => {
+              const item = (content.footer.whatWeDo || [])[index] || "";
+              return (
               <div key={index} className="flex items-center gap-2">
+
                 <Input
                   className="flex-1"
                   value={item}
-                  onChange={(e) =>
-                    setContent((prev) => ({
-                      ...prev,
-                      footer: {
-                        ...prev.footer,
-                        whatWeDo: (prev.footer.whatWeDo || []).map((w, i) => (i === index ? e.target.value : w)),
-                      },
-                    }))
-                  }
+                  onChange={(e) => {
+                    setContent((prev) => {
+                      const newWhatWeDo = [...(prev.footer.whatWeDo || [])];
+                      newWhatWeDo[index] = e.target.value;
+                      // Ensure exactly 3 items
+                      while (newWhatWeDo.length < 3) {
+                        newWhatWeDo.push("");
+                      }
+                      return {
+                        ...prev,
+                        footer: {
+                          ...prev.footer,
+                          whatWeDo: newWhatWeDo.slice(0, 3),
+                        },
+                      };
+                    });
+                  }}
                 />
+                
               </div>
-            ))}
+              );
+            })}
           </div>
         </CardContent>
       </Card>
@@ -3379,31 +3601,39 @@ const Admin = () => {
           </div>
           <div className="space-y-3">
             <Label>Paragraphs</Label>
-            {(content.about.highlight?.paragraphs || []).map((p, index) => (
-              <div key={index} className="space-y-2 rounded border p-3">
-                <div className="flex items-center justify-between">
-                  <Label className="text-xs text-muted-foreground">Paragraph {index + 1}</Label>
-                </div>
-                <Textarea
-                  rows={3}
-                  value={p}
-                  onChange={(e) =>
-                    setContent((prev) => ({
-                      ...prev,
-                      about: {
-                        ...prev.about,
-                        highlight: {
-                          ...(prev.about.highlight || { headingPrimary: "", headingSecondary: "", paragraphs: [] }),
-                          paragraphs: (prev.about.highlight?.paragraphs || []).map((val, i) =>
-                            i === index ? e.target.value : val,
-                          ),
+            {(() => {
+              // Ensure exactly 2 paragraphs
+              const paragraphs = content.about.highlight?.paragraphs || [];
+              const normalizedParagraphs = [...paragraphs];
+              while (normalizedParagraphs.length < 2) {
+                normalizedParagraphs.push("");
+              }
+              return normalizedParagraphs.slice(0, 2).map((p, index) => (
+                <div key={index} className="space-y-2 rounded border p-3">
+                  <div className="flex items-center justify-between">
+                    <Label className="text-xs text-muted-foreground">Paragraph {index + 1}</Label>
+                  </div>
+                  <Textarea
+                    rows={3}
+                    value={p}
+                    onChange={(e) => {
+                      const updated = [...normalizedParagraphs];
+                      updated[index] = e.target.value;
+                      setContent((prev) => ({
+                        ...prev,
+                        about: {
+                          ...prev.about,
+                          highlight: {
+                            ...(prev.about.highlight || { headingPrimary: "", headingSecondary: "", paragraphs: [] }),
+                            paragraphs: updated.slice(0, 2),
+                          },
                         },
-                      },
-                    }))
-                  }
-                />
-              </div>
-            ))}
+                      }));
+                    }}
+                  />
+                </div>
+              ));
+            })()}
           </div>
         </CardContent>
       </Card>
@@ -3418,18 +3648,33 @@ const Admin = () => {
           <CardDescription>Edit each paragraph of the story section.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          {content.about.story.map((paragraph, index) => (
-            <div key={index} className="space-y-2">
-              <div className="flex items-center justify-between">
-                <Label>Paragraph {index + 1}</Label>
+          {(() => {
+            // Ensure exactly 3 paragraphs
+            const story = content.about.story || [];
+            const normalizedStory = [...story];
+            while (normalizedStory.length < 3) {
+              normalizedStory.push("");
+            }
+            return normalizedStory.slice(0, 3).map((paragraph, index) => (
+              <div key={index} className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <Label>Paragraph {index + 1}</Label>
+                </div>
+                <Textarea
+                  rows={3}
+                  value={paragraph}
+                  onChange={(e) => {
+                    const updated = [...normalizedStory];
+                    updated[index] = e.target.value;
+                    setContent((prev) => ({
+                      ...prev,
+                      about: { ...prev.about, story: updated.slice(0, 3) },
+                    }));
+                  }}
+                />
               </div>
-              <Textarea
-                rows={3}
-                value={paragraph}
-                onChange={(e) => handleAboutStoryChange(index, e.target.value)}
-              />
-            </div>
-          ))}
+            ));
+          })()}
         </CardContent>
       </Card>
 
@@ -3479,45 +3724,72 @@ const Admin = () => {
 
           <div className="space-y-3">
             <Label>Amenities List</Label>
-            {(content.about.amenities?.amenitiesList || []).map((item, index) => (
-              <div key={index} className="flex items-center gap-2">
-                <Input
-                  className="flex-1"
-                  value={item}
-                  onChange={(e) =>
-                    setContent((prev) => ({
-                      ...prev,
-                      about: {
-                        ...prev.about,
-                        amenities: {
-                          ...(prev.about.amenities || { title: "", description: "", amenitiesList: [], carouselImages: [] }),
-                          amenitiesList: (prev.about.amenities?.amenitiesList || []).map((a, i) => (i === index ? e.target.value : a)),
-                        },
-                      },
-                    }))
-                  }
-                />
-                <Button
-                  type="button"
-                  size="icon"
-                  variant="ghost"
-                  onClick={() =>
-                    setContent((prev) => ({
-                      ...prev,
-                      about: {
-                        ...prev.about,
-                        amenities: {
-                          ...(prev.about.amenities || { title: "", description: "", amenitiesList: [], carouselImages: [] }),
-                          amenitiesList: (prev.about.amenities?.amenitiesList || []).filter((_, i) => i !== index),
-                        },
-                      },
-                    }))
-                  }
-                >
-                  <Trash2 className="h-4 w-4" />
-                </Button>
-              </div>
-            ))}
+            {Array.from({ length: 6 }, (_, i) => i).map((index) => {
+              const amenitiesList = content.about.amenities?.amenitiesList || [];
+              const item = amenitiesList[index] || "";
+              return (
+                <div key={index} className="flex items-center gap-2">
+                  <Input
+                    className="flex-1"
+                    placeholder={`Amenity ${index + 1}`}
+                    value={item}
+                    onChange={(e) => {
+                      setContent((prev) => {
+                        const currentList = prev.about.amenities?.amenitiesList || [];
+                        const newList = [...currentList];
+                        // Ensure array has at least index+1 items
+                        while (newList.length <= index) {
+                          newList.push("");
+                        }
+                        newList[index] = e.target.value;
+                        // Ensure exactly 6 items
+                        while (newList.length < 6) {
+                          newList.push("");
+                        }
+                        return {
+                          ...prev,
+                          about: {
+                            ...prev.about,
+                            amenities: {
+                              ...(prev.about.amenities || { title: "", description: "", amenitiesList: [], carouselImages: [] }),
+                              amenitiesList: newList.slice(0, 6),
+                            },
+                          },
+                        };
+                      });
+                    }}
+                  />
+                  <Button
+                    type="button"
+                    size="icon"
+                    variant="ghost"
+                    onClick={() => {
+                      setContent((prev) => {
+                        const currentList = prev.about.amenities?.amenitiesList || [];
+                        const newList = [...currentList];
+                        newList[index] = "";
+                        // Ensure exactly 6 items
+                        while (newList.length < 6) {
+                          newList.push("");
+                        }
+                        return {
+                          ...prev,
+                          about: {
+                            ...prev.about,
+                            amenities: {
+                              ...(prev.about.amenities || { title: "", description: "", amenitiesList: [], carouselImages: [] }),
+                              amenitiesList: newList.slice(0, 6),
+                            },
+                          },
+                        };
+                      });
+                    }}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
+              );
+            })}
           </div>
 
           <div className="space-y-3">
@@ -3536,12 +3808,12 @@ const Admin = () => {
                     className="flex-1"
                     type="file"
                     accept="image/*"
-                    onChange={(e) => {
+                    onChange={async (e) => {
                       const file = e.target.files?.[0];
                       if (!file) return;
-                      const reader = new FileReader();
-                      reader.onloadend = () => {
-                        const result = reader.result as string;
+                      try {
+                        toast({ title: "Uploading image...", description: "Please wait while we upload to Cloudinary." });
+                        const cloudinaryUrl = await uploadImageToCloudinary(file);
                         setContent((prev) => ({
                           ...prev,
                           about: {
@@ -3549,13 +3821,15 @@ const Admin = () => {
                             amenities: {
                               ...(prev.about.amenities || { title: "", description: "", amenitiesList: [], carouselImages: [] }),
                               carouselImages: (prev.about.amenities?.carouselImages || []).map((a, i) =>
-                                i === index ? result : a
+                                i === index ? cloudinaryUrl : a
                               ),
                             },
                           },
                         }));
-                      };
-                      reader.readAsDataURL(file);
+                        toast({ title: "Image uploaded", description: "Image successfully uploaded to Cloudinary." });
+                      } catch (error) {
+                        // Error already handled in uploadImageToCloudinary
+                      }
                       e.target.value = "";
                     }}
                   />
@@ -3617,15 +3891,21 @@ const Admin = () => {
           <div className="space-y-2">
             <Label>Heading</Label>
             <Input
-              value={content.about.community?.title || ""}
+              value={content.about.community?.heading || ""}
               onChange={(e) =>
-                setContent((prev) => ({
-                  ...prev,
-                  about: {
-                    ...prev.about,
-                    community: { ...(prev.about.community || { title: "", description: "" }), title: e.target.value },
-                  },
-                }))
+                setContent((prev) => {
+                  const existingCommunity = prev.about.community || {};
+                  return {
+                    ...prev,
+                    about: {
+                      ...prev.about,
+                      community: { 
+                        heading: e.target.value, 
+                        description: (existingCommunity as any).description || (existingCommunity as any).title || "" 
+                      },
+                    },
+                  };
+                })
               }
             />
           </div>
@@ -3635,34 +3915,48 @@ const Admin = () => {
               rows={4}
               value={content.about.community?.description || ""}
               onChange={(e) =>
-                setContent((prev) => ({
-                  ...prev,
-                  about: {
-                    ...prev.about,
-                    community: { ...(prev.about.community || { title: "", description: "" }), description: e.target.value },
-                  },
-                }))
+                setContent((prev) => {
+                  const existingCommunity = prev.about.community || {};
+                  return {
+                    ...prev,
+                    about: {
+                      ...prev.about,
+                      community: { 
+                        heading: (existingCommunity as any).heading || (existingCommunity as any).title || "", 
+                        description: e.target.value 
+                      },
+                    },
+                  };
+                })
               }
             />
           </div>
         </CardContent>
       </Card>
 
-      {renderCardListEditor("Core Values", content.about.coreValues, (next) =>
+      {renderCardListEditor("Core Values", content.about.coreValues || [], (next) => {
+        // Ensure exactly 3 items
+        const normalized = [...next];
+        while (normalized.length < 3) {
+          normalized.push({ title: "", description: "" });
+        }
         setContent((prev) => ({
           ...prev,
-          about: { ...prev.about, coreValues: next },
-        })),
-        'about-core-values'
-      )}
+          about: { ...prev.about, coreValues: normalized.slice(0, 3) },
+        }));
+      }, 'about-core-values', 3)}
 
-      {renderCardListEditor("Why We're Different", content.about.differentiators, (next) =>
+      {renderCardListEditor("Why We're Different", content.about.differentiators || [], (next) => {
+        // Ensure exactly 3 items
+        const normalized = [...next];
+        while (normalized.length < 3) {
+          normalized.push({ title: "", description: "" });
+        }
         setContent((prev) => ({
           ...prev,
-          about: { ...prev.about, differentiators: next },
-        })),
-        'about-differentiators'
-      )}
+          about: { ...prev.about, differentiators: normalized.slice(0, 3) },
+        }));
+      }, 'about-differentiators', 3)}
 
     </>
   );
@@ -3674,7 +3968,18 @@ const Admin = () => {
     list: { title: string; description: string }[],
     onChange: (next: { title: string; description: string }[]) => void,
     subsectionId?: string,
-  ) => (
+    maxItems?: number,
+  ) => {
+    // Ensure list has exactly maxItems if specified
+    const normalizedList = maxItems ? (() => {
+      const normalized = [...list];
+      while (normalized.length < maxItems) {
+        normalized.push({ title: "", description: "" });
+      }
+      return normalized.slice(0, maxItems);
+    })() : list;
+    
+    return (
     <Card 
       className="shadow-soft"
       onMouseEnter={subsectionId ? () => setActiveSubSection(subsectionId) : undefined}
@@ -3684,13 +3989,15 @@ const Admin = () => {
         <CardTitle>{title}</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        {list.map((item, index) => (
+        {normalizedList.map((item, index) => (
           <div key={index} className="rounded-lg border p-4 space-y-3">
             <div className="flex items-center justify-between">
               <Label>Card {index + 1}</Label>
-              <Button variant="ghost" size="icon" onClick={() => onChange(list.filter((_, i) => i !== index))}>
-                <Trash2 className="h-4 w-4" />
-              </Button>
+              {!maxItems && (
+                <Button variant="ghost" size="icon" onClick={() => onChange(normalizedList.filter((_, i) => i !== index))}>
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              )}
             </div>
             <Input
               placeholder="Title"
@@ -3707,7 +4014,7 @@ const Admin = () => {
               value={item.description}
               onChange={(e) =>
                 onChange(
-                  list.map((entry, i) => (i === index ? { ...entry, description: e.target.value } : entry)),
+                  normalizedList.map((entry, i) => (i === index ? { ...entry, description: e.target.value } : entry)),
                 )
               }
             />
@@ -3716,7 +4023,8 @@ const Admin = () => {
         
       </CardContent>
     </Card>
-  );
+    );
+  };
 
   const handleAboutStoryChange = (index: number, value: string) => {
     setContent((prev) => ({
@@ -4010,7 +4318,10 @@ const Admin = () => {
   );
 
   const renderGalleryEditor = () => {
-    const categoryKeys = Object.keys(content.gallery.categories) as Array<keyof typeof content.gallery.categories>;
+    // Only show "all" category, filter out classroom, students, events
+    const categoryKeys = (Object.keys(content.gallery.categories) as Array<keyof typeof content.gallery.categories>).filter(
+      (key) => key === "all"
+    );
 
     return (
       <>
@@ -4217,7 +4528,7 @@ const Admin = () => {
     }));
   };
 
-  const handleGalleryImageUpload = (
+  const handleGalleryImageUpload = async (
     category: keyof typeof content.gallery.categories,
     index: number,
     event: ChangeEvent<HTMLInputElement>,
@@ -4225,9 +4536,9 @@ const Admin = () => {
     const file = event.target.files?.[0];
     if (!file) return;
 
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      const result = reader.result as string;
+    try {
+      toast({ title: "Uploading image...", description: "Please wait while we upload to Cloudinary." });
+      const cloudinaryUrl = await uploadImageToCloudinary(file);
       setContent((prev) => ({
         ...prev,
         gallery: {
@@ -4235,14 +4546,16 @@ const Admin = () => {
           categories: {
             ...prev.gallery.categories,
             [category]: prev.gallery.categories[category].map((item, i) =>
-              i === index ? { ...item, src: result } : item,
+              i === index ? { ...item, src: cloudinaryUrl } : item,
             ),
           },
         },
       }));
-    };
+      toast({ title: "Image uploaded", description: "Image successfully uploaded to Cloudinary." });
+    } catch (error) {
+      // Error already handled in uploadImageToCloudinary
+    }
 
-    reader.readAsDataURL(file);
     event.target.value = "";
   };
 
@@ -4291,17 +4604,35 @@ const Admin = () => {
   };
 
     const renderReviewsEditor = () => {
-    const googleTestimonials = content.reviews.testimonials
-      .map((testimonial, index) => ({ testimonial, index }))
-      .filter(({ testimonial }) => (testimonial.source || "google") === "google");
-
-    const facebookTestimonials = content.reviews.testimonials
-      .map((testimonial, index) => ({ testimonial, index }))
-      .filter(({ testimonial }) => testimonial.source === "facebook");
-
-    const justdialTestimonials = content.reviews.testimonials
-      .map((testimonial, index) => ({ testimonial, index }))
-      .filter(({ testimonial }) => testimonial.source === "justdial");
+    // Ensure testimonials array has at least 9 items (3 per section)
+    let testimonials = content.reviews.testimonials || [];
+    const neededLength = 9;
+    
+      // Pad testimonials array to ensure it has at least 9 items
+      while (testimonials.length < neededLength) {
+        const nextIdx = testimonials.length;
+        const defaultSource = nextIdx < 3 ? "google" : nextIdx < 6 ? "facebook" : "justdial";
+        testimonials.push({ name: "", content: "", rating: 5, source: defaultSource } as any);
+      }
+    
+    // Get testimonials by source - use fixed indices: 0-2 for google, 3-5 for facebook, 6-8 for justdial
+    // Always return exactly 3 slots per section
+    const getTestimonialsForSource = (source: "google" | "facebook" | "justdial", startIdx: number) => {
+      return Array.from({ length: 3 }, (_, slotIdx) => {
+        const actualIdx = startIdx + slotIdx;
+        // Always use the testimonial at the fixed index, ensuring it has the correct source
+        const testimonial = actualIdx < testimonials.length ? testimonials[actualIdx] : { name: "", content: "", rating: 5, source } as any;
+        // Ensure source is set correctly
+        if (!testimonial.source || (testimonial as any).source !== source) {
+          (testimonial as any).source = source;
+        }
+        return { testimonial, originalIndex: actualIdx };
+      });
+    };
+    
+    const googleSlots = getTestimonialsForSource("google", 0);
+    const facebookSlots = getTestimonialsForSource("facebook", 3);
+    const justdialSlots = getTestimonialsForSource("justdial", 6);
 
     return (
       <>
@@ -4358,49 +4689,37 @@ const Admin = () => {
               />
             </div>
             <div className="space-y-4">
-              {googleTestimonials.map(({ testimonial, index }) => (
-                <div key={index} className="border rounded-lg p-4 space-y-3">
-                  <div className="flex items-center justify-between">
-                    <Label>Testimonial {index + 1}</Label>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => handleRemoveReviewTestimonial(index)}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
+              {googleSlots.map(({ testimonial, originalIndex }, slotIndex) => (
+                <div key={slotIndex} className="border rounded-lg p-4 space-y-3">
+                  <Label>Testimonial {slotIndex + 1}</Label>
                   <Input
                     placeholder="Name"
-                    value={testimonial.name}
-                    onChange={(e) => handleReviewTestimonialChange(index, "name", e.target.value)}
-                  />
-                  <Input
-                    placeholder="Role"
-                    value={testimonial.role}
-                    onChange={(e) => handleReviewTestimonialChange(index, "role", e.target.value)}
+                    value={testimonial.name || ""}
+                    onChange={(e) => {
+                      handleReviewTestimonialChange(originalIndex, "name", e.target.value, "google");
+                    }}
                   />
                   <Textarea
                     rows={3}
                     placeholder="Content"
-                    value={testimonial.content}
-                    onChange={(e) =>
-                      handleReviewTestimonialChange(index, "content", e.target.value)
-                    }
+                    value={testimonial.content || ""}
+                    onChange={(e) => {
+                      handleReviewTestimonialChange(originalIndex, "content", e.target.value, "google");
+                    }}
                   />
                   <Input
                     type="number"
                     min={1}
                     max={5}
-                    placeholder="Rating"
-                    value={testimonial.rating}
-                    onChange={(e) =>
-                      handleReviewTestimonialChange(index, "rating", Number(e.target.value))
-                    }
+                    placeholder="Rating (default: 5)"
+                    value={testimonial.rating ?? 5}
+                    onChange={(e) => {
+                      const ratingValue = e.target.value === "" ? 5 : Number(e.target.value);
+                      handleReviewTestimonialChange(originalIndex, "rating", ratingValue, "google");
+                    }}
                   />
                 </div>
               ))}
-              
             </div>
           </CardContent>
         </Card>
@@ -4434,49 +4753,37 @@ const Admin = () => {
               />
             </div>
             <div className="space-y-4">
-              {facebookTestimonials.map(({ testimonial, index }) => (
-                <div key={index} className="border rounded-lg p-4 space-y-3">
-                  <div className="flex items-center justify-between">
-                    <Label>Testimonial {index + 1}</Label>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => handleRemoveReviewTestimonial(index)}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
+              {facebookSlots.map(({ testimonial, originalIndex }, slotIndex) => (
+                <div key={slotIndex} className="border rounded-lg p-4 space-y-3">
+                  <Label>Testimonial {slotIndex + 1}</Label>
                   <Input
                     placeholder="Name"
-                    value={testimonial.name}
-                    onChange={(e) => handleReviewTestimonialChange(index, "name", e.target.value)}
-                  />
-                  <Input
-                    placeholder="Role"
-                    value={testimonial.role}
-                    onChange={(e) => handleReviewTestimonialChange(index, "role", e.target.value)}
+                    value={testimonial.name || ""}
+                    onChange={(e) => {
+                      handleReviewTestimonialChange(originalIndex, "name", e.target.value, "facebook");
+                    }}
                   />
                   <Textarea
                     rows={3}
                     placeholder="Content"
-                    value={testimonial.content}
-                    onChange={(e) =>
-                      handleReviewTestimonialChange(index, "content", e.target.value)
-                    }
+                    value={testimonial.content || ""}
+                    onChange={(e) => {
+                      handleReviewTestimonialChange(originalIndex, "content", e.target.value, "facebook");
+                    }}
                   />
                   <Input
                     type="number"
                     min={1}
                     max={5}
-                    placeholder="Rating"
-                    value={testimonial.rating}
-                    onChange={(e) =>
-                      handleReviewTestimonialChange(index, "rating", Number(e.target.value))
-                    }
+                    placeholder="Rating (default: 5)"
+                    value={testimonial.rating ?? 5}
+                    onChange={(e) => {
+                      const ratingValue = e.target.value === "" ? 5 : Number(e.target.value);
+                      handleReviewTestimonialChange(originalIndex, "rating", ratingValue, "facebook");
+                    }}
                   />
                 </div>
               ))}
-             
             </div>
           </CardContent>
         </Card>
@@ -4510,49 +4817,37 @@ const Admin = () => {
               />
             </div>
             <div className="space-y-4">
-              {justdialTestimonials.map(({ testimonial, index }) => (
-                <div key={index} className="border rounded-lg p-4 space-y-3">
-                  <div className="flex items-center justify-between">
-                    <Label>Testimonial {index + 1}</Label>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => handleRemoveReviewTestimonial(index)}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
+              {justdialSlots.map(({ testimonial, originalIndex }, slotIndex) => (
+                <div key={slotIndex} className="border rounded-lg p-4 space-y-3">
+                  <Label>Testimonial {slotIndex + 1}</Label>
                   <Input
                     placeholder="Name"
-                    value={testimonial.name}
-                    onChange={(e) => handleReviewTestimonialChange(index, "name", e.target.value)}
-                  />
-                  <Input
-                    placeholder="Role"
-                    value={testimonial.role}
-                    onChange={(e) => handleReviewTestimonialChange(index, "role", e.target.value)}
+                    value={testimonial.name || ""}
+                    onChange={(e) => {
+                      handleReviewTestimonialChange(originalIndex, "name", e.target.value, "justdial");
+                    }}
                   />
                   <Textarea
                     rows={3}
                     placeholder="Content"
-                    value={testimonial.content}
-                    onChange={(e) =>
-                      handleReviewTestimonialChange(index, "content", e.target.value)
-                    }
+                    value={testimonial.content || ""}
+                    onChange={(e) => {
+                      handleReviewTestimonialChange(originalIndex, "content", e.target.value, "justdial");
+                    }}
                   />
                   <Input
                     type="number"
                     min={1}
                     max={5}
-                    placeholder="Rating"
-                    value={testimonial.rating}
-                    onChange={(e) =>
-                      handleReviewTestimonialChange(index, "rating", Number(e.target.value))
-                    }
+                    placeholder="Rating (default: 5)"
+                    value={testimonial.rating ?? 5}
+                    onChange={(e) => {
+                      const ratingValue = e.target.value === "" ? 5 : Number(e.target.value);
+                      handleReviewTestimonialChange(originalIndex, "rating", ratingValue, "justdial");
+                    }}
                   />
                 </div>
               ))}
-              
             </div>
           </CardContent>
         </Card>
@@ -4672,18 +4967,53 @@ const Admin = () => {
 
   const handleReviewTestimonialChange = (
     index: number,
-    field: "name" | "role" | "content" | "rating" | "source",
+    field: "name" | "content" | "rating" | "source",
     value: string | number,
+    source?: "google" | "facebook" | "justdial",
   ) => {
-    setContent((prev) => ({
-      ...prev,
-      reviews: {
-        ...prev.reviews,
-        testimonials: prev.reviews.testimonials.map((testimonial, i) =>
-          i === index ? { ...testimonial, [field]: value } : testimonial,
-        ),
-      },
-    }));
+    setContent((prev) => {
+      // Ensure testimonials array has exactly 9 items (3 per section)
+      const currentTestimonials = prev.reviews.testimonials || [];
+      const neededLength = 9;
+      const testimonials = [...currentTestimonials];
+      
+      // Extend array to ensure we have exactly 9 slots
+      while (testimonials.length < neededLength) {
+        const nextIdx = testimonials.length;
+        const defaultSource = nextIdx < 3 ? "google" : nextIdx < 6 ? "facebook" : "justdial";
+        testimonials.push({ name: "", content: "", rating: 5, source: defaultSource } as any);
+      }
+      
+      // Trim to exactly 9 if too long
+      if (testimonials.length > neededLength) {
+        testimonials.splice(neededLength);
+      }
+      
+      // Update the specific testimonial
+      const updatedTestimonials = testimonials.map((testimonial, i) => {
+        if (i === index) {
+          const updated = { ...testimonial, [field]: value };
+          // Ensure rating defaults to 5 if not set
+          if (field === "rating" && (!updated.rating || updated.rating === 0)) {
+            (updated as any).rating = 5;
+          }
+          // If source is provided, ensure it's set
+          if (source && field !== "source") {
+            (updated as any).source = source;
+          }
+          return updated;
+        }
+        return testimonial;
+      });
+      
+      return {
+        ...prev,
+        reviews: {
+          ...prev.reviews,
+          testimonials: updatedTestimonials,
+        },
+      };
+    });
   };
 
   const handleAddReviewTestimonial = () => {
@@ -4763,8 +5093,8 @@ const Admin = () => {
           <CardTitle>FAQ Hero</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <Input placeholder="Title" value={content.faq.hero.title} onChange={(e) => handleFaqHeroChange("title", e.target.value)} />
-          <Textarea rows={2} placeholder="Subtitle" value={content.faq.hero.subtitle} onChange={(e) => handleFaqHeroChange("subtitle", e.target.value)} />
+          <Input placeholder="Title" value={content.faq.hero?.title || ""} onChange={(e) => handleFaqHeroChange("title", e.target.value)} />
+          <Textarea rows={2} placeholder="Subtitle" value={content.faq.hero?.subtitle || ""} onChange={(e) => handleFaqHeroChange("subtitle", e.target.value)} />
         </CardContent>
       </Card>
 
@@ -4777,7 +5107,7 @@ const Admin = () => {
           <CardTitle>FAQ Categories</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          {content.faq.categories.map((category, index) => (
+          {(content.faq.categories || []).map((category, index) => (
             <div key={index} className="border rounded-lg p-4 space-y-3">
               <div className="flex items-center justify-between">
                 <Label>Category {index + 1}</Label>
@@ -4785,10 +5115,10 @@ const Admin = () => {
                   <Trash2 className="h-4 w-4" />
                 </Button>
               </div>
-              <Input placeholder="Category Title" value={category.category} onChange={(e) => handleFaqCategoryChange(index, e.target.value)} />
+              <Input placeholder="Category Title" value={category?.category || ""} onChange={(e) => handleFaqCategoryChange(index, e.target.value)} />
               <div className="space-y-2">
                 <Label>Questions</Label>
-                {category.questions.map((question, qIndex) => (
+                {(category?.questions || []).map((question, qIndex) => (
                   <div key={qIndex} className="rounded border p-3 space-y-2">
                     <div className="flex items-center justify-between">
                       <span className="text-sm font-semibold">Question {qIndex + 1}</span>
@@ -4796,8 +5126,8 @@ const Admin = () => {
                         <Trash2 className="h-4 w-4" />
                       </Button>
                     </div>
-                    <Input placeholder="Question" value={question.q} onChange={(e) => handleFaqQuestionChange(index, qIndex, "q", e.target.value)} />
-                    <Textarea rows={3} placeholder="Answer" value={question.a} onChange={(e) => handleFaqQuestionChange(index, qIndex, "a", e.target.value)} />
+                    <Input placeholder="Question" value={question?.q || ""} onChange={(e) => handleFaqQuestionChange(index, qIndex, "q", e.target.value)} />
+                    <Textarea rows={3} placeholder="Answer" value={question?.a || ""} onChange={(e) => handleFaqQuestionChange(index, qIndex, "a", e.target.value)} />
                   </div>
                 ))}
                 <Button variant="outline" className="flex items-center gap-2" onClick={() => handleAddFaqQuestion(index)}>
@@ -4823,10 +5153,10 @@ const Admin = () => {
           <CardTitle>Support Section</CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
-          <Input placeholder="Title" value={content.faq.support.title} onChange={(e) => handleFaqSupportChange("title", e.target.value)} />
-          <Textarea rows={2} placeholder="Description" value={content.faq.support.description} onChange={(e) => handleFaqSupportChange("description", e.target.value)} />
-          <Input placeholder="Phone Number" value={content.faq.support.phoneNumber} onChange={(e) => handleFaqSupportChange("phoneNumber", e.target.value)} />
-          <Input placeholder="Note" value={content.faq.support.note} onChange={(e) => handleFaqSupportChange("note", e.target.value)} />
+          <Input placeholder="Title" value={content.faq.support?.title || ""} onChange={(e) => handleFaqSupportChange("title", e.target.value)} />
+          <Textarea rows={2} placeholder="Description" value={content.faq.support?.description || ""} onChange={(e) => handleFaqSupportChange("description", e.target.value)} />
+          <Input placeholder="Phone Number" value={content.faq.support?.phoneNumber || ""} onChange={(e) => handleFaqSupportChange("phoneNumber", e.target.value)} />
+          <Input placeholder="Note" value={content.faq.support?.note || ""} onChange={(e) => handleFaqSupportChange("note", e.target.value)} />
         </CardContent>
       </Card>
     </>
@@ -4835,7 +5165,13 @@ const Admin = () => {
   const handleFaqHeroChange = (field: "title" | "subtitle", value: string) => {
     setContent((prev) => ({
       ...prev,
-      faq: { ...prev.faq, hero: { ...prev.faq.hero, [field]: value } },
+      faq: { 
+        ...prev.faq, 
+        hero: { 
+          ...(prev.faq.hero || { title: "", subtitle: "" }), 
+          [field]: value 
+        } 
+      },
     }));
   };
 
@@ -4844,7 +5180,7 @@ const Admin = () => {
       ...prev,
       faq: {
         ...prev.faq,
-        categories: prev.faq.categories.map((category, i) =>
+        categories: (prev.faq.categories || []).map((category, i) =>
           i === index ? { ...category, category: value } : category,
         ),
       },
@@ -4856,7 +5192,7 @@ const Admin = () => {
       ...prev,
       faq: {
         ...prev.faq,
-        categories: [...prev.faq.categories, { category: "", questions: [{ q: "", a: "" }] }],
+        categories: [...(prev.faq.categories || []), { category: "", questions: [{ q: "", a: "" }] }],
       },
     }));
   };
@@ -4864,7 +5200,7 @@ const Admin = () => {
   const handleRemoveFaqCategory = (index: number) => {
     setContent((prev) => ({
       ...prev,
-      faq: { ...prev.faq, categories: prev.faq.categories.filter((_, i) => i !== index) },
+      faq: { ...prev.faq, categories: (prev.faq.categories || []).filter((_, i) => i !== index) },
     }));
   };
 
@@ -4878,11 +5214,11 @@ const Admin = () => {
       ...prev,
       faq: {
         ...prev.faq,
-        categories: prev.faq.categories.map((category, i) =>
+        categories: (prev.faq.categories || []).map((category, i) =>
           i === categoryIndex
             ? {
                 ...category,
-                questions: category.questions.map((question, qi) =>
+                questions: (category.questions || []).map((question, qi) =>
                   qi === questionIndex ? { ...question, [field]: value } : question,
                 ),
               }
@@ -4897,9 +5233,9 @@ const Admin = () => {
       ...prev,
       faq: {
         ...prev.faq,
-        categories: prev.faq.categories.map((category, i) =>
+        categories: (prev.faq.categories || []).map((category, i) =>
           i === categoryIndex
-            ? { ...category, questions: [...category.questions, { q: "", a: "" }] }
+            ? { ...category, questions: [...(category.questions || []), { q: "", a: "" }] }
             : category,
         ),
       },
@@ -4911,9 +5247,9 @@ const Admin = () => {
       ...prev,
       faq: {
         ...prev.faq,
-        categories: prev.faq.categories.map((category, i) =>
+        categories: (prev.faq.categories || []).map((category, i) =>
           i === categoryIndex
-            ? { ...category, questions: category.questions.filter((_, qi) => qi !== questionIndex) }
+            ? { ...category, questions: (category.questions || []).filter((_, qi) => qi !== questionIndex) }
             : category,
         ),
       },
@@ -4923,7 +5259,13 @@ const Admin = () => {
   const handleFaqSupportChange = (field: "title" | "description" | "phoneNumber" | "note", value: string) => {
     setContent((prev) => ({
       ...prev,
-      faq: { ...prev.faq, support: { ...prev.faq.support, [field]: value } },
+      faq: { 
+        ...prev.faq, 
+        support: { 
+          ...(prev.faq.support || { title: "", description: "", phoneNumber: "", note: "" }), 
+          [field]: value 
+        } 
+      },
     }));
   };
 
@@ -4953,33 +5295,40 @@ const Admin = () => {
           <CardDescription>Address, phone, email, and hours information.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          {content.contact.cards.map((card, index) => (
-            <div key={index} className="border rounded-lg p-4 space-y-3">
-              <div className="flex items-center justify-between">
+          {/* Ensure exactly 4 cards: address, phone, email, hours */}
+          {Array.from({ length: 4 }, (_, index) => {
+            const cardTypes: ("address" | "phone" | "email" | "hours")[] = ["address", "phone", "email", "hours"];
+            const cardType = cardTypes[index];
+            const card = content.contact.cards?.find((c) => c.type === cardType) || {
+              type: cardType,
+              title: cardType.charAt(0).toUpperCase() + cardType.slice(1),
+              lines: [] as string[],
+            };
+            
+            return (
+              <div key={index} className="border rounded-lg p-4 space-y-3">
                 <Label>Card {index + 1}</Label>
-                <Button variant="ghost" size="icon" onClick={() => handleRemoveContactCard(index)}>
-                  <Trash2 className="h-4 w-4" />
-                </Button>
-              </div>
-              <Input placeholder="Type (address, phone, email, hours)" value={card.type} onChange={(e) => handleContactCardChange(index, "type", e.target.value)} />
-              <div className="space-y-2">
-                <Label>Lines</Label>
-                {card.lines.map((line, lineIndex) => (
-                  <div key={lineIndex} className="flex gap-2">
-                    <Input value={line} onChange={(e) => handleContactCardLineChange(index, lineIndex, e.target.value)} />
-                    <Button variant="ghost" size="icon" onClick={() => handleRemoveContactCardLine(index, lineIndex)}>
-                      <Trash2 className="h-4 w-4" />
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium text-muted-foreground">{card.type}</Label>
+                  <div className="space-y-2">
+                    <Label>Lines</Label>
+                    {(card.lines || []).map((line, lineIndex) => (
+                      <div key={lineIndex} className="flex gap-2">
+                        <Input value={line} onChange={(e) => handleContactCardLineChange(cardType, lineIndex, e.target.value)} />
+                        <Button variant="ghost" size="icon" onClick={() => handleRemoveContactCardLine(cardType, lineIndex)}>
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    ))}
+                    <Button variant="outline" className="flex items-center gap-2" onClick={() => handleAddContactCardLine(cardType)}>
+                      <Plus className="h-4 w-4" />
+                      Add Line
                     </Button>
                   </div>
-                ))}
-                <Button variant="outline" className="flex items-center gap-2" onClick={() => handleAddContactCardLine(index)}>
-                  <Plus className="h-4 w-4" />
-                  Add Line
-                </Button>
+                </div>
               </div>
-            </div>
-          ))}
-          
+            );
+          })}
         </CardContent>
       </Card>
 
@@ -5035,42 +5384,117 @@ const Admin = () => {
     }));
   };
 
-  const handleContactCardLineChange = (cardIndex: number, lineIndex: number, value: string) => {
-    setContent((prev) => ({
-      ...prev,
-      contact: {
-        ...prev.contact,
-        cards: prev.contact.cards.map((card, i) =>
-          i === cardIndex
-            ? { ...card, lines: card.lines.map((line, li) => (li === lineIndex ? value : line)) }
-            : card,
-        ),
-      },
-    }));
+  const handleContactCardLineChange = (cardType: "address" | "phone" | "email" | "hours", lineIndex: number, value: string) => {
+    setContent((prev) => {
+      const cards = prev.contact.cards || [];
+      
+      // Ensure all 4 card types exist
+      const cardTypes: ("address" | "phone" | "email" | "hours")[] = ["address", "phone", "email", "hours"];
+      let updatedCards = [...cards];
+      
+      cardTypes.forEach((type) => {
+        if (!updatedCards.find((c) => c.type === type)) {
+          updatedCards.push({
+            type,
+            title: type.charAt(0).toUpperCase() + type.slice(1),
+            lines: [],
+          });
+        }
+      });
+      
+      // Update the specific card's line
+      updatedCards = updatedCards.map((card) => {
+        if (card.type === cardType) {
+          const updatedLines = [...(card.lines || [])];
+          while (updatedLines.length <= lineIndex) {
+            updatedLines.push("");
+          }
+          updatedLines[lineIndex] = value;
+          return { ...card, lines: updatedLines };
+        }
+        return card;
+      });
+      
+      return {
+        ...prev,
+        contact: {
+          ...prev.contact,
+          cards: updatedCards,
+        },
+      };
+    });
   };
 
-  const handleAddContactCardLine = (cardIndex: number) => {
-    setContent((prev) => ({
-      ...prev,
-      contact: {
-        ...prev.contact,
-        cards: prev.contact.cards.map((card, i) =>
-          i === cardIndex ? { ...card, lines: [...card.lines, ""] } : card,
-        ),
-      },
-    }));
+  const handleAddContactCardLine = (cardType: "address" | "phone" | "email" | "hours") => {
+    setContent((prev) => {
+      const cards = prev.contact.cards || [];
+      
+      // Ensure all 4 card types exist
+      const cardTypes: ("address" | "phone" | "email" | "hours")[] = ["address", "phone", "email", "hours"];
+      let updatedCards = [...cards];
+      
+      cardTypes.forEach((type) => {
+        if (!updatedCards.find((c) => c.type === type)) {
+          updatedCards.push({
+            type,
+            title: type.charAt(0).toUpperCase() + type.slice(1),
+            lines: [],
+          });
+        }
+      });
+      
+      // Add line to the specific card
+      updatedCards = updatedCards.map((card) => {
+        if (card.type === cardType) {
+          return { ...card, lines: [...(card.lines || []), ""] };
+        }
+        return card;
+      });
+      
+      return {
+        ...prev,
+        contact: {
+          ...prev.contact,
+          cards: updatedCards,
+        },
+      };
+    });
   };
 
-  const handleRemoveContactCardLine = (cardIndex: number, lineIndex: number) => {
-    setContent((prev) => ({
-      ...prev,
-      contact: {
-        ...prev.contact,
-        cards: prev.contact.cards.map((card, i) =>
-          i === cardIndex ? { ...card, lines: card.lines.filter((_, li) => li !== lineIndex) } : card,
-        ),
-      },
-    }));
+  const handleRemoveContactCardLine = (cardType: "address" | "phone" | "email" | "hours", lineIndex: number) => {
+    setContent((prev) => {
+      const cards = prev.contact.cards || [];
+      
+      // Ensure all 4 card types exist
+      const cardTypes: ("address" | "phone" | "email" | "hours")[] = ["address", "phone", "email", "hours"];
+      let updatedCards = [...cards];
+      
+      cardTypes.forEach((type) => {
+        if (!updatedCards.find((c) => c.type === type)) {
+          updatedCards.push({
+            type,
+            title: type.charAt(0).toUpperCase() + type.slice(1),
+            lines: [],
+          });
+        }
+      });
+      
+      // Remove line from the specific card
+      updatedCards = updatedCards.map((card) => {
+        if (card.type === cardType) {
+          return { ...card, lines: (card.lines || []).filter((_, li) => li !== lineIndex) };
+        }
+        return card;
+      });
+      
+      return {
+        ...prev,
+        contact: {
+          ...prev.contact,
+          cards: updatedCards,
+        },
+      };
+    });
   };
 
   const handleAddContactCard = () => {
@@ -5185,15 +5609,44 @@ const Admin = () => {
 
               <div className="space-y-2">
                 <Label>Specializations</Label>
-                {member.specialization.map((item, specIndex) => (
+                {(member.specialization || []).filter((spec: string) => spec && spec.trim() !== "").map((item: string, specIndex: number) => (
                   <div key={specIndex} className="flex gap-2">
-                    <Input value={item} onChange={(e) => handleFacultyMemberStringValueChange(index, "specialization", specIndex, e.target.value)} />
-                    <Button variant="ghost" size="icon" onClick={() => handleFacultyMemberStringItemRemove(index, "specialization", specIndex)}>
+                    <Input 
+                      placeholder={`Specialization ${specIndex + 1}`}
+                      value={item} 
+                      onChange={(e) => {
+                        const currentSpecs = (member.specialization || []).filter((s: string) => s && s.trim() !== "");
+                        const newSpecs = [...currentSpecs];
+                        newSpecs[specIndex] = e.target.value;
+                        // Filter out empty strings before saving
+                        handleFacultyMemberStringListChange(index, "specialization", newSpecs.filter((s: string) => s && s.trim() !== ""));
+                      }} 
+                    />
+                    <Button 
+                      variant="ghost" 
+                      size="icon" 
+                      onClick={() => {
+                        const currentSpecs = (member.specialization || []).filter((s: string) => s && s.trim() !== "");
+                        const newSpecs = currentSpecs.filter((_: string, i: number) => i !== specIndex);
+                        handleFacultyMemberStringListChange(index, "specialization", newSpecs);
+                      }}
+                    >
                       <Trash2 className="h-4 w-4" />
                     </Button>
                   </div>
                 ))}
-               
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="flex items-center gap-2"
+                  onClick={() => {
+                    const currentSpecs = (member.specialization || []).filter((s: string) => s && s.trim() !== "");
+                    handleFacultyMemberStringListChange(index, "specialization", [...currentSpecs, ""]);
+                  }}
+                >
+                  <Plus className="h-4 w-4" />
+                  Add Specialization
+                </Button>
               </div>
 
               <div className="space-y-2">
@@ -5222,13 +5675,20 @@ const Admin = () => {
 
       {renderCardListEditor(
         "Teaching Methodology",
-        content.faculty.methodology,
-        (next) =>
+        content.faculty.methodology || [],
+        (next) => {
+          // Ensure exactly 4 items
+          const normalized = [...next];
+          while (normalized.length < 4) {
+            normalized.push({ title: "", description: "" });
+          }
           setContent((prev) => ({
             ...prev,
-            faculty: { ...prev.faculty, methodology: next },
-          })),
-        'faculty-methodology'
+            faculty: { ...prev.faculty, methodology: normalized.slice(0, 4) },
+          }));
+        },
+        'faculty-methodology',
+        4
       )}
 
       <Card 
@@ -5288,19 +5748,22 @@ const Admin = () => {
     }));
   };
 
-  const handleFacultyMemberImageChange = (index: number, file: File | null) => {
+  const handleFacultyMemberImageChange = async (index: number, file: File | null) => {
     if (!file) return;
-    const reader = new FileReader();
-    reader.onload = () => {
+    try {
+      toast({ title: "Uploading image...", description: "Please wait while we upload to Cloudinary." });
+      const cloudinaryUrl = await uploadImageToCloudinary(file);
       setContent((prev) => ({
         ...prev,
         faculty: {
           ...prev.faculty,
-          members: prev.faculty.members.map((m, i) => (i === index ? { ...m, imageUrl: (reader.result as string) } : m)),
+          members: prev.faculty.members.map((m, i) => (i === index ? { ...m, imageUrl: cloudinaryUrl } : m)),
         },
       }));
-    };
-    reader.readAsDataURL(file);
+      toast({ title: "Image uploaded", description: "Image successfully uploaded to Cloudinary." });
+    } catch (error) {
+      // Error already handled in uploadImageToCloudinary
+    }
   };
 
   const handleFacultyMemberStringListChange = (
@@ -5528,6 +5991,25 @@ const Admin = () => {
 
   const editableSections = adminSections.filter((section) => section.type !== "static");
   const staticSections = adminSections.filter((section) => section.type === "static");
+
+  // Show loading state while checking authentication
+  if (isCheckingAuth) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <Card className="w-full max-w-md shadow-soft">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Lock className="h-5 w-5" />
+              Admin Access
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="text-center py-8">
+            <p className="text-muted-foreground">Checking authentication...</p>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   // Gate the admin UI behind a simple login screen
   if (!isAuthed) {

@@ -594,13 +594,27 @@ const LivePreview = ({ selectedSectionId, activeSubSection }: LivePreviewProps) 
                       <div style={{ width: '250px', minWidth: '250px' }}>
                         <h3 className="font-bold mb-3 sm:mb-4 text-accent text-sm sm:text-base">Quick Links</h3>
                         <ul className="space-y-1 sm:space-y-2 text-xs sm:text-sm">
-                          {footer.quickLinks.map((link, index) => (
-                            <li key={index}>
-                              <a href={link.to} className="hover:underline hover:decoration-white/60 hover:text-accent text-primary-foreground/90">
-                                {link.label}
-                              </a>
-                            </li>
-                          ))}
+                          {(footer.quickLinks || []).filter((l) => l && typeof l === 'string' && l.trim()).map((linkText, index) => {
+                            // Map link text to routes
+                            const routeMap: Record<string, string> = {
+                              "Home": "/",
+                              "About Us": "/about",
+                              "FAQ": "/faq",
+                              "Gallery": "/gallery",
+                              "Privacy Policy": "/privacy-policy",
+                              "Contact": "/contact",
+                              "Faculty": "/faculty",
+                              "Reviews": "/reviews",
+                            };
+                            const route = routeMap[linkText] || "/";
+                            return (
+                              <li key={index}>
+                                <a href={route} className="hover:underline hover:decoration-white/60 hover:text-accent text-primary-foreground/90">
+                                  {linkText}
+                                </a>
+                              </li>
+                            );
+                          })}
                         </ul>
                       </div>
 
@@ -1123,26 +1137,26 @@ const LivePreview = ({ selectedSectionId, activeSubSection }: LivePreviewProps) 
               <div className="w-full max-w-full min-w-0">
                 <section ref={faqHeroRef} className="gradient-hero py-20 text-primary-foreground">
                   <div className="container mx-auto px-4 text-center">
-                    <h1 className="text-4xl md:text-5xl font-bold mb-4">{faq.hero.title}</h1>
-                    <p className="text-xl max-w-3xl mx-auto text-primary-foreground/90">{faq.hero.subtitle}</p>
+                    <h1 className="text-4xl md:text-5xl font-bold mb-4">{faq.hero?.title || ""}</h1>
+                    <p className="text-xl max-w-3xl mx-auto text-primary-foreground/90">{faq.hero?.subtitle || ""}</p>
                   </div>
                 </section>
 
                 <section ref={faqCategoriesRef} className="py-20">
                   <div className="container mx-auto px-4">
                     <div className="max-w-4xl mx-auto space-y-8">
-                      {faq.categories.map((category, categoryIndex) => (
+                      {(faq.categories || []).map((category, categoryIndex) => (
                         <Card key={categoryIndex} className="shadow-soft">
                           <CardContent className="pt-6">
-                            <h2 className="text-2xl font-bold mb-4 text-primary">{category.category}</h2>
+                            <h2 className="text-2xl font-bold mb-4 text-primary">{category?.category || ""}</h2>
                             <Accordion type="single" collapsible className="w-full">
-                              {category.questions.map((question, questionIndex) => (
+                              {(category?.questions || []).map((question, questionIndex) => (
                                 <AccordionItem key={questionIndex} value={`item-${categoryIndex}-${questionIndex}`}>
                                   <AccordionTrigger className="text-left">
-                                    {question.q}
+                                    {question?.q || ""}
                                   </AccordionTrigger>
                                   <AccordionContent className="text-muted-foreground">
-                                    {question.a}
+                                    {question?.a || ""}
                                   </AccordionContent>
                                 </AccordionItem>
                               ))}
@@ -1158,16 +1172,16 @@ const LivePreview = ({ selectedSectionId, activeSubSection }: LivePreviewProps) 
                   <div className="container mx-auto px-4">
                     <Card className="max-w-2xl mx-auto shadow-medium">
                       <CardContent className="pt-6 text-center space-y-4">
-                        <h2 className="text-2xl font-bold">{faq.support.title}</h2>
-                        <p className="text-muted-foreground">{faq.support.description}</p>
+                        <h2 className="text-2xl font-bold">{faq.support?.title || ""}</h2>
+                        <p className="text-muted-foreground">{faq.support?.description || ""}</p>
                         <div className="flex flex-col items-center space-y-2 text-lg">
                           <div className="flex items-center space-x-2">
                             <Phone className="h-5 w-5 text-accent" />
-                            <a href={`tel:${faq.support.phoneNumber}`} className="font-bold text-primary hover:underline">
-                              {faq.support.phoneNumber}
+                            <a href={`tel:${faq.support?.phoneNumber || ""}`} className="font-bold text-primary hover:underline">
+                              {faq.support?.phoneNumber || ""}
                             </a>
                           </div>
-                          <p className="text-sm text-muted-foreground">{faq.support.note}</p>
+                          <p className="text-sm text-muted-foreground">{faq.support?.note || ""}</p>
                         </div>
                       </CardContent>
                     </Card>

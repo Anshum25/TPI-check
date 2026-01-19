@@ -1,24 +1,14 @@
 import { useState, useEffect, useRef } from "react";
+import { useContent } from "@/lib/content";
 
-interface AmenitiesProps {
-  title?: string;
-  description?: string;
-  amenitiesList?: string[];
-  carouselImages?: string[];
-}
-
-const Amenities = ({
-  title = "Amenities",
-  description = "We are functioning at a spacious premises in posh area of Satellite with all the amenities to facilitate our students with the best environment to sharpen their communication skills and gain self confidence along with positive personality traits.",
-  amenitiesList = [
-    "Precious AC class rooms with comfortable sitting arrangement",
-    "Hall with stage, mic and projector",
-    "Course material with detailed explanation and practice material",
-    "Recorded videos of all the lectures if student misses any lecture",
-    "Library with numerous reading materials along with take home facility",
-    "Reading room where you can utilize for quality time",
-  ],
-  carouselImages = [
+const Amenities = () => {
+  const { content } = useContent();
+  const amenities = content.about.amenities || {};
+  
+  const title = amenities.title || "Amenities";
+  const description = amenities.description || "We are functioning at a spacious premises in posh area of Satellite with all the amenities to facilitate our students with the best environment to sharpen their communication skills and gain self confidence along with positive personality traits.";
+  const amenitiesList = amenities.amenitiesList || [];
+  const carouselImages = amenities.carouselImages || [
     "https://images.unsplash.com/photo-1523580494863-6f3031224c94?w=500&h=400&fit=crop",
     "https://images.unsplash.com/photo-1552664730-d307ca884978?w=500&h=400&fit=crop",
     "https://images.unsplash.com/photo-1587825140708-dfaf72ae4b04?w=500&h=400&fit=crop",
@@ -29,8 +19,8 @@ const Amenities = ({
     "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=500&h=400&fit=crop",
     "https://images.unsplash.com/photo-1511632765486-a01980e01a18?w=500&h=400&fit=crop",
     "https://images.unsplash.com/photo-1552664730-d307ca884978?w=500&h=400&fit=crop",
-  ],
-}: AmenitiesProps) => {
+  ];
+  
   const [currentSlide, setCurrentSlide] = useState(0);
 
   const touchStartXRef = useRef<number | null>(null);

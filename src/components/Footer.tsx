@@ -67,13 +67,27 @@ const Footer = () => {
           <div className="lg:pl-8 xl:pl-12">
             <h3 className="font-bold mb-4 text-accent">Quick Links</h3>
             <ul className="space-y-2 text-sm">
-              {content.footer.quickLinks.map((l, i) => (
-                <li key={i}>
-                  <Link to={l.to} className="hover:underline hover:decoration-white/60 hover:text-accent">
-                    {l.label}
-                  </Link>
-                </li>
-              ))}
+              {(content.footer.quickLinks || []).filter((l) => l && typeof l === 'string' && l.trim()).map((linkText, i) => {
+                // Map link text to routes
+                const routeMap: Record<string, string> = {
+                  "Home": "/",
+                  "About Us": "/about",
+                  "FAQ": "/faq",
+                  "Gallery": "/gallery",
+                  "Privacy Policy": "/privacy-policy",
+                  "Contact": "/contact",
+                  "Faculty": "/faculty",
+                  "Reviews": "/reviews",
+                };
+                const route = routeMap[linkText] || "/";
+                return (
+                  <li key={i}>
+                    <Link to={route} className="text-primary-foreground/80 hover:underline hover:decoration-white/60 hover:text-accent">
+                      {linkText}
+                    </Link>
+                  </li>
+                );
+              })}
             </ul>
           </div>
 
@@ -81,8 +95,12 @@ const Footer = () => {
           <div>
             <h3 className="font-bold mb-4 text-accent">What We Do</h3>
             <ul className="space-y-2 text-sm">
-              {(content.about?.differentiators || []).slice(0, 4).map((item, i) => (
-                <li key={i} className="text-primary-foreground/80">{item.title}</li>
+              {(
+                content.footer.whatWeDo && content.footer.whatWeDo.length
+                  ? content.footer.whatWeDo
+                  : (content.about?.differentiators || []).slice(0, 4).map((item) => item.title)
+              ).map((item, i) => (
+                <li key={i} className="text-primary-foreground/80">{item}</li>
               ))}
             </ul>
           </div>
