@@ -1355,6 +1355,7 @@ type ContentContextValue = {
   resetContent: () => void;
   exportJSON: () => string;
   importJSON: (json: string) => void;
+  loading: boolean;
 };
 
 const ContentContext = createContext<ContentContextValue | undefined>(undefined);
@@ -1860,7 +1861,7 @@ export const ContentProvider: React.FC<{ children: React.ReactNode }> = ({ child
   };
 
   return (
-    <ContentContext.Provider value={{ content, setContent, resetContent, exportJSON, importJSON }}>
+    <ContentContext.Provider value={{ content, setContent, resetContent, exportJSON, importJSON, loading }}>
       {children}
     </ContentContext.Provider>
   );

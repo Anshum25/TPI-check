@@ -1,5 +1,5 @@
 import { useLocation } from "react-router-dom";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -30,7 +30,7 @@ import FinalCtaBanner from "@/components/FinalCtaBanner";
 const Home = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { content } = useContent();
+  const { content, loading } = useContent();
   const home = content.home ?? DEFAULT_CONTENT.home;
   const joinUs = home.joinUs;
   const bottomTitle = joinUs?.bottom?.title || "You belong here.";
@@ -45,6 +45,18 @@ const Home = () => {
           .split(".")
           .map((point) => point.trim())
           .filter(Boolean);
+
+  const hasSignalledReady = useRef(false);
+
+  // Notify preloader when home content has finished loading from backend
+  useEffect(() => {
+    if (loading || hasSignalledReady.current) return;
+    hasSignalledReady.current = true;
+
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(new Event("tpi-home-ready"));
+    }
+  }, [loading]);
 
   const featureIcons = [
     <Target key="icon-0" className="h-6 w-6" />,
