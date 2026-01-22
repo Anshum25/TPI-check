@@ -3,7 +3,6 @@ import { Link, useLocation } from "react-router-dom";
 import { Menu, X, Phone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import RequestCallbackDialog from "@/components/RequestCallbackDialog";
-import tpLogo from "@/assets/cropped-cropped-cropped-Blue-Dark-Minimalist-Initial-T-Letter-Logo-512-x-512-px-1-removebg-preview.png";
 
 
 
@@ -64,7 +63,7 @@ const Header = () => {
           <div className="flex h-16 items-center justify-between">
             <Link to="/" className="flex-shrink-0">
               <div className="flex items-center">
-                <img src={tpLogo} alt="Turning Point Institute" className="h-10 w-10 object-contain" />
+                <img src="/tpi-logo.png" alt="Turning Point Institute" className="h-10 w-10 object-contain" />
                 <div className="ml-2">
                   <h1 className="text-sm font-bold leading-tight">TURNING POINT INSTITUTE</h1>
                   <p className="text-xs text-muted-foreground">THE ONE TO TURN TO</p>
