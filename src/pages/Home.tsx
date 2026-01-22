@@ -101,14 +101,22 @@ const Home = () => {
                   <AccordionItem
                     key={index}
                     value={`you-belong-${index}`}
-                    className="border-b last:border-b-0"
+                    className="group border-b last:border-b-0"
                   >
                     <AccordionTrigger className="text-left hover:no-underline hover:text-primary data-[state=open]:text-primary transition-colors py-3">
-                      <span className="text-base md:text-lg font-semibold text-foreground">
-                        {item.title}
-                      </span>
+                      <div className="flex items-center gap-2">
+                        <span className="text-lg font-bold text-primary group-data-[state=open]:hidden">
+                          +
+                        </span>
+                        <span className="text-lg font-bold text-primary hidden group-data-[state=open]:inline-block">
+                          -
+                        </span>
+                        <span className="text-base md:text-lg font-semibold text-foreground">
+                          {item.title}
+                        </span>
+                      </div>
                     </AccordionTrigger>
-                    <AccordionContent className="text-muted-foreground text-sm md:text-base leading-relaxed">
+                    <AccordionContent className="text-muted-foreground text-sm md:text-base leading-relaxed whitespace-pre-wrap break-words break-all">
                       {item.description || item.title}
                     </AccordionContent>
                   </AccordionItem>

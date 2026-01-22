@@ -76,7 +76,7 @@ const MethodologySection = () => {
                 >
                   <div className="flex items-center gap-3">
                     <span className="text-sm md:text-base font-bold text-primary transition-colors">
-                      +
+                      {expandedIndex === index ? "-" : "+"}
                     </span>
                     <h3 className="text-lg md:text-xl font-bold text-foreground group-hover:text-primary transition-colors">
                       {section.title}
