@@ -704,7 +704,7 @@ export const DEFAULT_CONTENT: SiteContent = {
       phoneNumber: "9725500435",
       directionsLabel: "Get Directions",
       directionsUrl:
-        "https://www.google.com/maps/place/Turning+Point+Institute/@23.0131818,72.518835,17z/data=!3m1!4b1!4m6!3m5!1s0x395e84cf0a8203a1:0xd1a3ec8eb1a3e77e!8m2!3d23.0131818!4d72.5210237!16s%2Fg%2F1v42d5nt",
+        "https://www.google.com/maps/dir//Turning+Point+Institute,+The+Grand+Monarch,+306,+100+Feet+Anand+Nagar+Rd,+near+Sima+Hall,+beside+Diamond+Gym+lounge,+Satellite,+Ahmedabad,+Gujarat+380015/@23.0132362,72.5210221,17z/data=!4m8!4m7!1m0!1m5!1m1!1s0x395e84cf0a8203a1:0xd1a3ec8eb1a3e77e!2m2!1d72.5210221!2d23.0132362?entry=ttu&g_ep=EgoyMDI2MDExOS4wIKXMDSoKLDEwMDc5MjA3MUgBUAM%3D",
       callbackLabel: "Request Call Back",
     },
   },
