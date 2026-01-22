@@ -27,6 +27,23 @@ import { Target, Users, Award, BookOpen } from "lucide-react";
 import { DEFAULT_CONTENT, useContent } from "@/lib/content";
 import FinalCtaBanner from "@/components/FinalCtaBanner";
 
+const toEmbedUrl = (url?: string) => {
+  if (!url) return "";
+  try {
+    if (url.includes("youtu.be/")) {
+      const id = url.split("youtu.be/")[1]?.split(/[?&#]/)[0];
+      return id ? `https://www.youtube.com/embed/${id}` : url;
+    }
+    if (url.includes("watch?v=")) {
+      const id = url.split("watch?v=")[1]?.split(/[?&#]/)[0];
+      return id ? `https://www.youtube.com/embed/${id}` : url;
+    }
+    return url;
+  } catch {
+    return url;
+  }
+};
+
 const Home = () => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -167,7 +184,7 @@ const Home = () => {
                   </div>
                   <div className="aspect-video w-full bg-muted">
                     <iframe
-                      src={home.directorVideoUrl}
+                      src={toEmbedUrl(home.directorVideoUrl)}
                       title="Director's desk video"
                       className="w-full h-full"
                       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
