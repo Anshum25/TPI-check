@@ -21,28 +21,34 @@ const Hero = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isCallbackDialogOpen, setIsCallbackDialogOpen] = useState(false);
 
+  const home = content.home ?? DEFAULT_CONTENT.home;
+  const cta = home.finalCta ?? DEFAULT_CONTENT.home.finalCta;
+
   // Use admin-configured buttons from content
   const heroButtons = [
     {
-      text: content.home.heroButtons.callNow.text,
-      action: content.home.heroButtons.callNow.action,
-      target: content.home.heroButtons.callNow.target,
-      variant: content.home.heroButtons.callNow.variant,
-      enabled: content.home.heroButtons.callNow.enabled
+      key: "callNow" as const,
+      text: home.heroButtons.callNow.text,
+      action: home.heroButtons.callNow.action,
+      target: home.heroButtons.callNow.target,
+      variant: home.heroButtons.callNow.variant,
+      enabled: home.heroButtons.callNow.enabled,
     },
     {
-      text: content.home.heroButtons.getDirections.text,
-      action: content.home.heroButtons.getDirections.action,
-      target: content.home.heroButtons.getDirections.target,
-      variant: content.home.heroButtons.getDirections.variant,
-      enabled: content.home.heroButtons.getDirections.enabled
+      key: "getDirections" as const,
+      text: home.heroButtons.getDirections.text,
+      action: home.heroButtons.getDirections.action,
+      target: home.heroButtons.getDirections.target,
+      variant: home.heroButtons.getDirections.variant,
+      enabled: home.heroButtons.getDirections.enabled,
     },
     {
-      text: content.home.heroButtons.requestCallback.text,
-      action: content.home.heroButtons.requestCallback.action,
-      target: content.home.heroButtons.requestCallback.target,
-      variant: content.home.heroButtons.requestCallback.variant,
-      enabled: content.home.heroButtons.requestCallback.enabled
+      key: "requestCallback" as const,
+      text: home.heroButtons.requestCallback.text,
+      action: home.heroButtons.requestCallback.action,
+      target: home.heroButtons.requestCallback.target,
+      variant: home.heroButtons.requestCallback.variant,
+      enabled: home.heroButtons.requestCallback.enabled,
     }
   ].filter(button => button.enabled); // Only show enabled buttons
 
@@ -63,36 +69,37 @@ const Hero = () => {
 
   // Button action handlers
   const handleCallNow = () => {
-    navigate('/contact#phone');
+    if (!cta.phoneNumber) return;
+    window.location.href = `tel:${cta.phoneNumber}`;
   };
 
   const handleGetDirection = () => {
-    navigate('/contact#map');
+    if (!cta.directionsUrl) return;
+    window.open(cta.directionsUrl, "_blank", "noopener,noreferrer");
   };
 
   const handleRequestCallback = () => {
     setIsCallbackDialogOpen(true);
   };
 
-  const handleButtonClick = (button: typeof heroButtons[0]) => {
-    const text = (button.text || "").toLowerCase();
-
-    // If this is the CALL NOW button, open the phone dialer directly
-    if (text.includes("call now")) {
-      const phoneNumber =
-        content.home?.finalCta?.phoneNumber ||
-        DEFAULT_CONTENT.home.finalCta.phoneNumber;
-
-      if (phoneNumber) {
-        window.location.href = `tel:${phoneNumber}`;
-      }
+  const handleButtonClick = (button: (typeof heroButtons)[number]) => {
+    if (button.key === "callNow") {
+      handleCallNow();
       return;
     }
 
-    if (button.action === 'navigate') {
+    if (button.key === "getDirections") {
+      handleGetDirection();
+      return;
+    }
+
+    if (button.key === "requestCallback" || button.action === "modal") {
+      handleRequestCallback();
+      return;
+    }
+
+    if (button.action === "navigate") {
       navigate(button.target);
-    } else if (button.action === 'modal') {
-      setIsCallbackDialogOpen(true);
     }
   };
 
