@@ -55,7 +55,11 @@ type JoinUs = {
   reasonsHeading?: string;
   statCard?: { metric: string; heading: string; description: string };
   infoCard?: { title: string; description: string };
-  bottom?: { title: string; description?: string; points?: string[] };
+  bottom?: {
+    title: string;
+    description?: string;
+    points?: ({ title: string; description?: string } | string)[];
+  };
 };
 type Question = { q: string; a: string };
 type FAQCategory = { category: string; questions: Question[] };
@@ -920,7 +924,7 @@ export const DEFAULT_CONTENT: SiteContent = {
     stories: [
       {
         name: "Priya Sharma",
-        role: "Software Engineer",
+       
         content:
           "This institute transformed my communication skills completely. I'm now confident in presentations and team meetings.",
         rating: 5,

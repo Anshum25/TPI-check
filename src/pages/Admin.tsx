@@ -1240,54 +1240,95 @@ const Admin = () => {
               }))}
             />
           </div>
-        
+
           <div className="space-y-2">
-            <Label>Bottom Points</Label>
-            <div className="space-y-2">
-              {(content.home.joinUs?.bottom?.points || []).map((point, index) => (
-                <div key={index} className="flex gap-2">
-                  <Input
-                    value={point}
-                    onChange={(e)=> setContent((prev)=> {
-                      const prevBottom = prev.home.joinUs?.bottom || { title: "", description: "" };
-                      const prevPoints = prevBottom.points || [];
-                      const nextPoints = prevPoints.map((p, i)=> i === index ? e.target.value : p);
-                      return {
-                        ...prev,
-                        home: {
-                          ...prev.home,
-                          joinUs: {
-                            ...(prev.home.joinUs || {}),
-                            bottom: { ...prevBottom, points: nextPoints },
-                          },
-                        },
-                      };
-                    })}
-                  />
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="icon"
-                    onClick={()=> setContent((prev)=> {
-                      const prevBottom = prev.home.joinUs?.bottom || { title: "", description: "" };
-                      const prevPoints = prevBottom.points || [];
-                      const nextPoints = prevPoints.filter((_, i)=> i !== index);
-                      return {
-                        ...prev,
-                        home: {
-                          ...prev.home,
-                          joinUs: {
-                            ...(prev.home.joinUs || {}),
-                            bottom: { ...prevBottom, points: nextPoints },
-                          },
-                        },
-                      };
-                    })}
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                </div>
-              ))}
+            <Label>Bottom Points </Label>
+            <div className="space-y-3">
+              {(content.home.joinUs?.bottom?.points || []).map((rawPoint, index) => {
+                const point =
+                  typeof rawPoint === "string"
+                    ? { title: rawPoint, description: "" }
+                    : { title: rawPoint.title || "", description: rawPoint.description || "" };
+
+                return (
+                  <div key={index} className="border border-border/40 rounded-lg p-3 md:p-4 space-y-2 bg-background/60">
+                    <div className="flex items-start gap-2">
+                      <div className="flex-1 space-y-2">
+                        <Input
+                          placeholder={`Point ${index + 1} title`}
+                          value={point.title}
+                          onChange={(e)=> setContent((prev)=> {
+                            const prevBottom = prev.home.joinUs?.bottom || { title: "", description: "" };
+                            const prevPoints = prevBottom.points || [];
+                            const nextPoints = prevPoints.map((p, i)=> {
+                              if (i !== index) return p;
+                              const existing = typeof p === "string" ? { title: p, description: "" } : p || { title: "", description: "" };
+                              return { ...existing, title: e.target.value };
+                            });
+                            return {
+                              ...prev,
+                              home: {
+                                ...prev.home,
+                                joinUs: {
+                                  ...(prev.home.joinUs || {}),
+                                  bottom: { ...prevBottom, points: nextPoints },
+                                },
+                              },
+                            };
+                          })}
+                        />
+                        <Textarea
+                          rows={3}
+                          placeholder="Subtext / description for this point"
+                          value={point.description}
+                          onChange={(e)=> setContent((prev)=> {
+                            const prevBottom = prev.home.joinUs?.bottom || { title: "", description: "" };
+                            const prevPoints = prevBottom.points || [];
+                            const nextPoints = prevPoints.map((p, i)=> {
+                              if (i !== index) return p;
+                              const existing = typeof p === "string" ? { title: p, description: "" } : p || { title: "", description: "" };
+                              return { ...existing, description: e.target.value };
+                            });
+                            return {
+                              ...prev,
+                              home: {
+                                ...prev.home,
+                                joinUs: {
+                                  ...(prev.home.joinUs || {}),
+                                  bottom: { ...prevBottom, points: nextPoints },
+                                },
+                              },
+                            };
+                          })}
+                        />
+                      </div>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="icon"
+                        onClick={()=> setContent((prev)=> {
+                          const prevBottom = prev.home.joinUs?.bottom || { title: "", description: "" };
+                          const prevPoints = prevBottom.points || [];
+                          const nextPoints = prevPoints.filter((_, i)=> i !== index);
+                          return {
+                            ...prev,
+                            home: {
+                              ...prev.home,
+                              joinUs: {
+                                ...(prev.home.joinUs || {}),
+                                bottom: { ...prevBottom, points: nextPoints },
+                              },
+                            },
+                          };
+                        })}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+                );
+              })}
+
               <Button
                 type="button"
                 variant="outline"
@@ -1301,7 +1342,7 @@ const Admin = () => {
                       ...prev.home,
                       joinUs: {
                         ...(prev.home.joinUs || {}),
-                        bottom: { ...prevBottom, points: [...prevPoints, ""] },
+                        bottom: { ...prevBottom, points: [...prevPoints, { title: "", description: "" }] },
                       },
                     },
                   };
