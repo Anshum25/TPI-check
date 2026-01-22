@@ -14,6 +14,23 @@ const Reviews = () => {
   const testimonials = reviews.testimonials ?? [];
   const videoReviews = reviews.videoReviews ?? [];
 
+  const toEmbedUrl = (url?: string) => {
+    if (!url) return "";
+    try {
+      if (url.includes("youtu.be/")) {
+        const id = url.split("youtu.be/")[1]?.split(/[?&#]/)[0];
+        return id ? `https://www.youtube.com/embed/${id}` : url;
+      }
+      if (url.includes("watch?v=")) {
+        const id = url.split("watch?v=")[1]?.split(/[?&#]/)[0];
+        return id ? `https://www.youtube.com/embed/${id}` : url;
+      }
+      return url;
+    } catch {
+      return url;
+    }
+  };
+
   // Group testimonials by source (google / facebook / justdial) with sensible fallbacks
   const googleTestimonials = (() => {
     const filtered = testimonials.filter((t) => t.source === "google");
@@ -205,7 +222,7 @@ const Reviews = () => {
                     <div className="aspect-video w-full bg-black/80">
                       <iframe
                         className="w-full h-full"
-                        src={video.url}
+                        src={toEmbedUrl(video.url)}
                         title={video.title}
                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                         allowFullScreen

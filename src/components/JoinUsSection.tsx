@@ -1,5 +1,22 @@
 import { useContent } from "@/lib/content";
 
+const toEmbedUrl = (url?: string) => {
+  if (!url) return "";
+  try {
+    if (url.includes("youtu.be/")) {
+      const id = url.split("youtu.be/")[1]?.split(/[?&#]/)[0];
+      return id ? `https://www.youtube.com/embed/${id}` : url;
+    }
+    if (url.includes("watch?v=")) {
+      const id = url.split("watch?v=")[1]?.split(/[?&#]/)[0];
+      return id ? `https://www.youtube.com/embed/${id}` : url;
+    }
+    return url;
+  } catch {
+    return url;
+  }
+};
+
 interface JoinUsSectionProps {
   showJourney?: boolean;
 }
@@ -7,6 +24,8 @@ interface JoinUsSectionProps {
 const JoinUsSection = ({ showJourney = true }: JoinUsSectionProps) => {
   const { content } = useContent();
   const j = content.home.joinUs;
+  const fallbackUrl = "https://www.youtube.com/embed/sLMm9trcZYc";
+  const videoUrl = toEmbedUrl(j?.videoUrl || fallbackUrl);
   return (
     <section className="py-8 md:py-24 relative overflow-hidden">
       <div className="container mx-auto px-4">
@@ -55,7 +74,7 @@ const JoinUsSection = ({ showJourney = true }: JoinUsSectionProps) => {
                     <div className="relative w-full" style={{ paddingBottom: "56.25%" }}>
                       <iframe
                         className="absolute inset-0 w-full h-full"
-                        src={j?.videoUrl || "https://www.youtube.com/embed/sLMm9trcZYc"}
+                        src={videoUrl}
                         title="Introduction to the course"
                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                         allowFullScreen
@@ -88,7 +107,7 @@ const JoinUsSection = ({ showJourney = true }: JoinUsSectionProps) => {
                 >
                   <iframe
                     className="absolute inset-0 w-full h-full"
-                    src={j?.videoUrl || "https://www.youtube.com/embed/sLMm9trcZYc"}
+                    src={videoUrl}
                     title="Introduction to the course"
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                     allowFullScreen

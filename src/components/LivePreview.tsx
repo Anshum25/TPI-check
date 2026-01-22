@@ -265,6 +265,23 @@ const LivePreview = ({ selectedSectionId, activeSubSection }: LivePreviewProps) 
     return imageMap[src] || src;
   };
 
+  const toEmbedUrl = (url?: string) => {
+    if (!url) return "";
+    try {
+      if (url.includes("youtu.be/")) {
+        const id = url.split("youtu.be/")[1]?.split(/[?&#]/)[0];
+        return id ? `https://www.youtube.com/embed/${id}` : url;
+      }
+      if (url.includes("watch?v=")) {
+        const id = url.split("watch?v=")[1]?.split(/[?&#]/)[0];
+        return id ? `https://www.youtube.com/embed/${id}` : url;
+      }
+      return url;
+    } catch {
+      return url;
+    }
+  };
+
   const renderPreview = () => {
     try {
       if (!content) {
@@ -415,7 +432,7 @@ const LivePreview = ({ selectedSectionId, activeSubSection }: LivePreviewProps) 
                           </div>
                           <div className="aspect-video w-full bg-muted">
                             <iframe
-                              src={home.directorVideoUrl}
+                              src={toEmbedUrl(home.directorVideoUrl)}
                               title="Director's desk video"
                               className="w-full h-full"
                               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
@@ -1014,22 +1031,6 @@ const LivePreview = ({ selectedSectionId, activeSubSection }: LivePreviewProps) 
         case "gallery": {
           // Preview-safe Gallery page with Images / Videos tabs
           const { gallery } = content;
-          const toEmbedUrl = (url: string) => {
-            if (!url) return "";
-            try {
-              if (url.includes("youtu.be/")) {
-                const id = url.split("youtu.be/")[1]?.split(/[?&#]/)[0];
-                return id ? `https://www.youtube.com/embed/${id}` : url;
-              }
-              if (url.includes("watch?v=")) {
-                const id = url.split("watch?v=")[1]?.split(/[?&#]/)[0];
-                return id ? `https://www.youtube.com/embed/${id}` : url;
-              }
-              return url;
-            } catch {
-              return url;
-            }
-          };
           const videos = (gallery.videos && gallery.videos.length > 0
             ? gallery.videos
             : [

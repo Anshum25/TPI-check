@@ -1214,147 +1214,7 @@ const Admin = () => {
         </CardContent>
       </Card>
 
-      <Card 
-        className="shadow-soft"
-        onMouseEnter={() => setActiveSubSection('you-belong-here')}
-        onFocus={() => setActiveSubSection('you-belong-here')}
-      >
-        <CardHeader>
-          <CardTitle>"You belong here" Section</CardTitle>
-         
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <Label>Title</Label>
-            <Input
-              value={content.home.joinUs?.bottom?.title || ""}
-              onChange={(e)=> setContent((prev)=> ({
-                ...prev,
-                home: {
-                  ...prev.home,
-                  joinUs: {
-                    ...(prev.home.joinUs || {}),
-                    bottom: { ...(prev.home.joinUs?.bottom || { title: "", description: "" }), title: e.target.value },
-                  },
-                },
-              }))}
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label>Bottom Points </Label>
-            <div className="space-y-3">
-              {(content.home.joinUs?.bottom?.points || []).map((rawPoint, index) => {
-                const point =
-                  typeof rawPoint === "string"
-                    ? { title: rawPoint, description: "" }
-                    : { title: rawPoint.title || "", description: rawPoint.description || "" };
-
-                return (
-                  <div key={index} className="border border-border/40 rounded-lg p-3 md:p-4 space-y-2 bg-background/60">
-                    <div className="flex items-start gap-2">
-                      <div className="flex-1 space-y-2">
-                        <Input
-                          placeholder={`Point ${index + 1} title`}
-                          value={point.title}
-                          onChange={(e)=> setContent((prev)=> {
-                            const prevBottom = prev.home.joinUs?.bottom || { title: "", description: "" };
-                            const prevPoints = prevBottom.points || [];
-                            const nextPoints = prevPoints.map((p, i)=> {
-                              if (i !== index) return p;
-                              const existing = typeof p === "string" ? { title: p, description: "" } : p || { title: "", description: "" };
-                              return { ...existing, title: e.target.value };
-                            });
-                            return {
-                              ...prev,
-                              home: {
-                                ...prev.home,
-                                joinUs: {
-                                  ...(prev.home.joinUs || {}),
-                                  bottom: { ...prevBottom, points: nextPoints },
-                                },
-                              },
-                            };
-                          })}
-                        />
-                        <Textarea
-                          rows={3}
-                          placeholder="Subtext / description for this point"
-                          value={point.description}
-                          onChange={(e)=> setContent((prev)=> {
-                            const prevBottom = prev.home.joinUs?.bottom || { title: "", description: "" };
-                            const prevPoints = prevBottom.points || [];
-                            const nextPoints = prevPoints.map((p, i)=> {
-                              if (i !== index) return p;
-                              const existing = typeof p === "string" ? { title: p, description: "" } : p || { title: "", description: "" };
-                              return { ...existing, description: e.target.value };
-                            });
-                            return {
-                              ...prev,
-                              home: {
-                                ...prev.home,
-                                joinUs: {
-                                  ...(prev.home.joinUs || {}),
-                                  bottom: { ...prevBottom, points: nextPoints },
-                                },
-                              },
-                            };
-                          })}
-                        />
-                      </div>
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="icon"
-                        onClick={()=> setContent((prev)=> {
-                          const prevBottom = prev.home.joinUs?.bottom || { title: "", description: "" };
-                          const prevPoints = prevBottom.points || [];
-                          const nextPoints = prevPoints.filter((_, i)=> i !== index);
-                          return {
-                            ...prev,
-                            home: {
-                              ...prev.home,
-                              joinUs: {
-                                ...(prev.home.joinUs || {}),
-                                bottom: { ...prevBottom, points: nextPoints },
-                              },
-                            },
-                          };
-                        })}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </div>
-                );
-              })}
-
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={()=> setContent((prev)=> {
-                  const prevBottom = prev.home.joinUs?.bottom || { title: "", description: "" };
-                  const prevPoints = prevBottom.points || [];
-                  return {
-                    ...prev,
-                    home: {
-                      ...prev.home,
-                      joinUs: {
-                        ...(prev.home.joinUs || {}),
-                        bottom: { ...prevBottom, points: [...prevPoints, { title: "", description: "" }] },
-                      },
-                    },
-                  };
-                })}
-              >
-                <Plus className="h-4 w-4 mr-2" />
-                Add Point
-              </Button>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+      
 
       <Card 
         className="shadow-soft"
@@ -1937,6 +1797,148 @@ const Admin = () => {
               />
             </div>
           
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card 
+        className="shadow-soft"
+        onMouseEnter={() => setActiveSubSection('you-belong-here')}
+        onFocus={() => setActiveSubSection('you-belong-here')}
+      >
+        <CardHeader>
+          <CardTitle>"You belong here" Section</CardTitle>
+         
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="space-y-2">
+            <Label>Title</Label>
+            <Input
+              value={content.home.joinUs?.bottom?.title || ""}
+              onChange={(e)=> setContent((prev)=> ({
+                ...prev,
+                home: {
+                  ...prev.home,
+                  joinUs: {
+                    ...(prev.home.joinUs || {}),
+                    bottom: { ...(prev.home.joinUs?.bottom || { title: "", description: "" }), title: e.target.value },
+                  },
+                },
+              }))}
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label>Bottom Points </Label>
+            <div className="space-y-3">
+              {(content.home.joinUs?.bottom?.points || []).map((rawPoint, index) => {
+                const point =
+                  typeof rawPoint === "string"
+                    ? { title: rawPoint, description: "" }
+                    : { title: rawPoint.title || "", description: rawPoint.description || "" };
+
+                return (
+                  <div key={index} className="border border-border/40 rounded-lg p-3 md:p-4 space-y-2 bg-background/60">
+                    <div className="flex items-start gap-2">
+                      <div className="flex-1 space-y-2">
+                        <Input
+                          placeholder={`Point ${index + 1} title`}
+                          value={point.title}
+                          onChange={(e)=> setContent((prev)=> {
+                            const prevBottom = prev.home.joinUs?.bottom || { title: "", description: "" };
+                            const prevPoints = prevBottom.points || [];
+                            const nextPoints = prevPoints.map((p, i)=> {
+                              if (i !== index) return p;
+                              const existing = typeof p === "string" ? { title: p, description: "" } : p || { title: "", description: "" };
+                              return { ...existing, title: e.target.value };
+                            });
+                            return {
+                              ...prev,
+                              home: {
+                                ...prev.home,
+                                joinUs: {
+                                  ...(prev.home.joinUs || {}),
+                                  bottom: { ...prevBottom, points: nextPoints },
+                                },
+                              },
+                            };
+                          })}
+                        />
+                        <Textarea
+                          rows={3}
+                          placeholder="Subtext / description for this point"
+                          value={point.description}
+                          onChange={(e)=> setContent((prev)=> {
+                            const prevBottom = prev.home.joinUs?.bottom || { title: "", description: "" };
+                            const prevPoints = prevBottom.points || [];
+                            const nextPoints = prevPoints.map((p, i)=> {
+                              if (i !== index) return p;
+                              const existing = typeof p === "string" ? { title: p, description: "" } : p || { title: "", description: "" };
+                              return { ...existing, description: e.target.value };
+                            });
+                            return {
+                              ...prev,
+                              home: {
+                                ...prev.home,
+                                joinUs: {
+                                  ...(prev.home.joinUs || {}),
+                                  bottom: { ...prevBottom, points: nextPoints },
+                                },
+                              },
+                            };
+                          })}
+                        />
+                      </div>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="icon"
+                        onClick={()=> setContent((prev)=> {
+                          const prevBottom = prev.home.joinUs?.bottom || { title: "", description: "" };
+                          const prevPoints = prevBottom.points || [];
+                          const nextPoints = prevPoints.filter((_, i)=> i !== index);
+                          return {
+                            ...prev,
+                            home: {
+                              ...prev.home,
+                              joinUs: {
+                                ...(prev.home.joinUs || {}),
+                                bottom: { ...prevBottom, points: nextPoints },
+                              },
+                            },
+                          };
+                        })}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+                );
+              })}
+
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={()=> setContent((prev)=> {
+                  const prevBottom = prev.home.joinUs?.bottom || { title: "", description: "" };
+                  const prevPoints = prevBottom.points || [];
+                  return {
+                    ...prev,
+                    home: {
+                      ...prev.home,
+                      joinUs: {
+                        ...(prev.home.joinUs || {}),
+                        bottom: { ...prevBottom, points: [...prevPoints, { title: "", description: "" }] },
+                      },
+                    },
+                  };
+                })}
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                Add Point
+              </Button>
+            </div>
           </div>
         </CardContent>
       </Card>

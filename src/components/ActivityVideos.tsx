@@ -7,6 +7,25 @@ const ActivityVideos = () => {
   const activityVideos = content?.home?.activityVideos;
   const defaultActivityVideos = DEFAULT_CONTENT.home.activityVideos;
 
+  const toEmbedUrl = (url?: string) => {
+    if (!url) return "";
+    try {
+      // Short youtu.be links
+      if (url.includes("youtu.be/")) {
+        const id = url.split("youtu.be/")[1]?.split(/[?&#]/)[0];
+        return id ? `https://www.youtube.com/embed/${id}` : url;
+      }
+      // watch?v= links
+      if (url.includes("watch?v=")) {
+        const id = url.split("watch?v=")[1]?.split(/[?&#]/)[0];
+        return id ? `https://www.youtube.com/embed/${id}` : url;
+      }
+      return url;
+    } catch {
+      return url;
+    }
+  };
+
   const resolvedActivityVideos = (() => {
     if (!activityVideos) return defaultActivityVideos;
     if (!defaultActivityVideos) return activityVideos;
@@ -48,7 +67,7 @@ const ActivityVideos = () => {
             >
               <div className="aspect-video w-full bg-muted">
                 <iframe
-                  src={activity.videoUrl}
+                  src={toEmbedUrl(activity.videoUrl)}
                   title={activity.title}
                   className="w-full h-full"
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
