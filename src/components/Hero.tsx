@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useContent, DEFAULT_CONTENT } from "@/lib/content";
+import { useContent, DEFAULT_CONTENT, ButtonConfiguration } from "@/lib/content";
 import RequestCallbackDialog from "@/components/RequestCallbackDialog";
 import heroClassroom from "@/assets/hero-classroom.jpg";
 import speakingConfidence from "@/assets/speaking-confidence.jpg";
@@ -25,7 +25,11 @@ const Hero = () => {
   const cta = home.finalCta ?? DEFAULT_CONTENT.home.finalCta;
 
   // Use admin-configured buttons from content
-  const heroButtons = [
+  type HeroButtonWithKey = ButtonConfiguration & {
+    key: "callNow" | "getDirections" | "requestCallback";
+  };
+
+  const heroButtons: HeroButtonWithKey[] = [
     {
       key: "callNow" as const,
       text: home.heroButtons.callNow.text,
@@ -82,7 +86,7 @@ const Hero = () => {
     setIsCallbackDialogOpen(true);
   };
 
-  const handleButtonClick = (button: (typeof heroButtons)[number]) => {
+  const handleButtonClick = (button: HeroButtonWithKey) => {
     if (button.key === "callNow") {
       handleCallNow();
       return;

@@ -37,14 +37,23 @@ const Home = () => {
   const bottomDescription =
     joinUs?.bottom?.description ||
     "The real strength of any institute is its teachers. At Turning Point, you're not just a student – you're part of a community led by the founders themselves. Your success is our responsibility. You'll experience a teaching method that's proven effective for making students fluent, confident, and genuinely interested in learning English.";
-  const bottomPointsRaw = joinUs?.bottom?.points;
-  const bottomPoints =
-    bottomPointsRaw && bottomPointsRaw.length > 0
-      ? bottomPointsRaw
+
+  const rawBottomPoints = joinUs?.bottom?.points;
+  const bottomItems =
+    rawBottomPoints && rawBottomPoints.length > 0
+      ? rawBottomPoints.map((p) =>
+          typeof p === "string"
+            ? { title: p, description: "" }
+            : {
+                title: p.title || p.description || "",
+                description: p.description || "",
+              }
+        ).filter((item) => item.title.trim().length > 0 || item.description?.trim().length)
       : bottomDescription
           .split(".")
           .map((point) => point.trim())
-          .filter(Boolean);
+          .filter(Boolean)
+          .map((sentence) => ({ title: sentence, description: "" }));
 
   const hasSignalledReady = useRef(false);
 
@@ -77,26 +86,33 @@ const Home = () => {
         <section className="py-6">
           <div className="container mx-auto px-4">
             <div className="mt-8 bg-gradient-to-r from-primary/10 via-transparent to-accent/10 border border-primary/20 rounded-xl p-4 md:p-6">
+              <div className="mb-4 flex items-center justify-between">
+                <h3 className="text-2xl md:text-3xl font-bold text-foreground">
+                  {bottomTitle}
+                </h3>
+              </div>
               <Accordion
                 type="single"
                 collapsible
-                defaultValue="you-belong-here"
+                defaultValue="you-belong-0"
                 className="w-full"
               >
-                <AccordionItem value="you-belong-here" className="border-none">
-                  <AccordionTrigger className="text-left px-0">
-                    <h3 className="text-xl md:text-2xl font-bold text-foreground">
-                      {bottomTitle}
-                    </h3>
-                  </AccordionTrigger>
-                  <AccordionContent className="px-0">
-                    <ul className="list-disc md:list-outside space-y-2 text-muted-foreground text-sm md:text-base pl-5 marker:text-primary">
-                      {bottomPoints.map((point, index) => (
-                        <li key={index}>{point}.</li>
-                      ))}
-                    </ul>
-                  </AccordionContent>
-                </AccordionItem>
+                {bottomItems.map((item, index) => (
+                  <AccordionItem
+                    key={index}
+                    value={`you-belong-${index}`}
+                    className="border-b last:border-b-0"
+                  >
+                    <AccordionTrigger className="text-left hover:no-underline hover:text-primary data-[state=open]:text-primary transition-colors py-3">
+                      <span className="text-base md:text-lg font-semibold text-foreground">
+                        {item.title}
+                      </span>
+                    </AccordionTrigger>
+                    <AccordionContent className="text-muted-foreground text-sm md:text-base leading-relaxed">
+                      {item.description || item.title}
+                    </AccordionContent>
+                  </AccordionItem>
+                ))}
               </Accordion>
             </div>
           </div>
