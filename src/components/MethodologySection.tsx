@@ -100,25 +100,28 @@ const MethodologySection = () => {
                 >
                   <div className="p-5 md:p-6 space-y-5">
                     {/* Images Section - Displayed First */}
-                    {section.images && section.images.length > 0 && (
-                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                        {section.images.map((image, imgIdx) => (
-                          <div
-                            key={imgIdx}
-                            className="overflow-hidden rounded-lg shadow-medium"
-                          >
-                            <img
-                              src={resolveImageSrc(image.src)}
-                              alt={image.alt || `Section image ${imgIdx + 1}`}
-                              className="w-full h-48 object-cover hover:scale-105 transition-transform duration-300"
-                              onError={(e) => {
-                                (e.target as HTMLImageElement).style.display = 'none';
-                              }}
-                            />
-                          </div>
-                        ))}
-                      </div>
-                    )}
+                    {section.images &&
+                      section.images.some((image) => image?.src && image.src.trim() !== "") && (
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                          {section.images
+                            .filter((image) => image?.src && image.src.trim() !== "")
+                            .map((image, imgIdx) => (
+                              <div
+                                key={imgIdx}
+                                className="overflow-hidden rounded-lg shadow-medium"
+                              >
+                                <img
+                                  src={resolveImageSrc(image.src)}
+                                  alt={image.alt || `Section image ${imgIdx + 1}`}
+                                  className="w-full h-48 object-cover hover:scale-105 transition-transform duration-300"
+                                  onError={(e) => {
+                                    (e.target as HTMLImageElement).style.display = 'none';
+                                  }}
+                                />
+                              </div>
+                            ))}
+                        </div>
+                      )}
 
                     {/* Description Section */}
                     {(() => {
@@ -126,7 +129,7 @@ const MethodologySection = () => {
                         ? section.description
                         : (section.intro || "");
                       return desc ? (
-                        <p className="text-muted-foreground text-sm md:text-base leading-relaxed">{desc}</p>
+                        <p className="mt-0 text-muted-foreground text-sm md:text-base leading-relaxed">{desc}</p>
                       ) : null;
                     })()}
 

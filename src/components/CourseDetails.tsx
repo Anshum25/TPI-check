@@ -13,6 +13,9 @@ const CourseDetails = () => {
   const words = rawTitle.split(" ");
   const lastWord = words.pop() || "";
   const leading = words.join(" ");
+  const schedule = (co?.schedule || []).filter(
+    (group) => (group.items || []).length > 0,
+  );
   return (
     <section className="py-6 md:py-20 relative overflow-hidden bg-gradient-to-br from-rose-50/80 via-blue-50/60 to-purple-50/70 dark:from-rose-950/20 dark:via-blue-950/15 dark:to-purple-950/25">
       {/* Decorative background elements */}
@@ -37,26 +40,30 @@ const CourseDetails = () => {
             {/* Left - Schedule Card (on desktop) / Last (on mobile) */}
             <div className="order-2 md:order-1 bg-card border border-border/60 rounded-2xl shadow-soft p-6 md:p-8">
               <h3 className="text-2xl font-bold text-foreground mb-8">{co?.titleHighlight ? `${co.titleHighlight} Schedule` : 'Batch Schedule'}</h3>
-              {(co?.schedule || [
-                { heading: 'Morning', color: 'accent', items: [{label:'Batch 1', time:'8:00 am to 9:30 am'},{label:'Batch 2', time:'9:30 am to 11:00 am'},{label:'Batch 3', time:'11:00 am to 12:30 pm'}] },
-                { heading: 'Afternoon', color: 'primary', items: [] },
-                { heading: 'Evening', color: 'accent', items: [{label:'Batch 4', time:'6:00 pm to 7:30 pm'},{label:'Batch 5', time:'7:30 pm to 9:00 pm'}] },
-              ]).map((g, gi, arr) => (
-                <div key={gi} className={gi < arr.length - 1 ? 'mb-8' : ''}>
-                  <h4 className="text-lg font-bold text-foreground mb-4 flex items-center gap-3">
-                    <span className={`w-1 h-6 ${gi === 0 ? 'bg-accent' : gi === 1 ? 'bg-primary' : 'bg-accent'} rounded-full`}></span>
-                    {g.heading}
-                  </h4>
-                  <div className="space-y-3 ml-0 md:ml-4">
-                    {(g.items || []).map((it, ii) => (
-                      <div key={ii} className={`flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 pb-3 ${ii < (g.items?.length || 0) - 1 ? 'border-b border-border/40' : ''}`}>
-                        <span className="text-muted-foreground text-sm md:text-base whitespace-nowrap">{it.label}</span>
-                        <span className="font-semibold text-foreground text-sm md:text-base whitespace-nowrap">{it.time}</span>
-                      </div>
-                    ))}
+              {schedule.map((g, gi, arr) => {
+                const colorClass = g.color === 'primary' ? 'bg-primary' : 'bg-accent';
+                return (
+                  <div key={gi} className={gi < arr.length - 1 ? 'mb-8' : ''}>
+                    <h4 className="text-lg font-bold text-foreground mb-4 flex items-center gap-3">
+                      <span className={`w-1 h-6 ${colorClass} rounded-full`}></span>
+                      {g.heading}
+                    </h4>
+                    <div className="space-y-3 ml-0 md:ml-4">
+                      {(g.items || []).map((it, ii) => (
+                        <div
+                          key={ii}
+                          className={`flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 pb-3 ${
+                            ii < (g.items?.length || 0) - 1 ? 'border-b border-border/40' : ''
+                          }`}
+                        >
+                          <span className="text-muted-foreground text-sm md:text-base whitespace-nowrap">{it.label}</span>
+                          <span className="font-semibold text-foreground text-sm md:text-base whitespace-nowrap">{it.time}</span>
+                        </div>
+                      ))}
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
 
             {/* CTA Section - Mobile only (below Batch Schedule) */}

@@ -6,6 +6,8 @@ import { DEFAULT_CONTENT, useContent } from "@/lib/content";
 import googleLogo from "@/assets/google.svg";
 import facebookLogo from "@/assets/facebook.svg";
 import justdialLogo from "@/assets/justdial.svg";
+import { useEffect } from "react";
+import { useLocation } from "react-router-dom";
 
 const Reviews = () => {
   const { content } = useContent();
@@ -61,6 +63,28 @@ const Reviews = () => {
   const facebookSection = reviews.sections?.facebook;
   const justdialSection = reviews.sections?.justdial;
 
+  const location = useLocation();
+
+  // Scroll to section when /reviews is opened with a hash (#google-reviews)
+  // or when navigation state provides a target id (scrollTo).
+  useEffect(() => {
+    const state = (location.state as { scrollTo?: string } | null) || null;
+    const idFromState = state?.scrollTo;
+    const idFromHash = location.hash ? location.hash.replace("#", "") : "";
+    const id = idFromState || idFromHash;
+
+    if (!id) return;
+
+    const timeout = setTimeout(() => {
+      const el = document.getElementById(id);
+      if (el) {
+        el.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    }, 100);
+
+    return () => clearTimeout(timeout);
+  }, [location]);
+
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
@@ -77,7 +101,10 @@ const Reviews = () => {
        
 
         {/* Google Reviews */}
-        <section className="py-16 md:py-20 relative overflow-hidden bg-gradient-to-br from-rose-50/60 via-blue-50/50 to-purple-50/60 dark:from-rose-950/15 dark:via-blue-950/10 dark:to-purple-950/15">
+        <section
+          id="google-reviews"
+          className="py-16 md:py-20 relative overflow-hidden bg-gradient-to-br from-rose-50/60 via-blue-50/50 to-purple-50/60 dark:from-rose-950/15 dark:via-blue-950/10 dark:to-purple-950/15"
+        >
           <div className="container mx-auto px-4 relative z-10">
             <div className="text-center">
               <SectionHeader
@@ -119,7 +146,10 @@ const Reviews = () => {
           </div>
         </section>
           {/* JustDial Reviews */}
-        <section className="py-16">
+        <section
+          id="justdial-reviews"
+          className="py-16"
+        >
           <div className="container mx-auto px-4">
             <div className="text-center">
               <SectionHeader
@@ -162,7 +192,10 @@ const Reviews = () => {
         </section>
 
         {/* Facebook Reviews */}
-        <section className="py-16">
+        <section
+          id="facebook-reviews"
+          className="py-16"
+        >
           <div className="container mx-auto px-4">
             <div className="text-center">
               <SectionHeader
