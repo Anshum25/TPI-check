@@ -41,22 +41,46 @@ const Footer = () => {
 
             <div className="flex items-center gap-3">
               {content.footer.socialMedia.instagram && (
-                <a href={content.footer.socialMedia.instagram} aria-label="Instagram" className="h-9 w-9 rounded-full bg-white/10 hover:bg-white/20 transition-colors flex items-center justify-center">
+                <a
+                  href={content.footer.socialMedia.instagram}
+                  aria-label="Instagram"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="h-9 w-9 rounded-full bg-white/10 hover:bg-white/20 transition-colors flex items-center justify-center"
+                >
                   <Instagram className="h-4 w-4" />
                 </a>
               )}
               {content.footer.socialMedia.facebook && (
-                <a href={content.footer.socialMedia.facebook} aria-label="Facebook" className="h-9 w-9 rounded-full bg-white/10 hover:bg-white/20 transition-colors flex items-center justify-center">
+                <a
+                  href={content.footer.socialMedia.facebook}
+                  aria-label="Facebook"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="h-9 w-9 rounded-full bg-white/10 hover:bg-white/20 transition-colors flex items-center justify-center"
+                >
                   <Facebook className="h-4 w-4" />
                 </a>
               )}
               {content.footer.socialMedia.twitter && (
-                <a href={content.footer.socialMedia.twitter} aria-label="Twitter" className="h-9 w-9 rounded-full bg-white/10 hover:bg-white/20 transition-colors flex items-center justify-center">
+                <a
+                  href={content.footer.socialMedia.twitter}
+                  aria-label="Twitter"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="h-9 w-9 rounded-full bg-white/10 hover:bg-white/20 transition-colors flex items-center justify-center"
+                >
                   <Twitter className="h-4 w-4" />
                 </a>
               )}
               {content.footer.socialMedia.linkedin && (
-                <a href={content.footer.socialMedia.linkedin} aria-label="LinkedIn" className="h-9 w-9 rounded-full bg-white/10 hover:bg-white/20 transition-colors flex items-center justify-center">
+                <a
+                  href={content.footer.socialMedia.linkedin}
+                  aria-label="LinkedIn"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="h-9 w-9 rounded-full bg-white/10 hover:bg-white/20 transition-colors flex items-center justify-center"
+                >
                   <Linkedin className="h-4 w-4" />
                 </a>
               )}

@@ -2217,35 +2217,33 @@ const Admin = () => {
                                 (e.target as HTMLImageElement).style.display = 'none';
                               }}
                             />
-                            {image.src.startsWith('data:') && (
-                              <Button
-                                type="button"
-                                size="icon"
-                                variant="destructive"
-                                className="absolute top-1 right-1 h-5 w-5"
-                                onClick={() => {
-                                  setContent((prev) => ({
-                                    ...prev,
-                                    home: {
-                                      ...prev.home,
-                                      methodologySections: prev.home.methodologySections.map((s, i) =>
-                                        i === index
-                                          ? {
-                                              ...s,
-                                              images: Array.from({ length: 3 }, (_, idx) => {
-                                                if (idx === imgIdx) return { src: "", alt: "" };
-                                                return (s.images || [])[idx] || { src: "", alt: "" };
-                                              }),
-                                            }
-                                          : s
-                                      ),
-                                    },
-                                  }));
-                                }}
-                              >
-                                <X className="h-3 w-3" />
-                              </Button>
-                            )}
+                            <Button
+                              type="button"
+                              size="icon"
+                              variant="destructive"
+                              className="absolute top-1 right-1 h-5 w-5"
+                              onClick={() => {
+                                setContent((prev) => ({
+                                  ...prev,
+                                  home: {
+                                    ...prev.home,
+                                    methodologySections: prev.home.methodologySections.map((s, i) =>
+                                      i === index
+                                        ? {
+                                            ...s,
+                                            images: Array.from({ length: 3 }, (_, idx) => {
+                                              if (idx === imgIdx) return { src: "", alt: "" };
+                                              return (s.images || [])[idx] || { src: "", alt: "" };
+                                            }),
+                                          }
+                                        : s
+                                    ),
+                                  },
+                                }));
+                              }}
+                            >
+                              <X className="h-3 w-3" />
+                            </Button>
                           </div>
                         )}
                         <div className="flex gap-1">
@@ -2307,7 +2305,7 @@ const Admin = () => {
                   </div>
                 </div>
 
-                {index === 1 && (
+                {/* {index === 1 && (
                   <div className="space-y-2">
                     <Label>Objectives Title (Section 2)</Label>
                     <Input
@@ -2325,9 +2323,9 @@ const Admin = () => {
                       }
                     />
                   </div>
-                )}
+                )} */}
 
-                {index === 1 && (
+                {/* {index === 1 && (
                   <div className="space-y-2">
                     <Label>Objectives (Section 2)</Label>
                     <div className="space-y-2">
@@ -2389,7 +2387,7 @@ const Admin = () => {
                                 </div>
                     
                   </div>
-                )}
+                )} */}
               </div>
             ))}
           </div>
@@ -3301,6 +3299,7 @@ const Admin = () => {
 
   const renderFooterEditor = () => (
     <div className="space-y-8">
+      {/* Institute info */}
       <Card
         className="shadow-soft w-full"
         onMouseEnter={() => setActiveSubSection('footer-institute')}
@@ -3355,81 +3354,150 @@ const Admin = () => {
         </CardContent>
       </Card>
 
+      {/* Quick links */}
       <Card
-  className="shadow-soft w-full"
-  onMouseEnter={() => setActiveSubSection('footer-quick-links')}
-  onFocus={() => setActiveSubSection('footer-quick-links')}
->
-  <CardHeader>
-    <CardTitle>Quick Links</CardTitle>
-    <CardDescription>
-      Navigation link labels displayed in the footer.
-    </CardDescription>
-  </CardHeader>
+        className="shadow-soft w-full"
+        onMouseEnter={() => setActiveSubSection('footer-quick-links')}
+        onFocus={() => setActiveSubSection('footer-quick-links')}
+      >
+        <CardHeader>
+          <CardTitle>Quick Links</CardTitle>
+          <CardDescription>
+            Navigation link labels displayed in the footer.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          {Array.from({ length: 5 }, (_, i) => i).map((index) => {
+            const linkValue = content.footer.quickLinks?.[index];
+            const link =
+              typeof linkValue === "string"
+                ? linkValue
+                : typeof linkValue === "object" && linkValue !== null && "label" in linkValue
+                ? (linkValue as { label: string }).label
+                : "";
 
-  <CardContent className="space-y-3">
-    {Array.from({ length: 5 }, (_, i) => i).map((index) => {
-      const linkValue = content.footer.quickLinks?.[index];
-      const link =
-        typeof linkValue === "string"
-          ? linkValue
-          : typeof linkValue === "object" && linkValue !== null && "label" in linkValue
-          ? (linkValue as { label: string }).label
-          : "";
+            return (
+              <div key={index} className="flex items-center gap-3">
+                <Input
+                  placeholder={`Link ${index + 1}`}
+                  value={link}
+                  className="flex-1"
+                  onChange={(e) => {
+                    setContent((prev) => {
+                      const newLinks = [...(prev.footer.quickLinks || [])];
+                      newLinks[index] = e.target.value;
 
-      return (
-        <div key={index} className="flex items-center gap-3">
-          <Input
-            placeholder={`Link ${index + 1}`}
-            value={link}
-            className="flex-1"
-            onChange={(e) => {
-              setContent((prev) => {
-                const newLinks = [...(prev.footer.quickLinks || [])];
-                newLinks[index] = e.target.value;
+                      while (newLinks.length < 5) {
+                        newLinks.push("");
+                      }
 
-                while (newLinks.length < 5) {
-                  newLinks.push("");
-                }
+                      return {
+                        ...prev,
+                        footer: {
+                          ...prev.footer,
+                          quickLinks: newLinks.slice(0, 5),
+                        },
+                      };
+                    });
+                  }}
+                />
+              </div>
+            );
+          })}
+        </CardContent>
+      </Card>
 
-                return {
+      {/* Social media URLs */}
+      <Card
+        className="shadow-soft w-full"
+        onMouseEnter={() => setActiveSubSection('footer-social')}
+        onFocus={() => setActiveSubSection('footer-social')}
+      >
+        <CardHeader>
+          <CardTitle>Social Media Links</CardTitle>
+          <CardDescription>URLs for the social icons shown in the footer.</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="footerInstagram">Instagram URL</Label>
+            <Input
+              id="footerInstagram"
+              value={content.footer.socialMedia.instagram}
+              onChange={(e) =>
+                setContent((prev) => ({
                   ...prev,
                   footer: {
                     ...prev.footer,
-                    quickLinks: newLinks.slice(0, 5),
+                    socialMedia: {
+                      ...prev.footer.socialMedia,
+                      instagram: e.target.value,
+                    },
                   },
-                };
-              });
-            }}
-          />
-
-          {/* <Button
-            type="button"
-            size="icon"
-            variant="ghost"
-            onClick={() => {
-              setContent((prev) => {
-                const newLinks = [...(prev.footer.quickLinks || [])];
-                newLinks[index] = "";
-                return {
+                }))
+              }
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="footerFacebook">Facebook URL</Label>
+            <Input
+              id="footerFacebook"
+              value={content.footer.socialMedia.facebook}
+              onChange={(e) =>
+                setContent((prev) => ({
                   ...prev,
                   footer: {
                     ...prev.footer,
-                    quickLinks: newLinks.slice(0, 5),
+                    socialMedia: {
+                      ...prev.footer.socialMedia,
+                      facebook: e.target.value,
+                    },
                   },
-                };
-              });
-            }}
-          >
-            <Trash2 className="h-4 w-4" />
-          </Button> */}
-        </div>
-      );
-    })}
-  </CardContent>
-</Card>
+                }))
+              }
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="footerTwitter">Twitter URL</Label>
+            <Input
+              id="footerTwitter"
+              value={content.footer.socialMedia.twitter}
+              onChange={(e) =>
+                setContent((prev) => ({
+                  ...prev,
+                  footer: {
+                    ...prev.footer,
+                    socialMedia: {
+                      ...prev.footer.socialMedia,
+                      twitter: e.target.value,
+                    },
+                  },
+                }))
+              }
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="footerLinkedin">LinkedIn URL</Label>
+            <Input
+              id="footerLinkedin"
+              value={content.footer.socialMedia.linkedin}
+              onChange={(e) =>
+                setContent((prev) => ({
+                  ...prev,
+                  footer: {
+                    ...prev.footer,
+                    socialMedia: {
+                      ...prev.footer.socialMedia,
+                      linkedin: e.target.value,
+                    },
+                  },
+                }))
+              }
+            />
+          </div>
+        </CardContent>
+      </Card>
 
-
+      {/* What We Do */}
       <Card
         className="shadow-soft w-full"
         onMouseEnter={() => setActiveSubSection('footer-what-we-do')}
@@ -3444,37 +3512,35 @@ const Admin = () => {
             {Array.from({ length: 3 }, (_, i) => i).map((index) => {
               const item = (content.footer.whatWeDo || [])[index] || "";
               return (
-              <div key={index} className="flex items-center gap-2">
-
-                <Input
-                  className="flex-1"
-                  value={item}
-                  onChange={(e) => {
-                    setContent((prev) => {
-                      const newWhatWeDo = [...(prev.footer.whatWeDo || [])];
-                      newWhatWeDo[index] = e.target.value;
-                      // Ensure exactly 3 items
-                      while (newWhatWeDo.length < 3) {
-                        newWhatWeDo.push("");
-                      }
-                      return {
-                        ...prev,
-                        footer: {
-                          ...prev.footer,
-                          whatWeDo: newWhatWeDo.slice(0, 3),
-                        },
-                      };
-                    });
-                  }}
-                />
-                
-              </div>
+                <div key={index} className="flex items-center gap-2">
+                  <Input
+                    className="flex-1"
+                    value={item}
+                    onChange={(e) => {
+                      setContent((prev) => {
+                        const newWhatWeDo = [...(prev.footer.whatWeDo || [])];
+                        newWhatWeDo[index] = e.target.value;
+                        while (newWhatWeDo.length < 3) {
+                          newWhatWeDo.push("");
+                        }
+                        return {
+                          ...prev,
+                          footer: {
+                            ...prev.footer,
+                            whatWeDo: newWhatWeDo.slice(0, 3),
+                          },
+                        };
+                      });
+                    }}
+                  />
+                </div>
               );
             })}
           </div>
         </CardContent>
       </Card>
 
+      {/* Contact info */}
       <Card
         className="shadow-soft w-full"
         onMouseEnter={() => setActiveSubSection('footer-contact')}
@@ -3538,6 +3604,7 @@ const Admin = () => {
         </CardContent>
       </Card>
 
+      {/* Copyright */}
       <Card
         className="shadow-soft w-full"
         onMouseEnter={() => setActiveSubSection('footer-copyright')}
@@ -3566,806 +3633,11 @@ const Admin = () => {
     </div>
   );
 
-  const renderAboutEditor = () => (
-    <>
-      <Card 
-        className="shadow-soft"
-        onMouseEnter={() => setActiveSubSection('about-hero')}
-        onFocus={() => setActiveSubSection('about-hero')}
-      >
-        <CardHeader>
-          <CardTitle>About Hero</CardTitle>
-          <CardDescription>Title and subtitle shown in the about hero section.</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <Input
-            placeholder="Hero Title"
-            value={content.about.hero.title}
-            onChange={(e) =>
-              setContent((prev) => ({
-                ...prev,
-                about: { ...prev.about, hero: { ...prev.about.hero, title: e.target.value } },
-              }))
-            }
-          />
-          <Textarea
-            rows={2}
-            placeholder="Hero Subtitle"
-            value={content.about.hero.subtitle}
-            onChange={(e) =>
-              setContent((prev) => ({
-                ...prev,
-                about: { ...prev.about, hero: { ...prev.about.hero, subtitle: e.target.value } },
-              }))
-            }
-          />
-        </CardContent>
-      </Card>
-
-      <Card 
-        className="shadow-soft"
-        onMouseEnter={() => setActiveSubSection('about-highlight')}
-        onFocus={() => setActiveSubSection('about-highlight')}
-      >
-        <CardHeader>
-          <CardTitle>About Highlight</CardTitle>
-          <CardDescription>Edit the heading and paragraphs in the highlight section.</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <Label>Heading (Primary)</Label>
-            <Input
-              value={content.about.highlight?.headingPrimary || ""}
-              onChange={(e) =>
-                setContent((prev) => ({
-                  ...prev,
-                  about: {
-                    ...prev.about,
-                    highlight: { ...(prev.about.highlight || { headingPrimary: "", headingSecondary: "", paragraphs: [] }), headingPrimary: e.target.value },
-                  },
-                }))
-              }
-            />
-          </div>
-          <div className="space-y-2">
-            <Label>Heading (Secondary)</Label>
-            <Input
-              value={content.about.highlight?.headingSecondary || ""}
-              onChange={(e) =>
-                setContent((prev) => ({
-                  ...prev,
-                  about: {
-                    ...prev.about,
-                    highlight: { ...(prev.about.highlight || { headingPrimary: "", headingSecondary: "", paragraphs: [] }), headingSecondary: e.target.value },
-                  },
-                }))
-              }
-            />
-          </div>
-          <div className="space-y-3">
-            <Label>Paragraphs</Label>
-            {(() => {
-              // Ensure exactly 2 paragraphs
-              const paragraphs = content.about.highlight?.paragraphs || [];
-              const normalizedParagraphs = [...paragraphs];
-              while (normalizedParagraphs.length < 2) {
-                normalizedParagraphs.push("");
-              }
-              return normalizedParagraphs.slice(0, 2).map((p, index) => (
-                <div key={index} className="space-y-2 rounded border p-3">
-                  <div className="flex items-center justify-between">
-                    <Label className="text-xs text-muted-foreground">Paragraph {index + 1}</Label>
-                  </div>
-                  <Textarea
-                    rows={3}
-                    value={p}
-                    onChange={(e) => {
-                      const updated = [...normalizedParagraphs];
-                      updated[index] = e.target.value;
-                      setContent((prev) => ({
-                        ...prev,
-                        about: {
-                          ...prev.about,
-                          highlight: {
-                            ...(prev.about.highlight || { headingPrimary: "", headingSecondary: "", paragraphs: [] }),
-                            paragraphs: updated.slice(0, 2),
-                          },
-                        },
-                      }));
-                    }}
-                  />
-                </div>
-              ));
-            })()}
-          </div>
-        </CardContent>
-      </Card>
-
-      <Card 
-        className="shadow-soft"
-        onMouseEnter={() => setActiveSubSection('about-story')}
-        onFocus={() => setActiveSubSection('about-story')}
-      >
-        <CardHeader>
-          <CardTitle>Our Story</CardTitle>
-          <CardDescription>Edit each paragraph of the story section.</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {(() => {
-            // Ensure exactly 3 paragraphs
-            const story = content.about.story || [];
-            const normalizedStory = [...story];
-            while (normalizedStory.length < 3) {
-              normalizedStory.push("");
-            }
-            return normalizedStory.slice(0, 3).map((paragraph, index) => (
-              <div key={index} className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <Label>Paragraph {index + 1}</Label>
-                </div>
-                <Textarea
-                  rows={3}
-                  value={paragraph}
-                  onChange={(e) => {
-                    const updated = [...normalizedStory];
-                    updated[index] = e.target.value;
-                    setContent((prev) => ({
-                      ...prev,
-                      about: { ...prev.about, story: updated.slice(0, 3) },
-                    }));
-                  }}
-                />
-              </div>
-            ));
-          })()}
-        </CardContent>
-      </Card>
-
-      <Card 
-        className="shadow-soft"
-        onMouseEnter={() => setActiveSubSection('about-amenities')}
-        onFocus={() => setActiveSubSection('about-amenities')}
-      >
-        <CardHeader>
-          <CardTitle>Amenities</CardTitle>
-          <CardDescription>Edit the amenities title, description, list, and images.</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          <div className="grid gap-3 md:grid-cols-2">
-            <div className="space-y-2">
-              <Label>Title</Label>
-              <Input
-                value={content.about.amenities?.title || ""}
-                onChange={(e) =>
-                  setContent((prev) => ({
-                    ...prev,
-                    about: {
-                      ...prev.about,
-                      amenities: { ...(prev.about.amenities || { title: "", description: "", amenitiesList: [], carouselImages: [] }), title: e.target.value },
-                    },
-                  }))
-                }
-              />
-            </div>
-            <div className="space-y-2">
-              <Label>Description</Label>
-              <Textarea
-                rows={3}
-                value={content.about.amenities?.description || ""}
-                onChange={(e) =>
-                  setContent((prev) => ({
-                    ...prev,
-                    about: {
-                      ...prev.about,
-                      amenities: { ...(prev.about.amenities || { title: "", description: "", amenitiesList: [], carouselImages: [] }), description: e.target.value },
-                    },
-                  }))
-                }
-              />
-            </div>
-          </div>
-
-          <div className="space-y-3">
-            <Label>Amenities List</Label>
-            {Array.from({ length: 6 }, (_, i) => i).map((index) => {
-              const amenitiesList = content.about.amenities?.amenitiesList || [];
-              const item = amenitiesList[index] || "";
-              return (
-                <div key={index} className="flex items-center gap-2">
-                  <Input
-                    className="flex-1"
-                    placeholder={`Amenity ${index + 1}`}
-                    value={item}
-                    onChange={(e) => {
-                      setContent((prev) => {
-                        const currentList = prev.about.amenities?.amenitiesList || [];
-                        const newList = [...currentList];
-                        // Ensure array has at least index+1 items
-                        while (newList.length <= index) {
-                          newList.push("");
-                        }
-                        newList[index] = e.target.value;
-                        // Ensure exactly 6 items
-                        while (newList.length < 6) {
-                          newList.push("");
-                        }
-                        return {
-                          ...prev,
-                          about: {
-                            ...prev.about,
-                            amenities: {
-                              ...(prev.about.amenities || { title: "", description: "", amenitiesList: [], carouselImages: [] }),
-                              amenitiesList: newList.slice(0, 6),
-                            },
-                          },
-                        };
-                      });
-                    }}
-                  />
-                  <Button
-                    type="button"
-                    size="icon"
-                    variant="ghost"
-                    onClick={() => {
-                      setContent((prev) => {
-                        const currentList = prev.about.amenities?.amenitiesList || [];
-                        const newList = [...currentList];
-                        newList[index] = "";
-                        // Ensure exactly 6 items
-                        while (newList.length < 6) {
-                          newList.push("");
-                        }
-                        return {
-                          ...prev,
-                          about: {
-                            ...prev.about,
-                            amenities: {
-                              ...(prev.about.amenities || { title: "", description: "", amenitiesList: [], carouselImages: [] }),
-                              amenitiesList: newList.slice(0, 6),
-                            },
-                          },
-                        };
-                      });
-                    }}
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                </div>
-              );
-            })}
-          </div>
-
-          <div className="space-y-3">
-            <Label>Carousel Images (upload)</Label>
-            {(content.about.amenities?.carouselImages || []).map((item, index) => (
-              <div key={index} className="flex items-center gap-3">
-                <div className="w-16 h-16 rounded overflow-hidden border bg-muted flex-shrink-0">
-                  {item ? (
-                    <img src={item} alt={`Amenity ${index + 1}`} className="w-full h-full object-cover" />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center text-xs text-muted-foreground">No image</div>
-                  )}
-                </div>
-                <div className="flex-1 flex items-center gap-2">
-                  <Input
-                    className="flex-1"
-                    type="file"
-                    accept="image/*"
-                    onChange={async (e) => {
-                      const file = e.target.files?.[0];
-                      if (!file) return;
-                      try {
-                        toast({ title: "Uploading image...", description: "Please wait while we upload to Cloudinary." });
-                        const cloudinaryUrl = await uploadImageToCloudinary(file);
-                        setContent((prev) => ({
-                          ...prev,
-                          about: {
-                            ...prev.about,
-                            amenities: {
-                              ...(prev.about.amenities || { title: "", description: "", amenitiesList: [], carouselImages: [] }),
-                              carouselImages: (prev.about.amenities?.carouselImages || []).map((a, i) =>
-                                i === index ? cloudinaryUrl : a
-                              ),
-                            },
-                          },
-                        }));
-                        toast({ title: "Image uploaded", description: "Image successfully uploaded to Cloudinary." });
-                      } catch (error) {
-                        // Error already handled in uploadImageToCloudinary
-                      }
-                      e.target.value = "";
-                    }}
-                  />
-                  <Button
-                    type="button"
-                    size="icon"
-                    variant="ghost"
-                    onClick={() =>
-                      setContent((prev) => ({
-                        ...prev,
-                        about: {
-                          ...prev.about,
-                          amenities: {
-                            ...(prev.about.amenities || { title: "", description: "", amenitiesList: [], carouselImages: [] }),
-                            carouselImages: (prev.about.amenities?.carouselImages || []).filter((_, i) => i !== index),
-                          },
-                        },
-                      }))
-                    }
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                </div>
-              </div>
-            ))}
-            <Button
-              variant="outline"
-              className="flex items-center gap-2"
-              onClick={() =>
-                setContent((prev) => ({
-                  ...prev,
-                  about: {
-                    ...prev.about,
-                    amenities: {
-                      ...(prev.about.amenities || { title: "", description: "", amenitiesList: [], carouselImages: [] }),
-                      carouselImages: [...(prev.about.amenities?.carouselImages || []), ""],
-                    },
-                  },
-                }))
-              }
-            >
-              <Plus className="h-4 w-4" />
-              Add Image
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
-
-        <Card 
-        className="shadow-soft"
-        onMouseEnter={() => setActiveSubSection('about-community')}
-        onFocus={() => setActiveSubSection('about-community')}
-      >
-        <CardHeader>
-          <CardTitle>Serving the Community</CardTitle>
-          <CardDescription>Edit the heading and description for the community section.</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <Label>Heading</Label>
-            <Input
-              value={content.about.community?.heading || ""}
-              onChange={(e) =>
-                setContent((prev) => {
-                  const existingCommunity = prev.about.community || {};
-                  return {
-                    ...prev,
-                    about: {
-                      ...prev.about,
-                      community: { 
-                        heading: e.target.value, 
-                        description: (existingCommunity as any).description || (existingCommunity as any).title || "" 
-                      },
-                    },
-                  };
-                })
-              }
-            />
-          </div>
-          <div className="space-y-2">
-            <Label>Description</Label>
-            <Textarea
-              rows={4}
-              value={content.about.community?.description || ""}
-              onChange={(e) =>
-                setContent((prev) => {
-                  const existingCommunity = prev.about.community || {};
-                  return {
-                    ...prev,
-                    about: {
-                      ...prev.about,
-                      community: { 
-                        heading: (existingCommunity as any).heading || (existingCommunity as any).title || "", 
-                        description: e.target.value 
-                      },
-                    },
-                  };
-                })
-              }
-            />
-          </div>
-        </CardContent>
-      </Card>
-
-      {renderCardListEditor("Core Values", content.about.coreValues || [], (next) => {
-        // Ensure exactly 3 items
-        const normalized = [...next];
-        while (normalized.length < 3) {
-          normalized.push({ title: "", description: "" });
-        }
-        setContent((prev) => ({
-          ...prev,
-          about: { ...prev.about, coreValues: normalized.slice(0, 3) },
-        }));
-      }, 'about-core-values', 3)}
-
-      {renderCardListEditor("Why We're Different", content.about.differentiators || [], (next) => {
-        // Ensure exactly 3 items
-        const normalized = [...next];
-        while (normalized.length < 3) {
-          normalized.push({ title: "", description: "" });
-        }
-        setContent((prev) => ({
-          ...prev,
-          about: { ...prev.about, differentiators: normalized.slice(0, 3) },
-        }));
-      }, 'about-differentiators', 3)}
-
-    </>
-  );
-
-  
-
-  const renderCardListEditor = (
-    title: string,
-    list: { title: string; description: string }[],
-    onChange: (next: { title: string; description: string }[]) => void,
-    subsectionId?: string,
-    maxItems?: number,
-  ) => {
-    // Ensure list has exactly maxItems if specified
-    const normalizedList = maxItems ? (() => {
-      const normalized = [...list];
-      while (normalized.length < maxItems) {
-        normalized.push({ title: "", description: "" });
-      }
-      return normalized.slice(0, maxItems);
-    })() : list;
-    
-    return (
-    <Card 
-      className="shadow-soft"
-      onMouseEnter={subsectionId ? () => setActiveSubSection(subsectionId) : undefined}
-      onFocus={subsectionId ? () => setActiveSubSection(subsectionId) : undefined}
-    >
-      <CardHeader>
-        <CardTitle>{title}</CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        {normalizedList.map((item, index) => (
-          <div key={index} className="rounded-lg border p-4 space-y-3">
-            <div className="flex items-center justify-between">
-              <Label>Card {index + 1}</Label>
-              {!maxItems && (
-                <Button variant="ghost" size="icon" onClick={() => onChange(normalizedList.filter((_, i) => i !== index))}>
-                  <Trash2 className="h-4 w-4" />
-                </Button>
-              )}
-            </div>
-            <Input
-              placeholder="Title"
-              value={item.title}
-              onChange={(e) =>
-                onChange(
-                  list.map((entry, i) => (i === index ? { ...entry, title: e.target.value } : entry)),
-                )
-              }
-            />
-            <Textarea
-              rows={2}
-              placeholder="Description"
-              value={item.description}
-              onChange={(e) =>
-                onChange(
-                  normalizedList.map((entry, i) => (i === index ? { ...entry, description: e.target.value } : entry)),
-                )
-              }
-            />
-          </div>
-        ))}
-        
-      </CardContent>
-    </Card>
-    );
-  };
-
-  const handleAboutStoryChange = (index: number, value: string) => {
-    setContent((prev) => ({
-      ...prev,
-      about: { ...prev.about, story: prev.about.story.map((paragraph, i) => (i === index ? value : paragraph)) },
-    }));
-  };
-
-
-
-  const renderCoursesEditor = () => (
-    <>
-      <Card 
-        className="shadow-soft"
-        onMouseEnter={() => setActiveSubSection('courses-hero')}
-        onFocus={() => setActiveSubSection('courses-hero')}
-      >
-        <CardHeader>
-          <CardTitle>Courses Hero</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <Input
-            placeholder="Hero Title"
-            value={content.courses.hero.title}
-            onChange={(e) =>
-              setContent((prev) => ({
-                ...prev,
-                courses: { ...prev.courses, hero: { ...prev.courses.hero, title: e.target.value } },
-              }))
-            }
-          />
-          <Textarea
-            rows={2}
-            placeholder="Hero Subtitle"
-            value={content.courses.hero.subtitle}
-            onChange={(e) =>
-              setContent((prev) => ({
-                ...prev,
-                courses: { ...prev.courses, hero: { ...prev.courses.hero, subtitle: e.target.value } },
-              }))
-            }
-          />
-        </CardContent>
-      </Card>
-
-      <Card 
-        className="shadow-soft"
-        onMouseEnter={() => setActiveSubSection('courses-grid')}
-        onFocus={() => setActiveSubSection('courses-grid')}
-      >
-        <CardHeader>
-          <CardTitle>Courses</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {content.courses.courses.map((course, index) => (
-            <div key={index} className="rounded-lg border p-4 space-y-2">
-              <div className="flex items-center justify-between">
-                <Label>Course {index + 1}</Label>
-                <Button variant="ghost" size="icon" onClick={() => handleRemoveCourse(index)}>
-                  <Trash2 className="h-4 w-4" />
-                </Button>
-              </div>
-              <Input placeholder="Title" value={course.title} onChange={(e) => handleCourseChange(index, "title", e.target.value)} />
-              <Textarea rows={2} placeholder="Description" value={course.description} onChange={(e) => handleCourseChange(index, "description", e.target.value)} />
-              <Input placeholder="Duration" value={course.duration} onChange={(e) => handleCourseChange(index, "duration", e.target.value)} />
-              <Input placeholder="Students" value={course.students} onChange={(e) => handleCourseChange(index, "students", e.target.value)} />
-              <Input placeholder="Level" value={course.level} onChange={(e) => handleCourseChange(index, "level", e.target.value)} />
-            </div>
-          ))}
-          <Button variant="outline" className="flex items-center gap-2" onClick={handleAddCourse}>
-            <Plus className="h-4 w-4" />
-            Add Course
-          </Button>
-        </CardContent>
-      </Card>
-
-      <Card 
-        className="shadow-soft"
-        onMouseEnter={() => setActiveSubSection('courses-benefits')}
-        onFocus={() => setActiveSubSection('courses-benefits')}
-      >
-        <CardHeader>
-          <CardTitle>Benefits</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {content.courses.benefits.map((benefit, index) => (
-            <div key={index} className="flex gap-2">
-              <Input value={benefit} onChange={(e) => handleCourseBenefitChange(index, e.target.value)} />
-              <Button variant="ghost" size="icon" onClick={() => handleRemoveCourseBenefit(index)}>
-                <Trash2 className="h-4 w-4" />
-              </Button>
-            </div>
-          ))}
-          <Button variant="outline" className="flex items-center gap-2" onClick={handleAddCourseBenefit}>
-            <Plus className="h-4 w-4" />
-            Add Benefit
-          </Button>
-        </CardContent>
-      </Card>
-
-      <Card 
-        className="shadow-soft"
-        onMouseEnter={() => setActiveSubSection('courses-learning')}
-        onFocus={() => setActiveSubSection('courses-learning')}
-      >
-        <CardHeader>
-          <CardTitle>Learning Sections</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {content.courses.learningSections.map((section, index) => (
-            <div key={index} className="rounded-lg border p-4 space-y-2">
-              <div className="flex items-center justify-between">
-                <Label>Section {index + 1}</Label>
-                <Button variant="ghost" size="icon" onClick={() => handleRemoveLearningSection(index)}>
-                  <Trash2 className="h-4 w-4" />
-                </Button>
-              </div>
-              <Input placeholder="Title" value={section.title} onChange={(e) => handleLearningSectionChange(index, "title", e.target.value)} />
-              <Textarea
-                rows={4}
-                placeholder="Enter each item on a new line"
-                value={section.items.join("\n")}
-                onChange={(e) => handleLearningSectionChange(index, "items", e.target.value.split("\n"))}
-              />
-            </div>
-          ))}
-          <Button variant="outline" className="flex items-center gap-2" onClick={handleAddLearningSection}>
-            <Plus className="h-4 w-4" />
-            Add Section
-          </Button>
-        </CardContent>
-      </Card>
-    </>
-  );
-
-  const handleCourseChange = (
-    index: number,
-    field: "title" | "description" | "duration" | "students" | "level",
-    value: string,
-  ) => {
-    setContent((prev) => ({
-      ...prev,
-      courses: {
-        ...prev.courses,
-        courses: prev.courses.courses.map((course, i) => (i === index ? { ...course, [field]: value } : course)),
-      },
-    }));
-  };
-
-  const handleAddCourse = () => {
-    setContent((prev) => ({
-      ...prev,
-      courses: {
-        ...prev.courses,
-        courses: [...prev.courses.courses, { title: "", description: "", duration: "", students: "", level: "" }],
-      },
-    }));
-  };
-
-  const handleRemoveCourse = (index: number) => {
-    setContent((prev) => ({
-      ...prev,
-      courses: { ...prev.courses, courses: prev.courses.courses.filter((_, i) => i !== index) },
-    }));
-  };
-
-  const handleCourseBenefitChange = (index: number, value: string) => {
-    setContent((prev) => ({
-      ...prev,
-      courses: {
-        ...prev.courses,
-        benefits: prev.courses.benefits.map((benefit, i) => (i === index ? value : benefit)),
-      },
-    }));
-  };
-
-  const handleAddCourseBenefit = () => {
-    setContent((prev) => ({
-      ...prev,
-      courses: { ...prev.courses, benefits: [...prev.courses.benefits, ""] },
-    }));
-  };
-
-  const handleRemoveCourseBenefit = (index: number) => {
-    setContent((prev) => ({
-      ...prev,
-      courses: { ...prev.courses, benefits: prev.courses.benefits.filter((_, i) => i !== index) },
-    }));
-  };
-
-  const handleLearningSectionChange = (index: number, field: "title" | "items", value: string | string[]) => {
-    setContent((prev) => ({
-      ...prev,
-      courses: {
-        ...prev.courses,
-        learningSections: prev.courses.learningSections.map((section, i) =>
-          i === index ? { ...section, [field]: value } : section,
-        ),
-      },
-    }));
-  };
-
-  const handleAddLearningSection = () => {
-    setContent((prev) => ({
-      ...prev,
-      courses: { ...prev.courses, learningSections: [...prev.courses.learningSections, { title: "", items: [""] }] },
-    }));
-  };
-
-  const handleRemoveLearningSection = (index: number) => {
-    setContent((prev) => ({
-      ...prev,
-      courses: { ...prev.courses, learningSections: prev.courses.learningSections.filter((_, i) => i !== index) },
-    }));
-  };
-
- 
-
-  const renderListEditor = <T,>(
-    title: string,
-    list: T[],
-    opts: {
-      fieldRender: (item: T, index: number) => ReactNode;
-      onAdd: () => void;
-      onRemove: (index: number) => void;
-      subsectionId?: string;
-      disableAddButton?: boolean;
-    },
-  ) => (
-    <Card 
-      className="shadow-soft"
-      onMouseEnter={opts.subsectionId ? () => setActiveSubSection(opts.subsectionId!) : undefined}
-      onFocus={opts.subsectionId ? () => setActiveSubSection(opts.subsectionId!) : undefined}
-    >
-      <CardHeader>
-        <CardTitle>{title}</CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        {list.map((item, index) => (
-          <div key={index} className="border rounded-lg p-4 space-y-3">
-            <div className="flex items-center justify-between">
-              <Label>
-                {title} {index + 1}
-              </Label>
-              <Button variant="ghost" size="icon" onClick={() => opts.onRemove(index)}>
-                <Trash2 className="h-4 w-4" />
-              </Button>
-            </div>
-            {opts.fieldRender(item, index)}
-          </div>
-        ))}
-        
-      </CardContent>
-    </Card>
-  );
-
-  const renderSimpleStringList = (
-    title: string,
-    description: string,
-    list: string[],
-    onChange: (next: string[]) => void,
-    subsectionId?: string,
-    disableAddButton?: boolean,
-  ) => (
-    <Card 
-      className="shadow-soft"
-      onMouseEnter={subsectionId ? () => setActiveSubSection(subsectionId) : undefined}
-      onFocus={subsectionId ? () => setActiveSubSection(subsectionId) : undefined}
-    >
-      <CardHeader>
-        <CardTitle>{title}</CardTitle>
-        <CardDescription>{description}</CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        {list.map((item, index) => (
-          <div key={index} className="flex gap-2">
-            <Input value={item} onChange={(e) => onChange(list.map((entry, i) => (i === index ? e.target.value : entry)))} />
-            <Button variant="ghost" size="icon" onClick={() => onChange(list.filter((_, i) => i !== index))}>
-              <Trash2 className="h-4 w-4" />
-            </Button>
-          </div>
-        ))}
-        {!disableAddButton && (
-          <Button variant="outline" className="flex items-center gap-2" onClick={() => onChange([...list, ""])}>
-            <Plus className="h-4 w-4" />
-            Add Item
-          </Button>
-        )}
-      </CardContent>
-    </Card>
-  );
-
   const renderGalleryEditor = () => {
     // Only show "all" category, filter out classroom, students, events
     const categoryKeys = (Object.keys(content.gallery.categories) as Array<keyof typeof content.gallery.categories>).filter(
       (key) => key === "all"
     );
-
     return (
       <>
         <Card 
@@ -4381,7 +3653,6 @@ const Admin = () => {
             <Textarea rows={2} placeholder="Subtitle" value={content.gallery.hero.subtitle} onChange={(e) => handleGalleryHeroChange("subtitle", e.target.value)} />
           </CardContent>
         </Card>
-
         {categoryKeys.map((key) => (
           <Card 
             key={key} 

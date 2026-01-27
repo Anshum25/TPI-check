@@ -2,6 +2,7 @@ import { DEFAULT_CONTENT, useContent } from "@/lib/content";
 import googleLogo from "@/assets/google.svg";
 import facebookLogo from "@/assets/facebook.svg";
 import justdialLogo from "@/assets/justdial.svg";
+import { useNavigate } from "react-router-dom";
 
 const HomeReviewsSection = () => {
   const { content } = useContent();
@@ -9,6 +10,7 @@ const HomeReviewsSection = () => {
   const home = content.home ?? DEFAULT_CONTENT.home;
   const links = successStories?.cta?.reviewLinks || [];
   const homeReviews = home?.homeReviews;
+  const navigate = useNavigate();
 
   if (!links.length) return null;
 
@@ -30,31 +32,47 @@ const HomeReviewsSection = () => {
         </div>
 
         <div className="mt-8 grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-4xl mx-auto">
-          {links.map((item, i) => (
-            <a
-              key={i}
-              href={item.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="bg-card border border-border/60 rounded-xl shadow-soft p-5 flex items-center justify-center gap-3 hover:shadow-medium transition-shadow"
-            >
-              {(() => {
-                const label = item.label.toLowerCase();
-                const src = label.includes("google")
-                  ? googleLogo
-                  : label.includes("facebook")
-                  ? facebookLogo
-                  : justdialLogo;
-                const alt = label.includes("google")
-                  ? "Google"
-                  : label.includes("facebook")
-                  ? "Facebook"
-                  : "JustDial";
-                return <img src={src} alt={`${alt} logo`} className="h-7 w-7" />;
-              })()}
-              <span className="font-semibold text-foreground text-sm md:text-base">{item.label}</span>
-            </a>
-          ))}
+          {links.map((item, i) => {
+            const label = item.label.toLowerCase();
+            const targetId = label.includes("google")
+              ? "google-reviews"
+              : label.includes("facebook")
+              ? "facebook-reviews"
+              : label.includes("justdial")
+              ? "justdial-reviews"
+              : "";
+
+            const src = label.includes("google")
+              ? googleLogo
+              : label.includes("facebook")
+              ? facebookLogo
+              : justdialLogo;
+            const alt = label.includes("google")
+              ? "Google"
+              : label.includes("facebook")
+              ? "Facebook"
+              : "JustDial";
+
+            const handleClick = () => {
+              if (targetId) {
+                navigate("/reviews", { state: { scrollTo: targetId } });
+              } else {
+                navigate("/reviews");
+              }
+            };
+
+            return (
+              <button
+                key={i}
+                type="button"
+                onClick={handleClick}
+                className="bg-card border border-border/60 rounded-xl shadow-soft p-5 flex items-center justify-center gap-3 hover:shadow-medium transition-shadow w-full"
+              >
+                <img src={src} alt={`${alt} logo`} className="h-7 w-7" />
+                <span className="font-semibold text-foreground text-sm md:text-base">{item.label}</span>
+              </button>
+            );
+          })}
         </div>
       </div>
     </section>
