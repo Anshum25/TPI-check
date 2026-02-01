@@ -33,6 +33,7 @@ export type Testimonial = {
   rating?: number;
   achievement?: string;
   source?: "google" | "facebook" | "justdial";
+  role?: string;
 };
 
 type HeroContent = {
@@ -924,12 +925,12 @@ export const DEFAULT_CONTENT: SiteContent = {
     stories: [
       {
         name: "Priya Sharma",
-       
         content:
           "This institute transformed my communication skills completely. I'm now confident in presentations and team meetings.",
         rating: 5,
         achievement: "More confidence in presentations",
         source: "google",
+        role: "Student",
       },
       {
         name: "Rahul Patel",
@@ -938,6 +939,7 @@ export const DEFAULT_CONTENT: SiteContent = {
         rating: 5,
         achievement: "Better leadership and communication",
         source: "facebook",
+        role: "Student",
       },
       {
         name: "Anjali Desai",
@@ -946,6 +948,7 @@ export const DEFAULT_CONTENT: SiteContent = {
         rating: 5,
         achievement: "Improved professional communication",
         source: "justdial",
+        role: "Student",
       },
     ],
     achievements: [
