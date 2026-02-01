@@ -810,7 +810,7 @@ const LivePreview = ({ selectedSectionId, activeSubSection }: LivePreviewProps) 
                           About Us
                         </span>
                         <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-4">
-                          {about.community.title}
+                          {about.community.heading}
                         </h2>
                         <p className="text-muted-foreground leading-relaxed text-[15px] md:text-base">
                           {about.community.description}

@@ -3224,6 +3224,143 @@ const Admin = () => {
     }));
   };
 
+  const renderSimpleStringList = (
+    label: string,
+    description: string,
+    items: string[],
+    onChange: (next: string[]) => void,
+  ) => {
+    const list = items && items.length ? items : [""];
+    return (
+      <div className="space-y-2">
+        <div>
+          <Label className="text-sm font-medium">{label}</Label>
+          {description && (
+            <p className="text-xs text-muted-foreground">{description}</p>
+          )}
+        </div>
+        <div className="space-y-2">
+          {list.map((item, index) => (
+            <div key={index} className="flex gap-2">
+              <Textarea
+                rows={2}
+                className="flex-1"
+                value={item}
+                onChange={(e) => {
+                  const next = [...list];
+                  next[index] = e.target.value;
+                  onChange(next);
+                }}
+              />
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                onClick={() => {
+                  const next = list.filter((_, i) => i !== index);
+                  onChange(next);
+                }}
+              >
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            </div>
+          ))}
+        </div>
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          className="flex items-center gap-2"
+          onClick={() => onChange([...list, ""])}
+        >
+          <Plus className="h-4 w-4" />
+          Add Item
+        </Button>
+      </div>
+    );
+  };
+
+  const renderCardListEditor = (
+    title: string,
+    cards: { title: string; description: string }[],
+    onChange: (next: { title: string; description: string }[]) => void,
+    keyPrefix: string,
+    maxItems?: number,
+  ) => {
+    const handleUpdate = (index: number, field: "title" | "description", value: string) => {
+      const next = cards.map((card, i) => (i === index ? { ...card, [field]: value } : card));
+      onChange(next);
+    };
+
+    const handleRemove = (index: number) => {
+      const next = cards.filter((_, i) => i !== index);
+      onChange(next);
+    };
+
+    const handleAdd = () => {
+      if (maxItems && cards.length >= maxItems) return;
+      onChange([
+        ...cards,
+        { title: "", description: "" },
+      ]);
+    };
+
+    return (
+      <Card
+        className="shadow-soft"
+        onMouseEnter={() => setActiveSubSection(keyPrefix)}
+        onFocus={() => setActiveSubSection(keyPrefix)}
+      >
+        <CardHeader>
+          <CardTitle>{title}</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {cards.map((card, index) => (
+            <div
+              key={`${keyPrefix}-${index}`}
+              className="space-y-2 rounded-lg border p-4"
+            >
+              <div className="flex items-center justify-between">
+                <Label className="text-xs uppercase tracking-wide text-muted-foreground">
+                  Item {index + 1}
+                </Label>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => handleRemove(index)}
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </div>
+              <Input
+                placeholder="Title"
+                value={card.title}
+                onChange={(e) => handleUpdate(index, "title", e.target.value)}
+              />
+              <Textarea
+                rows={3}
+                placeholder="Description"
+                value={card.description}
+                onChange={(e) => handleUpdate(index, "description", e.target.value)}
+              />
+            </div>
+          ))}
+          <Button
+            type="button"
+            variant="outline"
+            className="flex items-center gap-2"
+            onClick={handleAdd}
+            disabled={!!maxItems && cards.length >= maxItems}
+          >
+            <Plus className="h-4 w-4" />
+            Add Item
+          </Button>
+        </CardContent>
+      </Card>
+    );
+  };
+
   const renderHeaderEditor = () => (
     <>
                         <Card 
@@ -3633,12 +3770,502 @@ const Admin = () => {
     </div>
   );
 
+  const renderAboutEditor = () => (
+    <>
+      <Card
+        className="shadow-soft"
+        onMouseEnter={() => setActiveSubSection('about-hero')}
+        onFocus={() => setActiveSubSection('about-hero')}
+      >
+        <CardHeader>
+          <CardTitle>About Hero</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <Input
+            placeholder="Title"
+            value={content.about.hero.title}
+            onChange={(e) =>
+              setContent((prev) => ({
+                ...prev,
+                about: {
+                  ...prev.about,
+                  hero: { ...prev.about.hero, title: e.target.value },
+                },
+              }))
+            }
+          />
+          <Textarea
+            rows={2}
+            placeholder="Subtitle"
+            value={content.about.hero.subtitle}
+            onChange={(e) =>
+              setContent((prev) => ({
+                ...prev,
+                about: {
+                  ...prev.about,
+                  hero: { ...prev.about.hero, subtitle: e.target.value },
+                },
+              }))
+            }
+          />
+        </CardContent>
+      </Card>
+
+      <Card
+        className="shadow-soft"
+        onMouseEnter={() => setActiveSubSection('about-highlight')}
+        onFocus={() => setActiveSubSection('about-highlight')}
+      >
+        <CardHeader>
+          <CardTitle>Institute Highlight</CardTitle>
+          <CardDescription>
+            Headings and paragraphs used in the main About narrative section.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="grid gap-3 md:grid-cols-2">
+            <div className="space-y-2">
+              <Label>Primary Heading</Label>
+              <Input
+                value={content.about.highlight?.headingPrimary || ""}
+                onChange={(e) =>
+                  setContent((prev) => ({
+                    ...prev,
+                    about: {
+                      ...prev.about,
+                      highlight: {
+                        ...(prev.about.highlight || {
+                          headingPrimary: "",
+                          headingSecondary: "",
+                          paragraphs: [],
+                        }),
+                        headingPrimary: e.target.value,
+                      },
+                    },
+                  }))
+                }
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>Secondary Heading</Label>
+              <Input
+                value={content.about.highlight?.headingSecondary || ""}
+                onChange={(e) =>
+                  setContent((prev) => ({
+                    ...prev,
+                    about: {
+                      ...prev.about,
+                      highlight: {
+                        ...(prev.about.highlight || {
+                          headingPrimary: "",
+                          headingSecondary: "",
+                          paragraphs: [],
+                        }),
+                        headingSecondary: e.target.value,
+                      },
+                    },
+                  }))
+                }
+              />
+            </div>
+          </div>
+
+          {renderSimpleStringList(
+            "Highlight Paragraphs",
+            "Main descriptive paragraphs about the institute.",
+            content.about.highlight?.paragraphs || [],
+            (next) =>
+              setContent((prev) => ({
+                ...prev,
+                about: {
+                  ...prev.about,
+                  highlight: {
+                    ...(prev.about.highlight || {
+                      headingPrimary: "",
+                      headingSecondary: "",
+                      paragraphs: [],
+                    }),
+                    paragraphs: next,
+                  },
+                },
+              }))
+          )}
+        </CardContent>
+      </Card>
+
+      <Card
+        className="shadow-soft"
+        onMouseEnter={() => setActiveSubSection('about-stats')}
+        onFocus={() => setActiveSubSection('about-stats')}
+      >
+        
+        <CardContent className="space-y-3">
+          {content.about.stats.map((stat, index) => (
+            <div key={index} className="grid gap-3 md:grid-cols-2">
+              <Input
+                placeholder="Value (e.g. 10,000+)"
+                value={stat.value}
+                onChange={(e) =>
+                  setContent((prev) => ({
+                    ...prev,
+                    about: {
+                      ...prev.about,
+                      stats: prev.about.stats.map((s, i) =>
+                        i === index ? { ...s, value: e.target.value } : s
+                      ),
+                    },
+                  }))
+                }
+              />
+              <Input
+                placeholder="Label (e.g. Students Trained)"
+                value={stat.label}
+                onChange={(e) =>
+                  setContent((prev) => ({
+                    ...prev,
+                    about: {
+                      ...prev.about,
+                      stats: prev.about.stats.map((s, i) =>
+                        i === index ? { ...s, label: e.target.value } : s
+                      ),
+                    },
+                  }))
+                }
+              />
+            </div>
+          ))}
+        </CardContent>
+      </Card>
+
+      <Card
+        className="shadow-soft"
+        onMouseEnter={() => setActiveSubSection('about-story')}
+        onFocus={() => setActiveSubSection('about-story')}
+      >
+        <CardHeader>
+          <CardTitle>Story Paragraphs</CardTitle>
+          <CardDescription>Long-form story content on the About page.</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          {renderSimpleStringList(
+            "Story Paragraphs",
+            "Each item becomes a paragraph in the About story.",
+            content.about.story,
+            (next) =>
+              setContent((prev) => ({
+                ...prev,
+                about: {
+                  ...prev.about,
+                  story: next,
+                },
+              }))
+          )}
+        </CardContent>
+      </Card>
+
+      <Card
+        className="shadow-soft"
+        onMouseEnter={() => setActiveSubSection('about-community')}
+        onFocus={() => setActiveSubSection('about-community')}
+      >
+        <CardHeader>
+          <CardTitle>Serving the Community</CardTitle>
+          <CardDescription>
+            Heading and long paragraph shown in the ABOUT US section below Amenities.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="space-y-2">
+            <Label>Heading</Label>
+            <Input
+              value={content.about.community?.heading || ""}
+              onChange={(e) =>
+                setContent((prev) => ({
+                  ...prev,
+                  about: {
+                    ...prev.about,
+                    community: {
+                      ...(prev.about.community || {
+                        heading: "",
+                        description: "",
+                      }),
+                      heading: e.target.value,
+                    },
+                  },
+                }))
+              }
+            />
+          </div>
+          <div className="space-y-2">
+            <Label>Description</Label>
+            <Textarea
+              rows={6}
+              value={content.about.community?.description || ""}
+              onChange={(e) =>
+                setContent((prev) => ({
+                  ...prev,
+                  about: {
+                    ...prev.about,
+                    community: {
+                      ...(prev.about.community || {
+                        heading: "",
+                        description: "",
+                      }),
+                      description: e.target.value,
+                    },
+                  },
+                }))
+              }
+            />
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card
+        className="shadow-soft"
+        onMouseEnter={() => setActiveSubSection('about-amenities')}
+        onFocus={() => setActiveSubSection('about-amenities')}
+      >
+        <CardHeader>
+          <CardTitle>Amenities</CardTitle>
+          <CardDescription>
+            Title, description and bullet list used in the Amenities section.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="space-y-2">
+            <Label>Section Title</Label>
+            <Input
+              value={content.about.amenities?.title || ""}
+              onChange={(e) =>
+                setContent((prev) => ({
+                  ...prev,
+                  about: {
+                    ...prev.about,
+                    amenities: {
+                      ...(prev.about.amenities || {
+                        title: "",
+                        description: "",
+                        amenitiesList: [],
+                        carouselImages: [],
+                      }),
+                      title: e.target.value,
+                    },
+                  },
+                }))
+              }
+            />
+          </div>
+          <div className="space-y-2">
+            <Label>Description</Label>
+            <Textarea
+              rows={3}
+              value={content.about.amenities?.description || ""}
+              onChange={(e) =>
+                setContent((prev) => ({
+                  ...prev,
+                  about: {
+                    ...prev.about,
+                    amenities: {
+                      ...(prev.about.amenities || {
+                        title: "",
+                        description: "",
+                        amenitiesList: [],
+                        carouselImages: [],
+                      }),
+                      description: e.target.value,
+                    },
+                  },
+                }))
+              }
+            />
+          </div>
+
+          {renderSimpleStringList(
+            "Amenities List",
+            "Bullet points shown in the Amenities section.",
+            content.about.amenities?.amenitiesList || [],
+            (next) =>
+              setContent((prev) => ({
+                ...prev,
+                about: {
+                  ...prev.about,
+                  amenities: {
+                    ...(prev.about.amenities || {
+                      title: "",
+                      description: "",
+                      amenitiesList: [],
+                      carouselImages: [],
+                    }),
+                    amenitiesList: next,
+                  },
+                },
+              }))
+          )}
+
+          <div className="space-y-2">
+            <Label>Carousel Images</Label>
+            <p className="text-xs text-muted-foreground">
+              Images used in the amenities carousel.
+            </p>
+            <div className="space-y-3">
+              {(content.about.amenities?.carouselImages || []).map((src, index) => (
+                <div key={index} className="border rounded-lg p-3 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <Label>Image {index + 1}</Label>
+                    {src && (
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        onClick={() =>
+                          setContent((prev) => ({
+                            ...prev,
+                            about: {
+                              ...prev.about,
+                              amenities: {
+                                ...(prev.about.amenities || {
+                                  title: "",
+                                  description: "",
+                                  amenitiesList: [],
+                                  carouselImages: [],
+                                }),
+                                carouselImages: (prev.about.amenities?.carouselImages || []).filter((_, i) => i !== index),
+                              },
+                            },
+                          }))
+                        }
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    )}
+                  </div>
+                  <div className="aspect-video rounded-lg border bg-muted/20 flex items-center justify-center overflow-hidden">
+                    {src ? (
+                      <img
+                        src={resolveGalleryImageSrc(src)}
+                        alt={`Amenity image ${index + 1}`}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <p className="text-sm text-muted-foreground">No image selected</p>
+                    )}
+                  </div>
+                  <div className="flex flex-wrap gap-3">
+                    <label className="inline-flex items-center gap-2 rounded-md border px-3 py-2 text-sm font-semibold cursor-pointer hover:bg-accent/10">
+                      <Upload className="h-4 w-4" />
+                      Upload Image
+                      <input
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={async (e) => {
+                          const file = e.target.files?.[0];
+                          if (!file) return;
+                          try {
+                            toast({ title: "Uploading image...", description: "Please wait while we upload to Cloudinary." });
+                            const cloudinaryUrl = await uploadImageToCloudinary(file);
+                            setContent((prev) => {
+                              const amenities = prev.about.amenities || {
+                                title: "",
+                                description: "",
+                                amenitiesList: [],
+                                carouselImages: [],
+                              };
+                              const images = amenities.carouselImages.slice();
+                              images[index] = cloudinaryUrl;
+                              return {
+                                ...prev,
+                                about: {
+                                  ...prev.about,
+                                  amenities: {
+                                    ...amenities,
+                                    carouselImages: images,
+                                  },
+                                },
+                              };
+                            });
+                            toast({ title: "Image uploaded", description: "Image successfully uploaded to Cloudinary." });
+                          } catch (error) {
+                            // error already handled in uploadImageToCloudinary
+                          }
+                          e.target.value = "";
+                        }}
+                      />
+                    </label>
+                  </div>
+                </div>
+              ))}
+              <Button
+                type="button"
+                variant="outline"
+                className="flex items-center gap-2 mt-2"
+                onClick={() =>
+                  setContent((prev) => ({
+                    ...prev,
+                    about: {
+                      ...prev.about,
+                      amenities: {
+                        ...(prev.about.amenities || {
+                          title: "",
+                          description: "",
+                          amenitiesList: [],
+                          carouselImages: [],
+                        }),
+                        carouselImages: [
+                          ...(prev.about.amenities?.carouselImages || []),
+                          "",
+                        ],
+                      },
+                    },
+                  }))
+                }
+              >
+                <Plus className="h-4 w-4" />
+                Add Image
+              </Button>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {renderCardListEditor(
+        "Core Values",
+        content.about.coreValues || [],
+        (next) =>
+          setContent((prev) => ({
+            ...prev,
+            about: {
+              ...prev.about,
+              coreValues: next,
+            },
+          })),
+        'about-core-values',
+      )}
+
+      {renderCardListEditor(
+        "Differentiators",
+        content.about.differentiators || [],
+        (next) =>
+          setContent((prev) => ({
+            ...prev,
+            about: {
+              ...prev.about,
+              differentiators: next,
+            },
+          })),
+        'about-differentiators',
+      )}
+    </>
+  );
+
   const renderGalleryEditor = () => {
     // Only show "all" category, filter out classroom, students, events
     const categoryKeys = (Object.keys(content.gallery.categories) as Array<keyof typeof content.gallery.categories>).filter(
       (key) => key === "all"
     );
     return (
+      // ... rest of the code remains the same ...
       <>
         <Card 
           className="shadow-soft"
