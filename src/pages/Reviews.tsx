@@ -272,30 +272,6 @@ const Reviews = () => {
             </div>
           </section>
         )}
-
-      
-
-        {/* Submit review stays at the bottom */}
-        <section className="py-20 bg-secondary/30">
-          <div className="container mx-auto px-4 text-center">
-            <h2 className="text-3xl font-bold mb-8">{reviews.cta.title}</h2>
-            <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
-              {reviews.cta.description}
-            </p>
-            <a
-              href="https://www.google.com/search?q=turning+point+institute#lrd=0x395e84cf0a8203a1:0xd1a3ec8eb1a3e77e,3,,,,"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <Button
-                asChild
-                className="inline-flex items-center justify-center px-8 py-3 rounded-lg gradient-accent text-accent-foreground font-semibold hover:opacity-90 transition-opacity"
-              >
-                <span>{reviews.cta.buttonText}</span>
-              </Button>
-            </a>
-          </div>
-        </section>
       </main>
       <Footer />
     </div>
