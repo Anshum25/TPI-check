@@ -5,6 +5,9 @@ import Footer from "@/components/Footer";
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useContent } from "@/lib/content";
+import { getYouTubeEmbedUrl } from "@/lib/youtube";
+import VideoSchemaHead from "@/components/VideoSchemaHead";
+import type { VideoMeta } from "@/lib/videoSchema";
 
 const Gallery = () => {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
@@ -32,28 +35,19 @@ const Gallery = () => {
         },
       ]);
 
-  const toEmbedUrl = (url: string) => {
-    if (!url) return "";
-    try {
-      // Short youtu.be links
-      if (url.includes("youtu.be/")) {
-        const id = url.split("youtu.be/")[1]?.split(/[?&#]/)[0];
-        return id ? `https://www.youtube.com/embed/${id}` : url;
-      }
-      // watch?v= links
-      if (url.includes("watch?v=")) {
-        const id = url.split("watch?v=")[1]?.split(/[?&#]/)[0];
-        return id ? `https://www.youtube.com/embed/${id}` : url;
-      }
-      return url;
-    } catch {
-      return url;
-    }
-  };
+  const videoSchemas: VideoMeta[] = videos
+    .filter((video) => !!video.url)
+    .map((video) => ({
+      url: video.url,
+      title: video.title || gallery.hero.title,
+      description: video.title || gallery.hero.subtitle,
+      uploadDate: new Date("2024-01-01T00:00:00.000Z").toISOString(),
+    }));
 
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
+      <VideoSchemaHead videos={videoSchemas} />
       <main className="flex-1">
         <section className="gradient-hero py-20 text-primary-foreground">
           <div className="container mx-auto px-4 text-center">
@@ -109,7 +103,7 @@ const Gallery = () => {
                       >
                         <div className="aspect-video w-full bg-muted">
                           <iframe
-                            src={toEmbedUrl(video.url)}
+                            src={getYouTubeEmbedUrl(video.url)}
                             title={video.title}
                             className="w-full h-full"
                             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
