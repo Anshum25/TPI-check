@@ -26,23 +26,9 @@ import {
 import { Target, Users, Award, BookOpen } from "lucide-react";
 import { DEFAULT_CONTENT, useContent } from "@/lib/content";
 import FinalCtaBanner from "@/components/FinalCtaBanner";
-
-const toEmbedUrl = (url?: string) => {
-  if (!url) return "";
-  try {
-    if (url.includes("youtu.be/")) {
-      const id = url.split("youtu.be/")[1]?.split(/[?&#]/)[0];
-      return id ? `https://www.youtube.com/embed/${id}` : url;
-    }
-    if (url.includes("watch?v=")) {
-      const id = url.split("watch?v=")[1]?.split(/[?&#]/)[0];
-      return id ? `https://www.youtube.com/embed/${id}` : url;
-    }
-    return url;
-  } catch {
-    return url;
-  }
-};
+import { getYouTubeEmbedUrl } from "@/lib/youtube";
+import VideoSchemaHead from "@/components/VideoSchemaHead";
+import type { VideoMeta } from "@/lib/videoSchema";
 
 const Home = () => {
   const location = useLocation();
@@ -91,10 +77,24 @@ const Home = () => {
     <BookOpen key="icon-3" className="h-6 w-6" />,
   ];
 
+  const directorVideoEmbedUrl = getYouTubeEmbedUrl(home.directorVideoUrl);
+
+  const videoSchemas: VideoMeta[] = directorVideoEmbedUrl
+    ? [
+        {
+          url: home.directorVideoUrl,
+          title: home.heroTitle,
+          description: home.heroSubtitle,
+          uploadDate: new Date("2024-01-01T00:00:00.000Z").toISOString(),
+        },
+      ]
+    : [];
+
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
       <HomeScrollEffect />
+      <VideoSchemaHead videos={videoSchemas} />
       <main className="flex-1">
         <Hero />
         <Differentiators />
@@ -184,7 +184,7 @@ const Home = () => {
                   </div>
                   <div className="aspect-video w-full bg-muted">
                     <iframe
-                      src={toEmbedUrl(home.directorVideoUrl)}
+                      src={directorVideoEmbedUrl}
                       title="Director's desk video"
                       className="w-full h-full"
                       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
