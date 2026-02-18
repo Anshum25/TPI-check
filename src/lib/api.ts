@@ -61,7 +61,7 @@ const apiRequest = async (
         message: response.statusText,
       };
     }
-    
+
     // Handle specific error codes
     if (response.status === 413) {
       throw new Error("Request entity too large. The content is too large to save. Please reduce the size of images or content.");
@@ -72,7 +72,7 @@ const apiRequest = async (
     if (response.status === 404) {
       throw new Error("Resource not found");
     }
-    
+
     throw new Error(errorData.message || errorData.error || "API request failed");
   }
 
@@ -133,6 +133,50 @@ export const authAPI = {
     const data = await response.json();
     if (!data.success) {
       throw new Error(data.message || "Failed to change password");
+    }
+  },
+
+  /**
+   * Send OTP for password reset (no auth required)
+   * OTP will be sent to the configured admin email
+   */
+  sendOTP: async (): Promise<void> => {
+    const response = await apiRequest("/auth/forgot-password", {
+      method: "POST",
+      body: JSON.stringify({}),
+    });
+    const data = await response.json();
+    if (!data.success) {
+      throw new Error(data.message || "Failed to send OTP");
+    }
+  },
+
+  /**
+   * Verify OTP for password reset (no auth required)
+   */
+  verifyOTP: async (otp: string): Promise<{ otpId: string }> => {
+    const response = await apiRequest("/auth/verify-otp", {
+      method: "POST",
+      body: JSON.stringify({ otp }),
+    });
+    const data = await response.json();
+    if (!data.success) {
+      throw new Error(data.message || "Failed to verify OTP");
+    }
+    return { otpId: data.otpId };
+  },
+
+  /**
+   * Reset password after OTP verification (no auth required)
+   */
+  resetPassword: async (otpId: string, newPassword: string): Promise<void> => {
+    const response = await apiRequest("/auth/reset-password", {
+      method: "POST",
+      body: JSON.stringify({ otpId, newPassword }),
+    });
+    const data = await response.json();
+    if (!data.success) {
+      throw new Error(data.message || "Failed to reset password");
     }
   },
 };
