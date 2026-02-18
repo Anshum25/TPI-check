@@ -84,7 +84,7 @@ const adminSections: AdminSection[] = [
     route: "/",
     filePath: "src/pages/Home.tsx",
   },
-  
+
   {
     id: "footer",
     label: "Footer",
@@ -201,10 +201,10 @@ const resolveGalleryImageSrc = (src: string) => {
 };
 
 const Admin = () => {
-    const { content, setContent, resetContent, exportJSON, importJSON } = useContent();
+  const { content, setContent, resetContent, exportJSON, importJSON } = useContent();
   const { toast } = useToast();
-    const [jsonValue, setJsonValue] = useState("");
-    const [importError, setImportError] = useState<string | null>(null);
+  const [jsonValue, setJsonValue] = useState("");
+  const [importError, setImportError] = useState<string | null>(null);
   const [activeSection, setActiveSection] = useState<AdminSection["id"]>("home");
   const [activeSubSection, setActiveSubSection] = useState<string | null>(null);
   const [isAuthed, setIsAuthed] = useState(false);
@@ -218,6 +218,17 @@ const Admin = () => {
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [hasExistingPassword, setHasExistingPassword] = useState(false);
+
+  // Forgot password states (simplified - no email input needed)
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
+  const [forgotPasswordStep, setForgotPasswordStep] = useState<'otp' | 'reset'>('otp');
+  const [forgotOTP, setForgotOTP] = useState("");
+  const [forgotOTPId, setForgotOTPId] = useState("");
+  const [forgotNewPassword, setForgotNewPassword] = useState("");
+  const [forgotConfirmPassword, setForgotConfirmPassword] = useState("");
+  const [showForgotNewPassword, setShowForgotNewPassword] = useState(false);
+  const [showForgotConfirmPassword, setShowForgotConfirmPassword] = useState(false);
+
   const selectedSection = adminSections.find((section) => section.id === activeSection) ?? adminSections[0];
 
   // Helper function to upload image to Cloudinary
@@ -327,50 +338,50 @@ const Admin = () => {
     } catch (error: any) {
       setIsAuthed(false);
       setLoginPassword("");
-      toast({ 
-        title: "Login failed", 
-        description: error.message || "Incorrect password. Please try again.", 
-        variant: "destructive" as any 
+      toast({
+        title: "Login failed",
+        description: error.message || "Incorrect password. Please try again.",
+        variant: "destructive" as any
       });
     }
   };
 
   const handleChangePasswordSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    
+
     // Validation
     if (!oldPassword) {
-      toast({ 
-        title: "Old password required", 
-        description: "Please enter your current password.", 
-        variant: "destructive" as any 
+      toast({
+        title: "Old password required",
+        description: "Please enter your current password.",
+        variant: "destructive" as any
       });
       return;
     }
-    
+
     if (!newPassword) {
-      toast({ 
-        title: "New password required", 
-        description: "Please enter a new password.", 
-        variant: "destructive" as any 
+      toast({
+        title: "New password required",
+        description: "Please enter a new password.",
+        variant: "destructive" as any
       });
       return;
     }
-    
+
     if (newPassword.length < 6) {
-      toast({ 
-        title: "Password too short", 
-        description: "New password must be at least 6 characters long.", 
-        variant: "destructive" as any 
+      toast({
+        title: "Password too short",
+        description: "New password must be at least 6 characters long.",
+        variant: "destructive" as any
       });
       return;
     }
-    
+
     if (newPassword !== confirmPassword) {
-      toast({ 
-        title: "Passwords do not match", 
-        description: "New password and confirmation must match.", 
-        variant: "destructive" as any 
+      toast({
+        title: "Passwords do not match",
+        description: "New password and confirmation must match.",
+        variant: "destructive" as any
       });
       return;
     }
@@ -380,142 +391,259 @@ const Admin = () => {
       setOldPassword("");
       setNewPassword("");
       setConfirmPassword("");
-      toast({ 
-        title: "Password updated", 
-        description: "Your password has been successfully changed." 
+      toast({
+        title: "Password updated",
+        description: "Your password has been successfully changed."
       });
     } catch (error: any) {
-      toast({ 
-        title: "Password change failed", 
-        description: error.message || "Failed to change password. Please try again.", 
-        variant: "destructive" as any 
+      toast({
+        title: "Password change failed",
+        description: error.message || "Failed to change password. Please try again.",
+        variant: "destructive" as any
       });
     }
   };
 
-    const handleFeatureChange = (index: number, field: "title" | "description", value: string) => {
-        setContent((prev) => ({
-            ...prev,
-            home: {
-                ...prev.home,
+  const handleForgotPasswordSendOTP = async () => {
+    try {
+      await authAPI.sendOTP();
+      setForgotPasswordStep('otp');
+      toast({
+        title: "OTP sent",
+        description: "Please check your admin email for the verification code."
+      });
+    } catch (error: any) {
+      toast({
+        title: "Failed to send OTP",
+        description: error.message || "Unable to send OTP. Please try again.",
+        variant: "destructive" as any
+      });
+    }
+  };
+
+  const handleForgotPasswordVerifyOTP = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    if (!forgotOTP || !forgotOTP.trim()) {
+      toast({
+        title: "OTP required",
+        description: "Please enter the verification code sent to your email.",
+        variant: "destructive" as any
+      });
+      return;
+    }
+
+    try {
+      const result = await authAPI.verifyOTP(forgotOTP.trim());
+      setForgotOTPId(result.otpId);
+      setForgotPasswordStep('reset');
+      toast({
+        title: "OTP verified",
+        description: "Please enter your new password."
+      });
+    } catch (error: any) {
+      toast({
+        title: "Invalid OTP",
+        description: error.message || "The OTP you entered is invalid or expired.",
+        variant: "destructive" as any
+      });
+    }
+  };
+
+  const handleForgotPasswordReset = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    if (!forgotNewPassword) {
+      toast({
+        title: "Password required",
+        description: "Please enter a new password.",
+        variant: "destructive" as any
+      });
+      return;
+    }
+
+    if (forgotNewPassword.length < 6) {
+      toast({
+        title: "Password too short",
+        description: "Password must be at least 6 characters long.",
+        variant: "destructive" as any
+      });
+      return;
+    }
+
+    if (forgotNewPassword !== forgotConfirmPassword) {
+      toast({
+        title: "Passwords do not match",
+        description: "Please ensure both password fields match.",
+        variant: "destructive" as any
+      });
+      return;
+    }
+
+    try {
+      await authAPI.resetPassword(forgotOTPId, forgotNewPassword);
+
+      // Reset all forgot password states
+      setShowForgotPassword(false);
+      setForgotPasswordStep('otp');
+      setForgotOTP("");
+      setForgotOTPId("");
+      setForgotNewPassword("");
+      setForgotConfirmPassword("");
+
+      toast({
+        title: "Password reset successful",
+        description: "You can now login with your new password."
+      });
+    } catch (error: any) {
+      toast({
+        title: "Password reset failed",
+        description: error.message || "Failed to reset password. Please try again.",
+        variant: "destructive" as any
+      });
+    }
+  };
+
+  const handleCancelForgotPassword = () => {
+    setShowForgotPassword(false);
+    setForgotPasswordStep('otp');
+    setForgotOTP("");
+    setForgotOTPId("");
+    setForgotNewPassword("");
+    setForgotConfirmPassword("");
+  };
+
+  const handleOpenForgotPassword = () => {
+    setShowForgotPassword(true);
+    setForgotPasswordStep('otp');
+    // Automatically send OTP when opening forgot password
+    handleForgotPasswordSendOTP();
+  };
+
+
+  const handleFeatureChange = (index: number, field: "title" | "description", value: string) => {
+    setContent((prev) => ({
+      ...prev,
+      home: {
+        ...prev.home,
         features: prev.home.features.map((feature, i) => (i === index ? { ...feature, [field]: value } : feature)),
-            },
-        }));
-    };
+      },
+    }));
+  };
 
-    const addFeature = () => {
-        setContent((prev) => ({
-            ...prev,
-            home: {
-                ...prev.home,
-                features: [...prev.home.features, { title: "", description: "" }],
-            },
-        }));
-    };
+  const addFeature = () => {
+    setContent((prev) => ({
+      ...prev,
+      home: {
+        ...prev.home,
+        features: [...prev.home.features, { title: "", description: "" }],
+      },
+    }));
+  };
 
-    const removeFeature = (index: number) => {
-        setContent((prev) => ({
-            ...prev,
-            home: {
-                ...prev.home,
-                features: prev.home.features.filter((_, i) => i !== index),
-            },
-        }));
-    };
+  const removeFeature = (index: number) => {
+    setContent((prev) => ({
+      ...prev,
+      home: {
+        ...prev.home,
+        features: prev.home.features.filter((_, i) => i !== index),
+      },
+    }));
+  };
 
   const handleTestimonialChange = (index: number, field: "name" | "role" | "content" | "rating", value: string) => {
-        setContent((prev) => ({
-            ...prev,
-            home: {
-                ...prev.home,
-                testimonials: prev.home.testimonials.map((testimonial, i) =>
-                    i === index
-                        ? {
-                            ...testimonial,
-                            [field]: field === "rating" ? Number(value) || undefined : value,
-                        }
-                        : testimonial,
-                ),
-            },
-        }));
-    };
+    setContent((prev) => ({
+      ...prev,
+      home: {
+        ...prev.home,
+        testimonials: prev.home.testimonials.map((testimonial, i) =>
+          i === index
+            ? {
+              ...testimonial,
+              [field]: field === "rating" ? Number(value) || undefined : value,
+            }
+            : testimonial,
+        ),
+      },
+    }));
+  };
 
-    const addTestimonial = () => {
-        setContent((prev) => ({
-            ...prev,
-            home: {
-                ...prev.home,
+  const addTestimonial = () => {
+    setContent((prev) => ({
+      ...prev,
+      home: {
+        ...prev.home,
         testimonials: [...prev.home.testimonials, { name: "", role: "", content: "", rating: 5 }],
-            },
-        }));
-    };
+      },
+    }));
+  };
 
-    const removeTestimonial = (index: number) => {
-        setContent((prev) => ({
-            ...prev,
-            home: {
-                ...prev.home,
-                testimonials: prev.home.testimonials.filter((_, i) => i !== index),
-            },
-        }));
-    };
+  const removeTestimonial = (index: number) => {
+    setContent((prev) => ({
+      ...prev,
+      home: {
+        ...prev.home,
+        testimonials: prev.home.testimonials.filter((_, i) => i !== index),
+      },
+    }));
+  };
 
   const handleNavChange = (index: number, field: "label" | "to", value: string) => {
-        setContent((prev) => ({
-            ...prev,
-            header: {
-                ...prev.header,
+    setContent((prev) => ({
+      ...prev,
+      header: {
+        ...prev.header,
         nav: prev.header.nav.map((item, i) => (i === index ? { ...item, [field]: value } : item)),
-            },
-        }));
-    };
+      },
+    }));
+  };
 
-    const addNavItem = () => {
-        setContent((prev) => ({
-            ...prev,
-            header: {
-                ...prev.header,
-                nav: [...prev.header.nav, { label: "New Link", to: "/" }],
-            },
-        }));
-    };
+  const addNavItem = () => {
+    setContent((prev) => ({
+      ...prev,
+      header: {
+        ...prev.header,
+        nav: [...prev.header.nav, { label: "New Link", to: "/" }],
+      },
+    }));
+  };
 
-    const removeNavItem = (index: number) => {
-        setContent((prev) => ({
-            ...prev,
-            header: {
-                ...prev.header,
-                nav: prev.header.nav.filter((_, i) => i !== index),
-            },
-        }));
-    };
+  const removeNavItem = (index: number) => {
+    setContent((prev) => ({
+      ...prev,
+      header: {
+        ...prev.header,
+        nav: prev.header.nav.filter((_, i) => i !== index),
+      },
+    }));
+  };
 
-    const handleExport = () => {
-        setJsonValue(exportJSON());
-        setImportError(null);
-    };
+  const handleExport = () => {
+    setJsonValue(exportJSON());
+    setImportError(null);
+  };
 
-    const handleImport = () => {
-        try {
-            importJSON(jsonValue);
-            setImportError(null);
-        } catch (e) {
-            const message = e instanceof Error ? e.message : "Invalid JSON";
-            setImportError(message);
-        }
-    };
+  const handleImport = () => {
+    try {
+      importJSON(jsonValue);
+      setImportError(null);
+    } catch (e) {
+      const message = e instanceof Error ? e.message : "Invalid JSON";
+      setImportError(message);
+    }
+  };
 
   const handleEditAction = () => {
     if (!selectedSection) return;
-      if (typeof window !== "undefined") {
+    if (typeof window !== "undefined") {
       if (selectedSection.id === "footer") {
         window.open(`/${"?scroll=footer"}`, "_blank", "noopener,noreferrer");
         return;
       }
       if (selectedSection.id === "header") {
         window.open(`/`, "_blank", "noopener,noreferrer");
-      return;
-    }
+        return;
+      }
       window.open(selectedSection.route, "_blank", "noopener,noreferrer");
     }
   };
@@ -553,10 +681,10 @@ const Admin = () => {
 
   const handleSaveChanges = async () => {
     if (!isAuthenticated()) {
-      toast({ 
-        title: "Authentication required", 
-        description: "Please login to save changes.", 
-        variant: "destructive" as any 
+      toast({
+        title: "Authentication required",
+        description: "Please login to save changes.",
+        variant: "destructive" as any
       });
       return;
     }
@@ -564,17 +692,17 @@ const Admin = () => {
     try {
       const key = getSectionKey(selectedSection.id);
       const slice = (content as any)[key];
-      
+
       // Save to backend API
       await contentAPI.update(key, slice);
-      
+
       toast({ title: "Changes saved", description: `${selectedSection.label} content updated successfully.` });
     } catch (error: any) {
       console.error("Save error:", error);
-      toast({ 
-        title: "Save failed", 
-        description: error.message || "Could not persist changes to database.", 
-        variant: "destructive" as any 
+      toast({
+        title: "Save failed",
+        description: error.message || "Could not persist changes to database.",
+        variant: "destructive" as any
       });
     }
   };
@@ -607,16 +735,16 @@ const Admin = () => {
         >
           Save Changes
         </Button>
-                        <Button
-                            variant="outline"
-                            className="flex items-center gap-2"
+        <Button
+          variant="outline"
+          className="flex items-center gap-2"
           asChild
         >
           <a href={section.route} target="_blank" rel="noopener noreferrer">
             <ExternalLink className="h-4 w-4" />
             Open live page
           </a>
-                        </Button>
+        </Button>
       </CardFooter>
     </Card>
   );
@@ -624,16 +752,16 @@ const Admin = () => {
   const renderHomeEditor = () => (
     <>
 
-      <Card 
+      <Card
         className="shadow-soft"
         onMouseEnter={() => setActiveSubSection('hero-carousel')}
         onFocus={() => setActiveSubSection('hero-carousel')}
       >
-                            <CardHeader>
+        <CardHeader>
           <CardTitle>Hero Carousel</CardTitle>
           <CardDescription>Slides displayed in the hero carousel at the top of the home page.</CardDescription>
-                            </CardHeader>
-                            <CardContent className="space-y-4">
+        </CardHeader>
+        <CardContent className="space-y-4">
           <div className="space-y-4">
             {content.home.heroCarousel.slides.map((slide, index) => (
               <div key={index} className="space-y-3 rounded-lg border p-4">
@@ -654,7 +782,7 @@ const Admin = () => {
                     <Trash2 className="h-4 w-4" />
                   </Button>
                 </div>
-                                <div className="space-y-2">
+                <div className="space-y-2">
                   <Label>Image</Label>
                   {slide.imageUrl && (
                     <div className="relative mb-2">
@@ -693,7 +821,7 @@ const Admin = () => {
                     </div>
                   )}
                   <div className="flex gap-2">
-                                    <Input
+                    <Input
                       type="file"
                       accept="image/*"
                       className="hidden"
@@ -737,7 +865,7 @@ const Admin = () => {
                       Upload Image
                     </Button>
                   </div>
-                  
+
                 </div>
                 <div className="space-y-2">
                   <Label>Title</Label>
@@ -815,7 +943,7 @@ const Admin = () => {
       </Card>
 
       {/* Hero Buttons Configuration */}
-      <Card 
+      <Card
         className="shadow-soft"
         onMouseEnter={() => setActiveSubSection('hero-buttons')}
         onFocus={() => setActiveSubSection('hero-buttons')}
@@ -910,7 +1038,7 @@ const Admin = () => {
           </div>
         </CardContent>
       </Card>
-      <Card 
+      <Card
         className="shadow-soft"
         onMouseEnter={() => setActiveSubSection('features')}
         onFocus={() => setActiveSubSection('features')}
@@ -924,174 +1052,174 @@ const Admin = () => {
             {content.home.differentiators?.cards.map((card, cIdx) => {
               // Ensure icon is set automatically based on index (first = "award", second = "users")
               const cardIcon = card.icon || (cIdx === 0 ? "award" : "users");
-              
+
               return (
-              <div key={cIdx} className="space-y-4 rounded-lg border p-4">
-                <div className="flex items-center justify-between gap-2">
-                  <Label className="text-xs uppercase tracking-wide text-muted-foreground">Card {cIdx + 1}</Label>
-                  <Button
-                    type="button"
-                    size="icon"
-                    variant="ghost"
-                    onClick={() => {
-                      setContent((prev) => ({
-                        ...prev,
-                        home: {
-                          ...prev.home,
-                          differentiators: {
-                            cards: (prev.home.differentiators?.cards || []).filter((_, i) => i !== cIdx).map((c, idx) => ({
-                              ...c,
-                              icon: idx === 0 ? "award" : "users", // Reassign icons after deletion
-                            })),
-                          },
-                        },
-                      }));
-                    }}
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                </div>
-                <div className="grid gap-4 md:grid-cols-2">
-                  <div className="space-y-2 md:col-span-1">
-                    <Label>Title</Label>
-                    <Input
-                      value={card.title || ""}
-                      onChange={(e) =>
+                <div key={cIdx} className="space-y-4 rounded-lg border p-4">
+                  <div className="flex items-center justify-between gap-2">
+                    <Label className="text-xs uppercase tracking-wide text-muted-foreground">Card {cIdx + 1}</Label>
+                    <Button
+                      type="button"
+                      size="icon"
+                      variant="ghost"
+                      onClick={() => {
                         setContent((prev) => ({
                           ...prev,
                           home: {
                             ...prev.home,
                             differentiators: {
-                              cards: (prev.home.differentiators?.cards || []).map((c, i) => 
-                                i === cIdx 
-                                  ? { ...c, title: e.target.value, icon: cardIcon } 
-                                  : c
-                              ),
+                              cards: (prev.home.differentiators?.cards || []).filter((_, i) => i !== cIdx).map((c, idx) => ({
+                                ...c,
+                                icon: idx === 0 ? "award" : "users", // Reassign icons after deletion
+                              })),
                             },
                           },
-                        }))
-                      }
-                    />
-                  </div>
-                </div>
-
-                <div className="space-y-3">
-                  <Label className="text-xs uppercase tracking-wide text-muted-foreground">Items</Label>
-                  {(card.items || []).map((it, iIdx) => (
-                    <div
-                      key={iIdx}
+                        }));
+                      }}
                     >
-                                <div className="space-y-2">
-                        <Label>Item Title</Label>
-                                    <Input
-                          value={it.title || ""}
-                      onChange={(e) =>
-                        setContent((prev) => ({
-                          ...prev,
-                          home: {
-                            ...prev.home,
-                            differentiators: {
-                              cards: (prev.home.differentiators?.cards || []).map((c, x) =>
-                                x === cIdx
-                                  ? {
-                                      ...c,
-                                      icon: cardIcon,
-                                      items: (c.items || []).map((y, yi) => (yi === iIdx ? { ...y, title: e.target.value } : y)),
-                                    }
-                                  : c,
-                              ),
-                            },
-                          },
-                        }))
-                      }
-                                    />
-                                </div>
-                      {cIdx !== 0 && (
-                        <div className="space-y-2 md:col-span-2">
-                          <Label>Item Description (optional)</Label>
-                                    <Input
-                            value={it.description || ""}
-                      onChange={(e) =>
-                        setContent((prev) => ({
-                          ...prev,
-                          home: {
-                            ...prev.home,
-                            differentiators: {
-                              cards: (prev.home.differentiators?.cards || []).map((c, x) =>
-                                x === cIdx
-                                  ? {
-                                      ...c,
-                                      icon: cardIcon,
-                                      items: (c.items || []).map((y, yi) => (yi === iIdx ? { ...y, description: e.target.value } : y)),
-                                    }
-                                  : c,
-                              ),
-                            },
-                          },
-                        }))
-                      }
-                                    />
-                                </div>
-                      )}
-                      <div className="flex justify-end md:col-start-3 md:row-start-1 self-start">
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="sm"
-                          onClick={() =>
-                            setContent((prev) => ({
-                              ...prev,
-                              home: {
-                                ...prev.home,
-                                differentiators: {
-                                  cards: (prev.home.differentiators?.cards || []).map((c, x) =>
-                                    x === cIdx ? { ...c, items: (c.items || []).filter((_, yi) => yi !== iIdx) } : c,
-                                  ),
-                                },
-                              },
-                            }))
-                          }
-                        >
-                          Remove Item
-                        </Button>
-                      </div>
-                    </div>
-                  ))}
-                  {/* Add Item button removed as per requirements */}
-                </div>
-
-                {cIdx === 0 && (
-                  <div className="space-y-2">
-                    <Label>Footer Text</Label>
-                    <Textarea
-                      value={card.footerText || ""}
-                      onChange={(e) =>
-                        setContent((prev) => ({
-                          ...prev,
-                          home: {
-                            ...prev.home,
-                            differentiators: {
-                              cards: (prev.home.differentiators?.cards || []).map((c, i) => 
-                                i === cIdx 
-                                  ? { ...c, footerText: e.target.value, icon: cardIcon } 
-                                  : c
-                              ),
-                            },
-                          },
-                        }))
-                      }
-                      rows={2}
-                    />
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
                   </div>
-                )}
-              </div>
+                  <div className="grid gap-4 md:grid-cols-2">
+                    <div className="space-y-2 md:col-span-1">
+                      <Label>Title</Label>
+                      <Input
+                        value={card.title || ""}
+                        onChange={(e) =>
+                          setContent((prev) => ({
+                            ...prev,
+                            home: {
+                              ...prev.home,
+                              differentiators: {
+                                cards: (prev.home.differentiators?.cards || []).map((c, i) =>
+                                  i === cIdx
+                                    ? { ...c, title: e.target.value, icon: cardIcon }
+                                    : c
+                                ),
+                              },
+                            },
+                          }))
+                        }
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-3">
+                    <Label className="text-xs uppercase tracking-wide text-muted-foreground">Items</Label>
+                    {(card.items || []).map((it, iIdx) => (
+                      <div
+                        key={iIdx}
+                      >
+                        <div className="space-y-2">
+                          <Label>Item Title</Label>
+                          <Input
+                            value={it.title || ""}
+                            onChange={(e) =>
+                              setContent((prev) => ({
+                                ...prev,
+                                home: {
+                                  ...prev.home,
+                                  differentiators: {
+                                    cards: (prev.home.differentiators?.cards || []).map((c, x) =>
+                                      x === cIdx
+                                        ? {
+                                          ...c,
+                                          icon: cardIcon,
+                                          items: (c.items || []).map((y, yi) => (yi === iIdx ? { ...y, title: e.target.value } : y)),
+                                        }
+                                        : c,
+                                    ),
+                                  },
+                                },
+                              }))
+                            }
+                          />
+                        </div>
+                        {cIdx !== 0 && (
+                          <div className="space-y-2 md:col-span-2">
+                            <Label>Item Description (optional)</Label>
+                            <Input
+                              value={it.description || ""}
+                              onChange={(e) =>
+                                setContent((prev) => ({
+                                  ...prev,
+                                  home: {
+                                    ...prev.home,
+                                    differentiators: {
+                                      cards: (prev.home.differentiators?.cards || []).map((c, x) =>
+                                        x === cIdx
+                                          ? {
+                                            ...c,
+                                            icon: cardIcon,
+                                            items: (c.items || []).map((y, yi) => (yi === iIdx ? { ...y, description: e.target.value } : y)),
+                                          }
+                                          : c,
+                                      ),
+                                    },
+                                  },
+                                }))
+                              }
+                            />
+                          </div>
+                        )}
+                        <div className="flex justify-end md:col-start-3 md:row-start-1 self-start">
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            onClick={() =>
+                              setContent((prev) => ({
+                                ...prev,
+                                home: {
+                                  ...prev.home,
+                                  differentiators: {
+                                    cards: (prev.home.differentiators?.cards || []).map((c, x) =>
+                                      x === cIdx ? { ...c, items: (c.items || []).filter((_, yi) => yi !== iIdx) } : c,
+                                    ),
+                                  },
+                                },
+                              }))
+                            }
+                          >
+                            Remove Item
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
+                    {/* Add Item button removed as per requirements */}
+                  </div>
+
+                  {cIdx === 0 && (
+                    <div className="space-y-2">
+                      <Label>Footer Text</Label>
+                      <Textarea
+                        value={card.footerText || ""}
+                        onChange={(e) =>
+                          setContent((prev) => ({
+                            ...prev,
+                            home: {
+                              ...prev.home,
+                              differentiators: {
+                                cards: (prev.home.differentiators?.cards || []).map((c, i) =>
+                                  i === cIdx
+                                    ? { ...c, footerText: e.target.value, icon: cardIcon }
+                                    : c
+                                ),
+                              },
+                            },
+                          }))
+                        }
+                        rows={2}
+                      />
+                    </div>
+                  )}
+                </div>
               );
             })}
           </div>
           {/* Add Card button intentionally removed as per requirements */}
-                            </CardContent>
-                        </Card>
-      <Card 
+        </CardContent>
+      </Card>
+      <Card
         className="shadow-soft"
         onMouseEnter={() => setActiveSubSection('hero-video')}
         onFocus={() => setActiveSubSection('hero-video')}
@@ -1108,7 +1236,7 @@ const Admin = () => {
                 value={content.home.joinUs?.kicker || ""}
                 onChange={(e) => setContent((prev) => ({
                   ...prev,
-                  home: { ...prev.home, joinUs: { ...(prev.home.joinUs||{}), kicker: e.target.value } },
+                  home: { ...prev.home, joinUs: { ...(prev.home.joinUs || {}), kicker: e.target.value } },
                 }))}
               />
             </div>
@@ -1118,7 +1246,7 @@ const Admin = () => {
                 value={content.home.joinUs?.titleBefore || ""}
                 onChange={(e) => setContent((prev) => ({
                   ...prev,
-                  home: { ...prev.home, joinUs: { ...(prev.home.joinUs||{}), titleBefore: e.target.value } },
+                  home: { ...prev.home, joinUs: { ...(prev.home.joinUs || {}), titleBefore: e.target.value } },
                 }))}
               />
             </div>
@@ -1128,7 +1256,7 @@ const Admin = () => {
                 value={content.home.joinUs?.titleHighlight || ""}
                 onChange={(e) => setContent((prev) => ({
                   ...prev,
-                  home: { ...prev.home, joinUs: { ...(prev.home.joinUs||{}), titleHighlight: e.target.value } },
+                  home: { ...prev.home, joinUs: { ...(prev.home.joinUs || {}), titleHighlight: e.target.value } },
                 }))}
               />
             </div>
@@ -1139,7 +1267,7 @@ const Admin = () => {
               value={content.home.joinUs?.titleAfter || ""}
               onChange={(e) => setContent((prev) => ({
                 ...prev,
-                home: { ...prev.home, joinUs: { ...(prev.home.joinUs||{}), titleAfter: e.target.value } },
+                home: { ...prev.home, joinUs: { ...(prev.home.joinUs || {}), titleAfter: e.target.value } },
               }))}
             />
           </div>
@@ -1150,7 +1278,7 @@ const Admin = () => {
               value={content.home.joinUs?.subtitle || ""}
               onChange={(e) => setContent((prev) => ({
                 ...prev,
-                home: { ...prev.home, joinUs: { ...(prev.home.joinUs||{}), subtitle: e.target.value } },
+                home: { ...prev.home, joinUs: { ...(prev.home.joinUs || {}), subtitle: e.target.value } },
               }))}
               rows={2}
             />
@@ -1176,7 +1304,7 @@ const Admin = () => {
                 value={content.home.joinUs?.reasonsHeading || ""}
                 onChange={(e) => setContent((prev) => ({
                   ...prev,
-                  home: { ...prev.home, joinUs: { ...(prev.home.joinUs||{}), reasonsHeading: e.target.value } },
+                  home: { ...prev.home, joinUs: { ...(prev.home.joinUs || {}), reasonsHeading: e.target.value } },
                 }))}
               />
             </div>
@@ -1184,23 +1312,23 @@ const Admin = () => {
               {(content.home.joinUs?.reasons || []).slice(0, 3).map((r, i) => (
                 <div key={i} className="grid grid-cols-1 gap-4 md:grid-cols-2">
                   <div className="space-y-2">
-                    <Label>Reason {i+1} Title</Label>
+                    <Label>Reason {i + 1} Title</Label>
                     <Input
                       value={r.title}
-                      onChange={(e) => setContent((prev)=>({
+                      onChange={(e) => setContent((prev) => ({
                         ...prev,
-                        home: { ...prev.home, joinUs: { ...(prev.home.joinUs||{}), reasons: (prev.home.joinUs?.reasons||[]).map((x,xi)=> xi===i? {...x, title: e.target.value}: x) } },
+                        home: { ...prev.home, joinUs: { ...(prev.home.joinUs || {}), reasons: (prev.home.joinUs?.reasons || []).map((x, xi) => xi === i ? { ...x, title: e.target.value } : x) } },
                       }))}
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label>Reason {i+1} Description</Label>
+                    <Label>Reason {i + 1} Description</Label>
                     <Textarea
                       value={r.description}
-                      onChange={(e) => setContent((prev)=>(
+                      onChange={(e) => setContent((prev) => (
                         {
                           ...prev,
-                          home: { ...prev.home, joinUs: { ...(prev.home.joinUs||{}), reasons: (prev.home.joinUs?.reasons||[]).map((x,xi)=> xi===i? {...x, description: e.target.value}: x) } },
+                          home: { ...prev.home, joinUs: { ...(prev.home.joinUs || {}), reasons: (prev.home.joinUs?.reasons || []).map((x, xi) => xi === i ? { ...x, description: e.target.value } : x) } },
                         }
                       ))}
                       rows={2}
@@ -1214,26 +1342,26 @@ const Admin = () => {
         </CardContent>
       </Card>
 
-      
 
-      <Card 
+
+      <Card
         className="shadow-soft"
         onMouseEnter={() => setActiveSubSection('testimonials')}
         onFocus={() => setActiveSubSection('testimonials')}
       >
-                            <CardHeader>
+        <CardHeader>
           <CardTitle>Course Overview</CardTitle>
           <CardDescription>Edit the batch schedule, key details, and CTA shown in the Course section.</CardDescription>
-                            </CardHeader>
+        </CardHeader>
         <CardContent className="space-y-6">
           <div className="grid gap-4 md:grid-cols-4">
             <div className="space-y-2">
               <Label>Kicker</Label>
               <Input
                 value={content.home.courseOverview?.kicker || ""}
-                onChange={(e)=> setContent(prev=> ({
+                onChange={(e) => setContent(prev => ({
                   ...prev,
-                  home: { ...prev.home, courseOverview: { ...(prev.home.courseOverview||{}), kicker: e.target.value } },
+                  home: { ...prev.home, courseOverview: { ...(prev.home.courseOverview || {}), kicker: e.target.value } },
                 }))}
               />
             </div>
@@ -1241,9 +1369,9 @@ const Admin = () => {
               <Label>Title </Label>
               <Input
                 value={content.home.courseOverview?.title || ""}
-                onChange={(e)=> setContent(prev=> ({
+                onChange={(e) => setContent(prev => ({
                   ...prev,
-                  home: { ...prev.home, courseOverview: { ...(prev.home.courseOverview||{}), title: e.target.value } },
+                  home: { ...prev.home, courseOverview: { ...(prev.home.courseOverview || {}), title: e.target.value } },
                 }))}
               />
             </div>
@@ -1256,36 +1384,40 @@ const Admin = () => {
                 <Label>Heading</Label>
                 <Input
                   value={content.home.courseOverview?.schedule?.[0]?.heading || ""}
-                  onChange={(e)=> setContent(prev=> ({
+                  onChange={(e) => setContent(prev => ({
                     ...prev,
-                    home: { ...prev.home, courseOverview: { ...(prev.home.courseOverview||{}), schedule: [
-                      { ...(prev.home.courseOverview?.schedule?.[0]||{ heading:"", color:"primary", items:[] }), heading: e.target.value },
-                      ...(prev.home.courseOverview?.schedule?.slice(1) || [
-                        { heading:"Afternoon", color:"primary", items:[] },
-                        { heading:"Evening", color:"accent", items:[] },
-                      ]),
-                    ] } },
+                    home: {
+                      ...prev.home, courseOverview: {
+                        ...(prev.home.courseOverview || {}), schedule: [
+                          { ...(prev.home.courseOverview?.schedule?.[0] || { heading: "", color: "primary", items: [] }), heading: e.target.value },
+                          ...(prev.home.courseOverview?.schedule?.slice(1) || [
+                            { heading: "Afternoon", color: "primary", items: [] },
+                            { heading: "Evening", color: "accent", items: [] },
+                          ]),
+                        ]
+                      }
+                    },
                   }))}
                 />
               </div>
 
-              {(content.home.courseOverview?.schedule?.[0]?.items || []).map((item, ii)=> (
+              {(content.home.courseOverview?.schedule?.[0]?.items || []).map((item, ii) => (
                 <div key={ii} className="md:col-span-4">
                   <div className="grid gap-3 md:grid-cols-[repeat(2,minmax(0,1fr))_auto] items-end">
                     <div className="space-y-2">
-                      <Label>Item {ii+1} Label</Label>
+                      <Label>Item {ii + 1} Label</Label>
                       <Input
                         value={item.label || ""}
-                        onChange={(e)=> {
+                        onChange={(e) => {
                           setContent(prev => {
                             const prevSchedule = prev.home.courseOverview?.schedule || [
-                              { heading:"", color:"primary", items:[] as {label:string; time:string}[] },
-                              { heading:"", color:"primary", items:[] as {label:string; time:string}[] },
-                              { heading:"", color:"accent", items:[] as {label:string; time:string}[] },
+                              { heading: "", color: "primary", items: [] as { label: string; time: string }[] },
+                              { heading: "", color: "primary", items: [] as { label: string; time: string }[] },
+                              { heading: "", color: "accent", items: [] as { label: string; time: string }[] },
                             ];
-                            const morning = prevSchedule[0] || { heading:"", color:"primary", items:[] as {label:string; time:string}[] };
-                            const afternoon = prevSchedule[1] || { heading:"", color:"primary", items:[] as {label:string; time:string}[] };
-                            const evening = prevSchedule[2] || { heading:"", color:"accent", items:[] as {label:string; time:string}[] };
+                            const morning = prevSchedule[0] || { heading: "", color: "primary", items: [] as { label: string; time: string }[] };
+                            const afternoon = prevSchedule[1] || { heading: "", color: "primary", items: [] as { label: string; time: string }[] };
+                            const evening = prevSchedule[2] || { heading: "", color: "accent", items: [] as { label: string; time: string }[] };
                             const updatedMorningItems = (morning.items || []).map((it, j) =>
                               j === ii ? { ...it, label: e.target.value } : it,
                             );
@@ -1308,19 +1440,19 @@ const Admin = () => {
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label>Item {ii+1} Time</Label>
+                      <Label>Item {ii + 1} Time</Label>
                       <Input
                         value={item.time || ""}
-                        onChange={(e)=> {
+                        onChange={(e) => {
                           setContent(prev => {
                             const prevSchedule = prev.home.courseOverview?.schedule || [
-                              { heading:"", color:"primary", items:[] as {label:string; time:string}[] },
-                              { heading:"", color:"primary", items:[] as {label:string; time:string}[] },
-                              { heading:"", color:"accent", items:[] as {label:string; time:string}[] },
+                              { heading: "", color: "primary", items: [] as { label: string; time: string }[] },
+                              { heading: "", color: "primary", items: [] as { label: string; time: string }[] },
+                              { heading: "", color: "accent", items: [] as { label: string; time: string }[] },
                             ];
-                            const morning = prevSchedule[0] || { heading:"", color:"primary", items:[] as {label:string; time:string}[] };
-                            const afternoon = prevSchedule[1] || { heading:"", color:"primary", items:[] as {label:string; time:string}[] };
-                            const evening = prevSchedule[2] || { heading:"", color:"accent", items:[] as {label:string; time:string}[] };
+                            const morning = prevSchedule[0] || { heading: "", color: "primary", items: [] as { label: string; time: string }[] };
+                            const afternoon = prevSchedule[1] || { heading: "", color: "primary", items: [] as { label: string; time: string }[] };
+                            const evening = prevSchedule[2] || { heading: "", color: "accent", items: [] as { label: string; time: string }[] };
                             const updatedMorningItems = (morning.items || []).map((it, j) =>
                               j === ii ? { ...it, time: e.target.value } : it,
                             );
@@ -1350,13 +1482,13 @@ const Admin = () => {
                         onClick={() => {
                           setContent(prev => {
                             const prevSchedule = prev.home.courseOverview?.schedule || [
-                              { heading:"", color:"primary", items:[] as {label:string; time:string}[] },
-                              { heading:"", color:"primary", items:[] as {label:string; time:string}[] },
-                              { heading:"", color:"accent", items:[] as {label:string; time:string}[] },
+                              { heading: "", color: "primary", items: [] as { label: string; time: string }[] },
+                              { heading: "", color: "primary", items: [] as { label: string; time: string }[] },
+                              { heading: "", color: "accent", items: [] as { label: string; time: string }[] },
                             ];
-                            const morning = prevSchedule[0] || { heading:"", color:"primary", items:[] as {label:string; time:string}[] };
-                            const afternoon = prevSchedule[1] || { heading:"", color:"primary", items:[] as {label:string; time:string}[] };
-                            const evening = prevSchedule[2] || { heading:"", color:"accent", items:[] as {label:string; time:string}[] };
+                            const morning = prevSchedule[0] || { heading: "", color: "primary", items: [] as { label: string; time: string }[] };
+                            const afternoon = prevSchedule[1] || { heading: "", color: "primary", items: [] as { label: string; time: string }[] };
+                            const evening = prevSchedule[2] || { heading: "", color: "accent", items: [] as { label: string; time: string }[] };
                             const updatedMorningItems = (morning.items || []).filter((_, j) => j !== ii);
                             return {
                               ...prev,
@@ -1391,13 +1523,13 @@ const Admin = () => {
                   onClick={() => {
                     setContent(prev => {
                       const prevSchedule = prev.home.courseOverview?.schedule || [
-                        { heading:"Morning", color:"primary", items:[] as {label:string; time:string}[] },
-                        { heading:"Afternoon", color:"primary", items:[] as {label:string; time:string}[] },
-                        { heading:"Evening", color:"accent", items:[] as {label:string; time:string}[] },
+                        { heading: "Morning", color: "primary", items: [] as { label: string; time: string }[] },
+                        { heading: "Afternoon", color: "primary", items: [] as { label: string; time: string }[] },
+                        { heading: "Evening", color: "accent", items: [] as { label: string; time: string }[] },
                       ];
-                      const morning = prevSchedule[0] || { heading:"Morning", color:"primary", items:[] as {label:string; time:string}[] };
-                      const afternoon = prevSchedule[1] || { heading:"Afternoon", color:"primary", items:[] as {label:string; time:string}[] };
-                      const evening = prevSchedule[2] || { heading:"Evening", color:"accent", items:[] as {label:string; time:string}[] };
+                      const morning = prevSchedule[0] || { heading: "Morning", color: "primary", items: [] as { label: string; time: string }[] };
+                      const afternoon = prevSchedule[1] || { heading: "Afternoon", color: "primary", items: [] as { label: string; time: string }[] };
+                      const evening = prevSchedule[2] || { heading: "Evening", color: "accent", items: [] as { label: string; time: string }[] };
                       const nextIndex = (morning.items?.length || 0) + 1;
                       const updatedMorningItems = [...(morning.items || []), { label: `Batch ${nextIndex}`, time: "" }];
                       return {
@@ -1431,34 +1563,38 @@ const Admin = () => {
                 <Label>Heading</Label>
                 <Input
                   value={content.home.courseOverview?.schedule?.[1]?.heading || ""}
-                  onChange={(e)=> setContent(prev=> ({
+                  onChange={(e) => setContent(prev => ({
                     ...prev,
-                    home: { ...prev.home, courseOverview: { ...(prev.home.courseOverview||{}), schedule: [
-                      ...(prev.home.courseOverview?.schedule?.slice(0,1) || [{ heading:"", color:"primary", items:[] }]),
-                      { ...(prev.home.courseOverview?.schedule?.[1]||{ heading:"", color:"primary", items:[] }), heading: e.target.value },
-                      ...(prev.home.courseOverview?.schedule?.slice(2) || [{ heading:"", color:"accent", items:[] }]),
-                    ] } },
+                    home: {
+                      ...prev.home, courseOverview: {
+                        ...(prev.home.courseOverview || {}), schedule: [
+                          ...(prev.home.courseOverview?.schedule?.slice(0, 1) || [{ heading: "", color: "primary", items: [] }]),
+                          { ...(prev.home.courseOverview?.schedule?.[1] || { heading: "", color: "primary", items: [] }), heading: e.target.value },
+                          ...(prev.home.courseOverview?.schedule?.slice(2) || [{ heading: "", color: "accent", items: [] }]),
+                        ]
+                      }
+                    },
                   }))}
                 />
               </div>
 
-              {(content.home.courseOverview?.schedule?.[1]?.items || []).map((item, ii)=> (
+              {(content.home.courseOverview?.schedule?.[1]?.items || []).map((item, ii) => (
                 <div key={ii} className="md:col-span-4">
                   <div className="grid gap-3 md:grid-cols-[repeat(2,minmax(0,1fr))_auto] items-end">
                     <div className="space-y-2">
-                      <Label>Item {ii+1} Label</Label>
+                      <Label>Item {ii + 1} Label</Label>
                       <Input
                         value={item.label || ""}
-                        onChange={(e)=> {
+                        onChange={(e) => {
                           setContent(prev => {
                             const prevSchedule = prev.home.courseOverview?.schedule || [
-                              { heading:"", color:"primary", items:[] as {label:string; time:string}[] },
-                              { heading:"", color:"primary", items:[] as {label:string; time:string}[] },
-                              { heading:"", color:"accent", items:[] as {label:string; time:string}[] },
+                              { heading: "", color: "primary", items: [] as { label: string; time: string }[] },
+                              { heading: "", color: "primary", items: [] as { label: string; time: string }[] },
+                              { heading: "", color: "accent", items: [] as { label: string; time: string }[] },
                             ];
-                            const morning = prevSchedule[0] || { heading:"", color:"primary", items:[] as {label:string; time:string}[] };
-                            const afternoon = prevSchedule[1] || { heading:"", color:"primary", items:[] as {label:string; time:string}[] };
-                            const evening = prevSchedule[2] || { heading:"", color:"accent", items:[] as {label:string; time:string}[] };
+                            const morning = prevSchedule[0] || { heading: "", color: "primary", items: [] as { label: string; time: string }[] };
+                            const afternoon = prevSchedule[1] || { heading: "", color: "primary", items: [] as { label: string; time: string }[] };
+                            const evening = prevSchedule[2] || { heading: "", color: "accent", items: [] as { label: string; time: string }[] };
                             const updatedAfternoonItems = (afternoon.items || []).map((it, j) =>
                               j === ii ? { ...it, label: e.target.value } : it,
                             );
@@ -1481,19 +1617,19 @@ const Admin = () => {
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label>Item {ii+1} Time</Label>
+                      <Label>Item {ii + 1} Time</Label>
                       <Input
                         value={item.time || ""}
-                        onChange={(e)=> {
+                        onChange={(e) => {
                           setContent(prev => {
                             const prevSchedule = prev.home.courseOverview?.schedule || [
-                              { heading:"", color:"primary", items:[] as {label:string; time:string}[] },
-                              { heading:"", color:"primary", items:[] as {label:string; time:string}[] },
-                              { heading:"", color:"accent", items:[] as {label:string; time:string}[] },
+                              { heading: "", color: "primary", items: [] as { label: string; time: string }[] },
+                              { heading: "", color: "primary", items: [] as { label: string; time: string }[] },
+                              { heading: "", color: "accent", items: [] as { label: string; time: string }[] },
                             ];
-                            const morning = prevSchedule[0] || { heading:"", color:"primary", items:[] as {label:string; time:string}[] };
-                            const afternoon = prevSchedule[1] || { heading:"", color:"primary", items:[] as {label:string; time:string}[] };
-                            const evening = prevSchedule[2] || { heading:"", color:"accent", items:[] as {label:string; time:string}[] };
+                            const morning = prevSchedule[0] || { heading: "", color: "primary", items: [] as { label: string; time: string }[] };
+                            const afternoon = prevSchedule[1] || { heading: "", color: "primary", items: [] as { label: string; time: string }[] };
+                            const evening = prevSchedule[2] || { heading: "", color: "accent", items: [] as { label: string; time: string }[] };
                             const updatedAfternoonItems = (afternoon.items || []).map((it, j) =>
                               j === ii ? { ...it, time: e.target.value } : it,
                             );
@@ -1523,13 +1659,13 @@ const Admin = () => {
                         onClick={() => {
                           setContent(prev => {
                             const prevSchedule = prev.home.courseOverview?.schedule || [
-                              { heading:"", color:"primary", items:[] as {label:string; time:string}[] },
-                              { heading:"", color:"primary", items:[] as {label:string; time:string}[] },
-                              { heading:"", color:"accent", items:[] as {label:string; time:string}[] },
+                              { heading: "", color: "primary", items: [] as { label: string; time: string }[] },
+                              { heading: "", color: "primary", items: [] as { label: string; time: string }[] },
+                              { heading: "", color: "accent", items: [] as { label: string; time: string }[] },
                             ];
-                            const morning = prevSchedule[0] || { heading:"", color:"primary", items:[] as {label:string; time:string}[] };
-                            const afternoon = prevSchedule[1] || { heading:"", color:"primary", items:[] as {label:string; time:string}[] };
-                            const evening = prevSchedule[2] || { heading:"", color:"accent", items:[] as {label:string; time:string}[] };
+                            const morning = prevSchedule[0] || { heading: "", color: "primary", items: [] as { label: string; time: string }[] };
+                            const afternoon = prevSchedule[1] || { heading: "", color: "primary", items: [] as { label: string; time: string }[] };
+                            const evening = prevSchedule[2] || { heading: "", color: "accent", items: [] as { label: string; time: string }[] };
                             const updatedAfternoonItems = (afternoon.items || []).filter((_, j) => j !== ii);
                             return {
                               ...prev,
@@ -1564,13 +1700,13 @@ const Admin = () => {
                   onClick={() => {
                     setContent(prev => {
                       const prevSchedule = prev.home.courseOverview?.schedule || [
-                        { heading:"Morning", color:"primary", items:[] as {label:string; time:string}[] },
-                        { heading:"Afternoon", color:"primary", items:[] as {label:string; time:string}[] },
-                        { heading:"Evening", color:"accent", items:[] as {label:string; time:string}[] },
+                        { heading: "Morning", color: "primary", items: [] as { label: string; time: string }[] },
+                        { heading: "Afternoon", color: "primary", items: [] as { label: string; time: string }[] },
+                        { heading: "Evening", color: "accent", items: [] as { label: string; time: string }[] },
                       ];
-                      const morning = prevSchedule[0] || { heading:"Morning", color:"primary", items:[] as {label:string; time:string}[] };
-                      const afternoon = prevSchedule[1] || { heading:"Afternoon", color:"primary", items:[] as {label:string; time:string}[] };
-                      const evening = prevSchedule[2] || { heading:"Evening", color:"accent", items:[] as {label:string; time:string}[] };
+                      const morning = prevSchedule[0] || { heading: "Morning", color: "primary", items: [] as { label: string; time: string }[] };
+                      const afternoon = prevSchedule[1] || { heading: "Afternoon", color: "primary", items: [] as { label: string; time: string }[] };
+                      const evening = prevSchedule[2] || { heading: "Evening", color: "accent", items: [] as { label: string; time: string }[] };
                       const nextIndex = (afternoon.items?.length || 0) + 1;
                       const offset = (morning.items?.length || 0);
                       const updatedAfternoonItems = [...(afternoon.items || []), { label: `Batch ${nextIndex + offset}`, time: "" }];
@@ -1605,36 +1741,40 @@ const Admin = () => {
                 <Label>Heading</Label>
                 <Input
                   value={content.home.courseOverview?.schedule?.[2]?.heading || ""}
-                  onChange={(e)=> setContent(prev=> ({
+                  onChange={(e) => setContent(prev => ({
                     ...prev,
-                    home: { ...prev.home, courseOverview: { ...(prev.home.courseOverview||{}), schedule: [
-                      ...(prev.home.courseOverview?.schedule?.slice(0,2) || [
-                        { heading:"", color:"primary", items:[] },
-                        { heading:"", color:"primary", items:[] },
-                      ]),
-                      { ...(prev.home.courseOverview?.schedule?.[2]||{ heading:"", color:"accent", items:[] }), heading: e.target.value },
-                    ] } },
+                    home: {
+                      ...prev.home, courseOverview: {
+                        ...(prev.home.courseOverview || {}), schedule: [
+                          ...(prev.home.courseOverview?.schedule?.slice(0, 2) || [
+                            { heading: "", color: "primary", items: [] },
+                            { heading: "", color: "primary", items: [] },
+                          ]),
+                          { ...(prev.home.courseOverview?.schedule?.[2] || { heading: "", color: "accent", items: [] }), heading: e.target.value },
+                        ]
+                      }
+                    },
                   }))}
                 />
               </div>
 
-              {(content.home.courseOverview?.schedule?.[2]?.items || []).map((item, ii)=> (
+              {(content.home.courseOverview?.schedule?.[2]?.items || []).map((item, ii) => (
                 <div key={ii} className="md:col-span-4">
                   <div className="grid gap-3 md:grid-cols-[repeat(2,minmax(0,1fr))_auto] items-end">
                     <div className="space-y-2">
-                      <Label>Item {ii+1} Label</Label>
+                      <Label>Item {ii + 1} Label</Label>
                       <Input
                         value={item.label || ""}
-                        onChange={(e)=> {
+                        onChange={(e) => {
                           setContent(prev => {
                             const prevSchedule = prev.home.courseOverview?.schedule || [
-                              { heading:"", color:"primary", items:[] as {label:string; time:string}[] },
-                              { heading:"", color:"primary", items:[] as {label:string; time:string}[] },
-                              { heading:"", color:"accent", items:[] as {label:string; time:string}[] },
+                              { heading: "", color: "primary", items: [] as { label: string; time: string }[] },
+                              { heading: "", color: "primary", items: [] as { label: string; time: string }[] },
+                              { heading: "", color: "accent", items: [] as { label: string; time: string }[] },
                             ];
-                            const morning = prevSchedule[0] || { heading:"", color:"primary", items:[] as {label:string; time:string}[] };
-                            const afternoon = prevSchedule[1] || { heading:"", color:"primary", items:[] as {label:string; time:string}[] };
-                            const evening = prevSchedule[2] || { heading:"", color:"accent", items:[] as {label:string; time:string}[] };
+                            const morning = prevSchedule[0] || { heading: "", color: "primary", items: [] as { label: string; time: string }[] };
+                            const afternoon = prevSchedule[1] || { heading: "", color: "primary", items: [] as { label: string; time: string }[] };
+                            const evening = prevSchedule[2] || { heading: "", color: "accent", items: [] as { label: string; time: string }[] };
                             const updatedEveningItems = (evening.items || []).map((it, j) =>
                               j === ii ? { ...it, label: e.target.value } : it,
                             );
@@ -1657,19 +1797,19 @@ const Admin = () => {
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label>Item {ii+1} Time</Label>
+                      <Label>Item {ii + 1} Time</Label>
                       <Input
                         value={item.time || ""}
-                        onChange={(e)=> {
+                        onChange={(e) => {
                           setContent(prev => {
                             const prevSchedule = prev.home.courseOverview?.schedule || [
-                              { heading:"", color:"primary", items:[] as {label:string; time:string}[] },
-                              { heading:"", color:"primary", items:[] as {label:string; time:string}[] },
-                              { heading:"", color:"accent", items:[] as {label:string; time:string}[] },
+                              { heading: "", color: "primary", items: [] as { label: string; time: string }[] },
+                              { heading: "", color: "primary", items: [] as { label: string; time: string }[] },
+                              { heading: "", color: "accent", items: [] as { label: string; time: string }[] },
                             ];
-                            const morning = prevSchedule[0] || { heading:"", color:"primary", items:[] as {label:string; time:string}[] };
-                            const afternoon = prevSchedule[1] || { heading:"", color:"primary", items:[] as {label:string; time:string}[] };
-                            const evening = prevSchedule[2] || { heading:"", color:"accent", items:[] as {label:string; time:string}[] };
+                            const morning = prevSchedule[0] || { heading: "", color: "primary", items: [] as { label: string; time: string }[] };
+                            const afternoon = prevSchedule[1] || { heading: "", color: "primary", items: [] as { label: string; time: string }[] };
+                            const evening = prevSchedule[2] || { heading: "", color: "accent", items: [] as { label: string; time: string }[] };
                             const updatedEveningItems = (evening.items || []).map((it, j) =>
                               j === ii ? { ...it, time: e.target.value } : it,
                             );
@@ -1699,13 +1839,13 @@ const Admin = () => {
                         onClick={() => {
                           setContent(prev => {
                             const prevSchedule = prev.home.courseOverview?.schedule || [
-                              { heading:"", color:"primary", items:[] as {label:string; time:string}[] },
-                              { heading:"", color:"primary", items:[] as {label:string; time:string}[] },
-                              { heading:"", color:"accent", items:[] as {label:string; time:string}[] },
+                              { heading: "", color: "primary", items: [] as { label: string; time: string }[] },
+                              { heading: "", color: "primary", items: [] as { label: string; time: string }[] },
+                              { heading: "", color: "accent", items: [] as { label: string; time: string }[] },
                             ];
-                            const morning = prevSchedule[0] || { heading:"", color:"primary", items:[] as {label:string; time:string}[] };
-                            const afternoon = prevSchedule[1] || { heading:"", color:"primary", items:[] as {label:string; time:string}[] };
-                            const evening = prevSchedule[2] || { heading:"", color:"accent", items:[] as {label:string; time:string}[] };
+                            const morning = prevSchedule[0] || { heading: "", color: "primary", items: [] as { label: string; time: string }[] };
+                            const afternoon = prevSchedule[1] || { heading: "", color: "primary", items: [] as { label: string; time: string }[] };
+                            const evening = prevSchedule[2] || { heading: "", color: "accent", items: [] as { label: string; time: string }[] };
                             const updatedEveningItems = (evening.items || []).filter((_, j) => j !== ii);
                             return {
                               ...prev,
@@ -1740,13 +1880,13 @@ const Admin = () => {
                   onClick={() => {
                     setContent(prev => {
                       const prevSchedule = prev.home.courseOverview?.schedule || [
-                        { heading:"Morning", color:"primary", items:[] as {label:string; time:string}[] },
-                        { heading:"Afternoon", color:"primary", items:[] as {label:string; time:string}[] },
-                        { heading:"Evening", color:"accent", items:[] as {label:string; time:string}[] },
+                        { heading: "Morning", color: "primary", items: [] as { label: string; time: string }[] },
+                        { heading: "Afternoon", color: "primary", items: [] as { label: string; time: string }[] },
+                        { heading: "Evening", color: "accent", items: [] as { label: string; time: string }[] },
                       ];
-                      const morning = prevSchedule[0] || { heading:"Morning", color:"primary", items:[] as {label:string; time:string}[] };
-                      const afternoon = prevSchedule[1] || { heading:"Afternoon", color:"primary", items:[] as {label:string; time:string}[] };
-                      const evening = prevSchedule[2] || { heading:"Evening", color:"accent", items:[] as {label:string; time:string}[] };
+                      const morning = prevSchedule[0] || { heading: "Morning", color: "primary", items: [] as { label: string; time: string }[] };
+                      const afternoon = prevSchedule[1] || { heading: "Afternoon", color: "primary", items: [] as { label: string; time: string }[] };
+                      const evening = prevSchedule[2] || { heading: "Evening", color: "accent", items: [] as { label: string; time: string }[] };
                       const nextIndex = (evening.items?.length || 0) + 1;
                       const offset = (morning.items?.length || 0) + (afternoon.items?.length || 0);
                       const updatedEveningItems = [...(evening.items || []), { label: `Batch ${nextIndex + offset}`, time: "" }];
@@ -1774,15 +1914,15 @@ const Admin = () => {
             </div>
           </div>
 
-          
+
           <div className="grid gap-4 md:grid-cols-3">
             <div className="space-y-2">
               <Label>CTA Text</Label>
               <Input
                 value={content.home.courseOverview?.ctaText || ""}
-                onChange={(e)=> setContent(prev=> ({
+                onChange={(e) => setContent(prev => ({
                   ...prev,
-                  home: { ...prev.home, courseOverview: { ...(prev.home.courseOverview||{}), ctaText: e.target.value } },
+                  home: { ...prev.home, courseOverview: { ...(prev.home.courseOverview || {}), ctaText: e.target.value } },
                 }))}
               />
             </div>
@@ -1790,32 +1930,32 @@ const Admin = () => {
               <Label>CTA Button</Label>
               <Input
                 value={content.home.courseOverview?.ctaButton || ""}
-                onChange={(e)=> setContent(prev=> ({
+                onChange={(e) => setContent(prev => ({
                   ...prev,
-                  home: { ...prev.home, courseOverview: { ...(prev.home.courseOverview||{}), ctaButton: e.target.value } },
+                  home: { ...prev.home, courseOverview: { ...(prev.home.courseOverview || {}), ctaButton: e.target.value } },
                 }))}
               />
             </div>
-          
+
           </div>
         </CardContent>
       </Card>
 
-      <Card 
+      <Card
         className="shadow-soft"
         onMouseEnter={() => setActiveSubSection('you-belong-here')}
         onFocus={() => setActiveSubSection('you-belong-here')}
       >
         <CardHeader>
           <CardTitle>"You belong here" Section</CardTitle>
-         
+
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
             <Label>Title</Label>
             <Input
               value={content.home.joinUs?.bottom?.title || ""}
-              onChange={(e)=> setContent((prev)=> ({
+              onChange={(e) => setContent((prev) => ({
                 ...prev,
                 home: {
                   ...prev.home,
@@ -1844,10 +1984,10 @@ const Admin = () => {
                         <Input
                           placeholder={`Point ${index + 1} title`}
                           value={point.title}
-                          onChange={(e)=> setContent((prev)=> {
+                          onChange={(e) => setContent((prev) => {
                             const prevBottom = prev.home.joinUs?.bottom || { title: "", description: "" };
                             const prevPoints = prevBottom.points || [];
-                            const nextPoints = prevPoints.map((p, i)=> {
+                            const nextPoints = prevPoints.map((p, i) => {
                               if (i !== index) return p;
                               const existing = typeof p === "string" ? { title: p, description: "" } : p || { title: "", description: "" };
                               return { ...existing, title: e.target.value };
@@ -1868,10 +2008,10 @@ const Admin = () => {
                           rows={3}
                           placeholder="Subtext / description for this point"
                           value={point.description}
-                          onChange={(e)=> setContent((prev)=> {
+                          onChange={(e) => setContent((prev) => {
                             const prevBottom = prev.home.joinUs?.bottom || { title: "", description: "" };
                             const prevPoints = prevBottom.points || [];
-                            const nextPoints = prevPoints.map((p, i)=> {
+                            const nextPoints = prevPoints.map((p, i) => {
                               if (i !== index) return p;
                               const existing = typeof p === "string" ? { title: p, description: "" } : p || { title: "", description: "" };
                               return { ...existing, description: e.target.value };
@@ -1893,10 +2033,10 @@ const Admin = () => {
                         type="button"
                         variant="outline"
                         size="icon"
-                        onClick={()=> setContent((prev)=> {
+                        onClick={() => setContent((prev) => {
                           const prevBottom = prev.home.joinUs?.bottom || { title: "", description: "" };
                           const prevPoints = prevBottom.points || [];
-                          const nextPoints = prevPoints.filter((_, i)=> i !== index);
+                          const nextPoints = prevPoints.filter((_, i) => i !== index);
                           return {
                             ...prev,
                             home: {
@@ -1920,7 +2060,7 @@ const Admin = () => {
                 type="button"
                 variant="outline"
                 size="sm"
-                onClick={()=> setContent((prev)=> {
+                onClick={() => setContent((prev) => {
                   const prevBottom = prev.home.joinUs?.bottom || { title: "", description: "" };
                   const prevPoints = prevBottom.points || [];
                   return {
@@ -1943,7 +2083,7 @@ const Admin = () => {
         </CardContent>
       </Card>
 
-       {/* Marquee Section */}
+      {/* Marquee Section */}
       <Card
         className="shadow-soft"
         onMouseEnter={() => setActiveSubSection('marquee')}
@@ -2015,12 +2155,12 @@ const Admin = () => {
               rows={3}
               aria-describedby="marquee-text-help"
             />
-           
+
           </div>
         </CardContent>
       </Card>
 
-       <Card
+      <Card
         className="shadow-soft"
         onMouseEnter={() => setActiveSubSection('methodology-video')}
         onFocus={() => setActiveSubSection('methodology-video')}
@@ -2099,13 +2239,13 @@ const Admin = () => {
               }))}
               placeholder="https://www.youtube.com/embed/VIDEO_ID"
             />
-           
-           
-                                </div>
-                            </CardContent>
-                        </Card>
 
-      <Card 
+
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card
         className="shadow-soft"
         onMouseEnter={() => setActiveSubSection('methodology')}
         onFocus={() => setActiveSubSection('methodology')}
@@ -2137,7 +2277,7 @@ const Admin = () => {
               />
             </div>
           </div>
-                                <div className="space-y-4">
+          <div className="space-y-4">
             {(content.home.methodologySections || []).map((section, index) => (
               <div key={index} className="space-y-4 rounded-lg border p-4">
                 <div className="flex items-center justify-between">
@@ -2156,13 +2296,13 @@ const Admin = () => {
                       }))
                     }
                   >
-                                                    <Trash2 className="h-4 w-4" />
-                                                </Button>
-                                            </div>
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
 
                 <div className="grid gap-3 md:grid-cols-2">
-                                            <div className="space-y-2">
-                                                <Label>Title</Label>
+                  <div className="space-y-2">
+                    <Label>Title</Label>
                     <Input
                       value={section.title}
                       onChange={(e) =>
@@ -2177,12 +2317,12 @@ const Admin = () => {
                         }))
                       }
                     />
-                                            </div>
+                  </div>
                 </div>
 
-                                            <div className="space-y-2">
-                                                <Label>Description</Label>
-                                                <Textarea
+                <div className="space-y-2">
+                  <Label>Description</Label>
+                  <Textarea
                     rows={4}
                     value={section.description || section.intro || ''}
                     onChange={(e) =>
@@ -2196,8 +2336,8 @@ const Admin = () => {
                         },
                       }))
                     }
-                                                />
-                                            </div>
+                  />
+                </div>
 
                 {/* Section Images */}
                 <div className="space-y-3 border-t pt-4">
@@ -2206,58 +2346,23 @@ const Admin = () => {
                     {Array.from({ length: 3 }, (_, i) => i).map((imgIdx) => {
                       const image = (section.images || [])[imgIdx] || { src: "", alt: "" };
                       return (
-                      <div key={imgIdx} className="space-y-2">
-                        {image.src && (
-                          <div className="relative mb-2">
-                            <img
-                              src={image.src.startsWith('data:') || image.src.startsWith('http') ? image.src : image.src}
-                              alt="Preview"
-                              className="w-full h-24 object-cover rounded-md border"
-                              onError={(e) => {
-                                (e.target as HTMLImageElement).style.display = 'none';
-                              }}
-                            />
-                            <Button
-                              type="button"
-                              size="icon"
-                              variant="destructive"
-                              className="absolute top-1 right-1 h-5 w-5"
-                              onClick={() => {
-                                setContent((prev) => ({
-                                  ...prev,
-                                  home: {
-                                    ...prev.home,
-                                    methodologySections: prev.home.methodologySections.map((s, i) =>
-                                      i === index
-                                        ? {
-                                            ...s,
-                                            images: Array.from({ length: 3 }, (_, idx) => {
-                                              if (idx === imgIdx) return { src: "", alt: "" };
-                                              return (s.images || [])[idx] || { src: "", alt: "" };
-                                            }),
-                                          }
-                                        : s
-                                    ),
-                                  },
-                                }));
-                              }}
-                            >
-                              <X className="h-3 w-3" />
-                            </Button>
-                          </div>
-                        )}
-                        <div className="flex gap-1">
-                          <Input
-                            type="file"
-                            accept="image/*"
-                            className="hidden"
-                            id={`methodology-image-${index}-${imgIdx}`}
-                            onChange={async (e) => {
-                              const file = e.target.files?.[0];
-                              if (file) {
-                                try {
-                                  toast({ title: "Uploading image...", description: "Please wait while we upload to Cloudinary." });
-                                  const cloudinaryUrl = await uploadImageToCloudinary(file);
+                        <div key={imgIdx} className="space-y-2">
+                          {image.src && (
+                            <div className="relative mb-2">
+                              <img
+                                src={image.src.startsWith('data:') || image.src.startsWith('http') ? image.src : image.src}
+                                alt="Preview"
+                                className="w-full h-24 object-cover rounded-md border"
+                                onError={(e) => {
+                                  (e.target as HTMLImageElement).style.display = 'none';
+                                }}
+                              />
+                              <Button
+                                type="button"
+                                size="icon"
+                                variant="destructive"
+                                className="absolute top-1 right-1 h-5 w-5"
+                                onClick={() => {
                                   setContent((prev) => ({
                                     ...prev,
                                     home: {
@@ -2265,41 +2370,76 @@ const Admin = () => {
                                       methodologySections: prev.home.methodologySections.map((s, i) =>
                                         i === index
                                           ? {
+                                            ...s,
+                                            images: Array.from({ length: 3 }, (_, idx) => {
+                                              if (idx === imgIdx) return { src: "", alt: "" };
+                                              return (s.images || [])[idx] || { src: "", alt: "" };
+                                            }),
+                                          }
+                                          : s
+                                      ),
+                                    },
+                                  }));
+                                }}
+                              >
+                                <X className="h-3 w-3" />
+                              </Button>
+                            </div>
+                          )}
+                          <div className="flex gap-1">
+                            <Input
+                              type="file"
+                              accept="image/*"
+                              className="hidden"
+                              id={`methodology-image-${index}-${imgIdx}`}
+                              onChange={async (e) => {
+                                const file = e.target.files?.[0];
+                                if (file) {
+                                  try {
+                                    toast({ title: "Uploading image...", description: "Please wait while we upload to Cloudinary." });
+                                    const cloudinaryUrl = await uploadImageToCloudinary(file);
+                                    setContent((prev) => ({
+                                      ...prev,
+                                      home: {
+                                        ...prev.home,
+                                        methodologySections: prev.home.methodologySections.map((s, i) =>
+                                          i === index
+                                            ? {
                                               ...s,
                                               images: Array.from({ length: 3 }, (_, idx) => {
                                                 if (idx === imgIdx) return { src: cloudinaryUrl, alt: "" };
                                                 return (s.images || [])[idx] || { src: "", alt: "" };
                                               }),
                                             }
-                                          : s
-                                      ),
-                                    },
-                                  }));
-                                  toast({
-                                    title: "Image uploaded",
-                                    description: "Image successfully uploaded to Cloudinary.",
-                                  });
-                                } catch (error) {
-                                  // Error already handled in uploadImageToCloudinary
+                                            : s
+                                        ),
+                                      },
+                                    }));
+                                    toast({
+                                      title: "Image uploaded",
+                                      description: "Image successfully uploaded to Cloudinary.",
+                                    });
+                                  } catch (error) {
+                                    // Error already handled in uploadImageToCloudinary
+                                  }
                                 }
-                              }
-                              e.target.value = '';
-                            }}
-                          />
-                          <Button
-                            type="button"
-                            variant="outline"
-                            size="sm"
-                            className="flex-1 text-xs"
-                            onClick={() => {
-                              document.getElementById(`methodology-image-${index}-${imgIdx}`)?.click();
-                            }}
-                          >
-                            <Upload className="h-3 w-3 mr-1" />
-                            Upload
-                          </Button>
+                                e.target.value = '';
+                              }}
+                            />
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              className="flex-1 text-xs"
+                              onClick={() => {
+                                document.getElementById(`methodology-image-${index}-${imgIdx}`)?.click();
+                              }}
+                            >
+                              <Upload className="h-3 w-3 mr-1" />
+                              Upload
+                            </Button>
+                          </div>
                         </div>
-                      </div>
                       );
                     })}
                   </div>
@@ -2392,21 +2532,21 @@ const Admin = () => {
             ))}
           </div>
 
-                            </CardContent>
-                        </Card>
+        </CardContent>
+      </Card>
 
       <Card
         className="shadow-soft"
         onMouseEnter={() => setActiveSubSection('gain-from-course')}
         onFocus={() => setActiveSubSection('gain-from-course')}
       >
-                            <CardHeader>
+        <CardHeader>
           <CardTitle>What You Will Gain</CardTitle>
           <CardDescription>Edit the heading, title, and accordion content for the "What you would gain from the course!" section.</CardDescription>
-                            </CardHeader>
+        </CardHeader>
         <CardContent className="space-y-6">
-                                            <div className="grid gap-3 md:grid-cols-2">
-                                                <div className="space-y-2">
+          <div className="grid gap-3 md:grid-cols-2">
+            <div className="space-y-2">
               <Label>Heading (small)</Label>
               <Input
                 value={content.home.gainHeading}
@@ -2418,8 +2558,8 @@ const Admin = () => {
                   },
                 }))}
               />
-                                                </div>
-                                                <div className="space-y-2">
+            </div>
+            <div className="space-y-2">
               <Label>Title</Label>
               <Input
                 value={content.home.gainTitle}
@@ -2431,7 +2571,7 @@ const Admin = () => {
                   },
                 }))}
               />
-                                                </div>
+            </div>
           </div>
 
           <div className="space-y-4">
@@ -2454,8 +2594,8 @@ const Admin = () => {
                   >
                     <Trash2 className="h-4 w-4" />
                   </Button>
-                                            </div>
-                                            <div className="space-y-2">
+                </div>
+                <div className="space-y-2">
                   <Label>Title</Label>
                   <Input
                     value={group.title}
@@ -2468,9 +2608,9 @@ const Admin = () => {
                         ),
                       },
                     }))}
-                                                />
-                                            </div>
-                                            <div className="space-y-2">
+                  />
+                </div>
+                <div className="space-y-2">
                   <Label>Subtitle</Label>
                   <Textarea
                     value={group.subtitle}
@@ -2509,7 +2649,7 @@ const Admin = () => {
                           <Trash2 className="h-3 w-3" />
                         </Button>
                       </div>
-                                                <Input
+                      <Input
                         placeholder="Item Title"
                         value={item.title}
                         onChange={(e) => setContent(prev => ({
@@ -2545,7 +2685,7 @@ const Admin = () => {
                           },
                         }))}
                         rows={2}
-                                                />
+                      />
                     </div>
                   ))}
                   <Button
@@ -2566,10 +2706,10 @@ const Admin = () => {
                     <Plus className="h-3 w-3" />
                     Add Item
                   </Button>
-                 
-                                            </div>
-                                        </div>
-                                    ))}
+
+                </div>
+              </div>
+            ))}
             <Button
               type="button"
               variant="outline"
@@ -2585,31 +2725,31 @@ const Admin = () => {
               <Plus className="h-4 w-4" />
               Add Group
             </Button>
-                                </div>
+          </div>
 
-         
-                            </CardContent>
-                        </Card>
+
+        </CardContent>
+      </Card>
 
       <Card
         className="shadow-soft"
         onMouseEnter={() => setActiveSubSection("faculty-highlight")}
         onFocus={() => setActiveSubSection("faculty-highlight")}
       >
-                            <CardHeader>
+        <CardHeader>
           <CardTitle>Core Faculty Section</CardTitle>
           <CardDescription>
             Edit the badge, heading and description shown above the three owner cards on the Home page.
           </CardDescription>
-                            </CardHeader>
-                            <CardContent className="space-y-4">
-                                <div className="space-y-2">
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="space-y-2">
             <Label>Badge Label</Label>
-                                    <Input
+            <Input
               value={content.home.facultyHighlight?.badgeLabel || ""}
-                                        onChange={(e) =>
-                                            setContent((prev) => ({
-                                                ...prev,
+              onChange={(e) =>
+                setContent((prev) => ({
+                  ...prev,
                   home: {
                     ...prev.home,
                     facultyHighlight: {
@@ -2621,19 +2761,19 @@ const Admin = () => {
                       badgeLabel: e.target.value,
                     },
                   },
-                                            }))
-                                        }
-                                    />
-            
-                                </div>
+                }))
+              }
+            />
 
-                                <div className="space-y-2">
+          </div>
+
+          <div className="space-y-2">
             <Label>Title</Label>
             <Input
               value={content.home.facultyHighlight?.title || ""}
-                                        onChange={(e) =>
-                                            setContent((prev) => ({
-                                                ...prev,
+              onChange={(e) =>
+                setContent((prev) => ({
+                  ...prev,
                   home: {
                     ...prev.home,
                     facultyHighlight: {
@@ -2645,15 +2785,15 @@ const Admin = () => {
                       title: e.target.value,
                     },
                   },
-                                            }))
-                                        }
+                }))
+              }
             />
           </div>
 
           <div className="space-y-2">
             <Label>Description</Label>
             <Textarea
-                                        rows={3}
+              rows={3}
               value={content.home.facultyHighlight?.description || ""}
               onChange={(e) =>
                 setContent((prev) => ({
@@ -2672,11 +2812,11 @@ const Admin = () => {
                 }))
               }
             />
-             <div className="rounded-lg border border-border/50 bg-secondary/30 p-4">
-            <p className="text-sm text-muted-foreground">
-              <strong>Note:</strong> The Cards are editable in the <strong>Faculty</strong> page.
-            </p>
-          </div>
+            <div className="rounded-lg border border-border/50 bg-secondary/30 p-4">
+              <p className="text-sm text-muted-foreground">
+                <strong>Note:</strong> The Cards are editable in the <strong>Faculty</strong> page.
+              </p>
+            </div>
           </div>
         </CardContent>
       </Card>
@@ -2798,7 +2938,7 @@ const Admin = () => {
               Add Row
             </Button>
           </div>
-          
+
         </CardContent>
       </Card>
 
@@ -2907,11 +3047,11 @@ const Admin = () => {
                     }))}
                     placeholder="https://www.youtube.com/embed/VIDEO_ID"
                   />
-                  
+
                 </div>
               </div>
             ))}
-           
+
           </div>
         </CardContent>
       </Card>
@@ -3070,7 +3210,7 @@ const Admin = () => {
                 </div>
               </div>
             ))}
-            
+
             <Button
               type="button"
               variant="outline"
@@ -3137,12 +3277,12 @@ const Admin = () => {
               />
             </div>
           </div>
-      
+
 
         </CardContent>
       </Card>
 
-             <Card 
+      <Card
         className="shadow-soft"
         onMouseEnter={() => setActiveSubSection('home-final-cta')}
         onFocus={() => setActiveSubSection('home-final-cta')}
@@ -3176,7 +3316,7 @@ const Admin = () => {
         </CardContent>
       </Card>
 
-     
+
 
 
     </>
@@ -3363,74 +3503,74 @@ const Admin = () => {
 
   const renderHeaderEditor = () => (
     <>
-                        <Card 
-                            className="shadow-soft"
-                            onMouseEnter={() => setActiveSubSection('header')}
-                            onFocus={() => setActiveSubSection('header')}
-                        >
-                            <CardHeader>
-                                <CardTitle>Header</CardTitle>
+      <Card
+        className="shadow-soft"
+        onMouseEnter={() => setActiveSubSection('header')}
+        onFocus={() => setActiveSubSection('header')}
+      >
+        <CardHeader>
+          <CardTitle>Header</CardTitle>
           <CardDescription>Control the site title shown next to the logo.</CardDescription>
-                            </CardHeader>
-                            <CardContent className="space-y-4">
-                                <div className="space-y-2">
-                                    <Label htmlFor="siteTitle">Site Title</Label>
-                                    <Input
-                                        id="siteTitle"
-                                        value={content.header.siteTitle}
-                                        onChange={(e) =>
-                                            setContent((prev) => ({
-                                                ...prev,
-                                                header: { ...prev.header, siteTitle: e.target.value },
-                                            }))
-                                        }
-                                    />
-                                </div>
-                            </CardContent>
-                        </Card>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="siteTitle">Site Title</Label>
+            <Input
+              id="siteTitle"
+              value={content.header.siteTitle}
+              onChange={(e) =>
+                setContent((prev) => ({
+                  ...prev,
+                  header: { ...prev.header, siteTitle: e.target.value },
+                }))
+              }
+            />
+          </div>
+        </CardContent>
+      </Card>
 
-                        <Card 
-                            className="shadow-soft"
-                            onMouseEnter={() => setActiveSubSection('header')}
-                            onFocus={() => setActiveSubSection('header')}
-                        >
-                            <CardHeader>
-                                <CardTitle>Navigation Links</CardTitle>
+      <Card
+        className="shadow-soft"
+        onMouseEnter={() => setActiveSubSection('header')}
+        onFocus={() => setActiveSubSection('header')}
+      >
+        <CardHeader>
+          <CardTitle>Navigation Links</CardTitle>
           <CardDescription>Links shown in the main navigation bar.</CardDescription>
-                            </CardHeader>
-                            <CardContent className="space-y-4">
-                                <div className="space-y-4">
-                                    {content.header.nav.map((item, index) => (
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="space-y-4">
+            {content.header.nav.map((item, index) => (
               <div key={index} className="space-y-3 rounded-lg border p-4">
-                                            <div className="flex items-center justify-between gap-2">
+                <div className="flex items-center justify-between gap-2">
                   <Label className="text-xs uppercase tracking-wide text-muted-foreground">Link {index + 1}</Label>
                   <Button type="button" size="icon" variant="ghost" onClick={() => removeNavItem(index)}>
-                                                    <Trash2 className="h-4 w-4" />
-                                                </Button>
-                                            </div>
-                                            <div className="grid gap-3 md:grid-cols-2">
-                                                <div className="space-y-2">
-                                                    <Label>Label</Label>
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
+                <div className="grid gap-3 md:grid-cols-2">
+                  <div className="space-y-2">
+                    <Label>Label</Label>
                     <Input value={item.label} onChange={(e) => handleNavChange(index, "label", e.target.value)} />
-                                                </div>
-                                                <div className="space-y-2">
-                                                    <Label>Path</Label>
-                                                    <Input
-                                                        value={item.to}
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Path</Label>
+                    <Input
+                      value={item.to}
                       onChange={(e) => handleNavChange(index, "to", e.target.value)}
-                                                        placeholder="/about"
-                                                    />
-                                                </div>
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
+                      placeholder="/about"
+                    />
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
           <Button type="button" variant="outline" className="flex items-center gap-2" onClick={addNavItem}>
-                                    <Plus className="h-4 w-4" />
-                                    Add Nav Item
-                                </Button>
-                            </CardContent>
-                        </Card>
+            <Plus className="h-4 w-4" />
+            Add Nav Item
+          </Button>
+        </CardContent>
+      </Card>
     </>
   );
 
@@ -3510,8 +3650,8 @@ const Admin = () => {
               typeof linkValue === "string"
                 ? linkValue
                 : typeof linkValue === "object" && linkValue !== null && "label" in linkValue
-                ? (linkValue as { label: string }).label
-                : "";
+                  ? (linkValue as { label: string }).label
+                  : "";
 
             return (
               <div key={index} className="flex items-center gap-3">
@@ -3898,7 +4038,7 @@ const Admin = () => {
         onMouseEnter={() => setActiveSubSection('about-stats')}
         onFocus={() => setActiveSubSection('about-stats')}
       >
-        
+
         <CardContent className="space-y-3">
           {content.about.stats.map((stat, index) => (
             <div key={index} className="grid gap-3 md:grid-cols-2">
@@ -4267,7 +4407,7 @@ const Admin = () => {
     return (
       // ... rest of the code remains the same ...
       <>
-        <Card 
+        <Card
           className="shadow-soft"
           onMouseEnter={() => setActiveSubSection('gallery-hero')}
           onFocus={() => setActiveSubSection('gallery-hero')}
@@ -4281,8 +4421,8 @@ const Admin = () => {
           </CardContent>
         </Card>
         {categoryKeys.map((key) => (
-          <Card 
-            key={key} 
+          <Card
+            key={key}
             className="shadow-soft"
             onMouseEnter={() => setActiveSubSection('gallery-grid')}
             onFocus={() => setActiveSubSection('gallery-grid')}
@@ -4544,18 +4684,18 @@ const Admin = () => {
     }));
   };
 
-    const renderReviewsEditor = () => {
+  const renderReviewsEditor = () => {
     // Ensure testimonials array has at least 9 items (3 per section)
     let testimonials = content.reviews.testimonials || [];
     const neededLength = 9;
-    
-      // Pad testimonials array to ensure it has at least 9 items
-      while (testimonials.length < neededLength) {
-        const nextIdx = testimonials.length;
-        const defaultSource = nextIdx < 3 ? "google" : nextIdx < 6 ? "facebook" : "justdial";
-        testimonials.push({ name: "", content: "", rating: 5, source: defaultSource } as any);
-      }
-    
+
+    // Pad testimonials array to ensure it has at least 9 items
+    while (testimonials.length < neededLength) {
+      const nextIdx = testimonials.length;
+      const defaultSource = nextIdx < 3 ? "google" : nextIdx < 6 ? "facebook" : "justdial";
+      testimonials.push({ name: "", content: "", rating: 5, source: defaultSource } as any);
+    }
+
     // Get testimonials by source - use fixed indices: 0-2 for google, 3-5 for facebook, 6-8 for justdial
     // Always return exactly 3 slots per section
     const getTestimonialsForSource = (source: "google" | "facebook" | "justdial", startIdx: number) => {
@@ -4570,7 +4710,7 @@ const Admin = () => {
         return { testimonial, originalIndex: actualIdx };
       });
     };
-    
+
     const googleSlots = getTestimonialsForSource("google", 0);
     const facebookSlots = getTestimonialsForSource("facebook", 3);
     const justdialSlots = getTestimonialsForSource("justdial", 6);
@@ -4917,19 +5057,19 @@ const Admin = () => {
       const currentTestimonials = prev.reviews.testimonials || [];
       const neededLength = 9;
       const testimonials = [...currentTestimonials];
-      
+
       // Extend array to ensure we have exactly 9 slots
       while (testimonials.length < neededLength) {
         const nextIdx = testimonials.length;
         const defaultSource = nextIdx < 3 ? "google" : nextIdx < 6 ? "facebook" : "justdial";
         testimonials.push({ name: "", content: "", rating: 5, source: defaultSource } as any);
       }
-      
+
       // Trim to exactly 9 if too long
       if (testimonials.length > neededLength) {
         testimonials.splice(neededLength);
       }
-      
+
       // Update the specific testimonial
       const updatedTestimonials = testimonials.map((testimonial, i) => {
         if (i === index) {
@@ -4946,7 +5086,7 @@ const Admin = () => {
         }
         return testimonial;
       });
-      
+
       return {
         ...prev,
         reviews: {
@@ -5025,7 +5165,7 @@ const Admin = () => {
 
   const renderFaqEditor = () => (
     <>
-      <Card 
+      <Card
         className="shadow-soft"
         onMouseEnter={() => setActiveSubSection('faq-hero')}
         onFocus={() => setActiveSubSection('faq-hero')}
@@ -5039,7 +5179,7 @@ const Admin = () => {
         </CardContent>
       </Card>
 
-      <Card 
+      <Card
         className="shadow-soft"
         onMouseEnter={() => setActiveSubSection('faq-categories')}
         onFocus={() => setActiveSubSection('faq-categories')}
@@ -5085,7 +5225,7 @@ const Admin = () => {
         </CardContent>
       </Card>
 
-      <Card 
+      <Card
         className="shadow-soft"
         onMouseEnter={() => setActiveSubSection('faq-support')}
         onFocus={() => setActiveSubSection('faq-support')}
@@ -5106,12 +5246,12 @@ const Admin = () => {
   const handleFaqHeroChange = (field: "title" | "subtitle", value: string) => {
     setContent((prev) => ({
       ...prev,
-      faq: { 
-        ...prev.faq, 
-        hero: { 
-          ...(prev.faq.hero || { title: "", subtitle: "" }), 
-          [field]: value 
-        } 
+      faq: {
+        ...prev.faq,
+        hero: {
+          ...(prev.faq.hero || { title: "", subtitle: "" }),
+          [field]: value
+        }
       },
     }));
   };
@@ -5158,11 +5298,11 @@ const Admin = () => {
         categories: (prev.faq.categories || []).map((category, i) =>
           i === categoryIndex
             ? {
-                ...category,
-                questions: (category.questions || []).map((question, qi) =>
-                  qi === questionIndex ? { ...question, [field]: value } : question,
-                ),
-              }
+              ...category,
+              questions: (category.questions || []).map((question, qi) =>
+                qi === questionIndex ? { ...question, [field]: value } : question,
+              ),
+            }
             : category,
         ),
       },
@@ -5200,19 +5340,19 @@ const Admin = () => {
   const handleFaqSupportChange = (field: "title" | "description" | "phoneNumber" | "note", value: string) => {
     setContent((prev) => ({
       ...prev,
-      faq: { 
-        ...prev.faq, 
-        support: { 
-          ...(prev.faq.support || { title: "", description: "", phoneNumber: "", note: "" }), 
-          [field]: value 
-        } 
+      faq: {
+        ...prev.faq,
+        support: {
+          ...(prev.faq.support || { title: "", description: "", phoneNumber: "", note: "" }),
+          [field]: value
+        }
       },
     }));
   };
 
   const renderContactEditor = () => (
     <>
-      <Card 
+      <Card
         className="shadow-soft"
         onMouseEnter={() => setActiveSubSection('contact-hero')}
         onFocus={() => setActiveSubSection('contact-hero')}
@@ -5226,7 +5366,7 @@ const Admin = () => {
         </CardContent>
       </Card>
 
-      <Card 
+      <Card
         className="shadow-soft"
         onMouseEnter={() => setActiveSubSection('contact-form')}
         onFocus={() => setActiveSubSection('contact-form')}
@@ -5245,7 +5385,7 @@ const Admin = () => {
               title: cardType.charAt(0).toUpperCase() + cardType.slice(1),
               lines: [] as string[],
             };
-            
+
             return (
               <div key={index} className="border rounded-lg p-4 space-y-3">
                 <Label>Card {index + 1}</Label>
@@ -5328,11 +5468,11 @@ const Admin = () => {
   const handleContactCardLineChange = (cardType: "address" | "phone" | "email" | "hours", lineIndex: number, value: string) => {
     setContent((prev) => {
       const cards = prev.contact.cards || [];
-      
+
       // Ensure all 4 card types exist
       const cardTypes: ("address" | "phone" | "email" | "hours")[] = ["address", "phone", "email", "hours"];
       let updatedCards = [...cards];
-      
+
       cardTypes.forEach((type) => {
         if (!updatedCards.find((c) => c.type === type)) {
           updatedCards.push({
@@ -5342,7 +5482,7 @@ const Admin = () => {
           });
         }
       });
-      
+
       // Update the specific card's line
       updatedCards = updatedCards.map((card) => {
         if (card.type === cardType) {
@@ -5355,7 +5495,7 @@ const Admin = () => {
         }
         return card;
       });
-      
+
       return {
         ...prev,
         contact: {
@@ -5369,11 +5509,11 @@ const Admin = () => {
   const handleAddContactCardLine = (cardType: "address" | "phone" | "email" | "hours") => {
     setContent((prev) => {
       const cards = prev.contact.cards || [];
-      
+
       // Ensure all 4 card types exist
       const cardTypes: ("address" | "phone" | "email" | "hours")[] = ["address", "phone", "email", "hours"];
       let updatedCards = [...cards];
-      
+
       cardTypes.forEach((type) => {
         if (!updatedCards.find((c) => c.type === type)) {
           updatedCards.push({
@@ -5383,7 +5523,7 @@ const Admin = () => {
           });
         }
       });
-      
+
       // Add line to the specific card
       updatedCards = updatedCards.map((card) => {
         if (card.type === cardType) {
@@ -5391,7 +5531,7 @@ const Admin = () => {
         }
         return card;
       });
-      
+
       return {
         ...prev,
         contact: {
@@ -5405,11 +5545,11 @@ const Admin = () => {
   const handleRemoveContactCardLine = (cardType: "address" | "phone" | "email" | "hours", lineIndex: number) => {
     setContent((prev) => {
       const cards = prev.contact.cards || [];
-      
+
       // Ensure all 4 card types exist
       const cardTypes: ("address" | "phone" | "email" | "hours")[] = ["address", "phone", "email", "hours"];
       let updatedCards = [...cards];
-      
+
       cardTypes.forEach((type) => {
         if (!updatedCards.find((c) => c.type === type)) {
           updatedCards.push({
@@ -5419,7 +5559,7 @@ const Admin = () => {
           });
         }
       });
-      
+
       // Remove line from the specific card
       updatedCards = updatedCards.map((card) => {
         if (card.type === cardType) {
@@ -5427,7 +5567,7 @@ const Admin = () => {
         }
         return card;
       });
-      
+
       return {
         ...prev,
         contact: {
@@ -5467,7 +5607,7 @@ const Admin = () => {
 
   const renderFacultyEditor = () => (
     <>
-      <Card 
+      <Card
         className="shadow-soft"
         onMouseEnter={() => setActiveSubSection('faculty-hero')}
         onFocus={() => setActiveSubSection('faculty-hero')}
@@ -5481,7 +5621,7 @@ const Admin = () => {
         </CardContent>
       </Card>
 
-      <Card 
+      <Card
         className="shadow-soft"
         onMouseEnter={() => setActiveSubSection('faculty-members')}
         onFocus={() => setActiveSubSection('faculty-members')}
@@ -5552,20 +5692,20 @@ const Admin = () => {
                 <Label>Specializations</Label>
                 {(member.specialization || []).filter((spec: string) => spec && spec.trim() !== "").map((item: string, specIndex: number) => (
                   <div key={specIndex} className="flex gap-2">
-                    <Input 
+                    <Input
                       placeholder={`Specialization ${specIndex + 1}`}
-                      value={item} 
+                      value={item}
                       onChange={(e) => {
                         const currentSpecs = (member.specialization || []).filter((s: string) => s && s.trim() !== "");
                         const newSpecs = [...currentSpecs];
                         newSpecs[specIndex] = e.target.value;
                         // Filter out empty strings before saving
                         handleFacultyMemberStringListChange(index, "specialization", newSpecs.filter((s: string) => s && s.trim() !== ""));
-                      }} 
+                      }}
                     />
-                    <Button 
-                      variant="ghost" 
-                      size="icon" 
+                    <Button
+                      variant="ghost"
+                      size="icon"
                       onClick={() => {
                         const currentSpecs = (member.specialization || []).filter((s: string) => s && s.trim() !== "");
                         const newSpecs = currentSpecs.filter((_: string, i: number) => i !== specIndex);
@@ -5632,7 +5772,7 @@ const Admin = () => {
         4
       )}
 
-      <Card 
+      <Card
         className="shadow-soft"
         onMouseEnter={() => setActiveSubSection('faculty-promise')}
         onFocus={() => setActiveSubSection('faculty-promise')}
@@ -5955,41 +6095,166 @@ const Admin = () => {
   // Gate the admin UI behind a simple login screen
   if (!isAuthed) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
+      <div className="min-h-screen flex items-center justify-center bg-background p-4">
         <Card className="w-full max-w-md shadow-soft">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Lock className="h-5 w-5" />
-              Admin Access
+              {showForgotPassword ? 'Reset Password' : 'Admin Access'}
             </CardTitle>
-            <CardDescription>Enter the admin password to access this panel.</CardDescription>
+            <CardDescription>
+              {showForgotPassword
+                ? 'Follow the steps to reset your admin password'
+                : 'Enter the admin password to access this panel.'}
+            </CardDescription>
           </CardHeader>
           <CardContent>
-            <form onSubmit={handleAdminLogin} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="adminPassword">Password</Label>
-                <div className="flex items-center gap-2">
-                  <Input
-                    id="adminPassword"
-                    type={showLoginPassword ? "text" : "password"}
-                    value={loginPassword}
-                    onChange={(e) => setLoginPassword(e.target.value)}
-                    required
-                  />
+            {!showForgotPassword ? (
+              // Login Form
+              <form onSubmit={handleAdminLogin} className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="adminPassword">Password</Label>
+                  <div className="flex items-center gap-2">
+                    <Input
+                      id="adminPassword"
+                      type={showLoginPassword ? "text" : "password"}
+                      value={loginPassword}
+                      onChange={(e) => setLoginPassword(e.target.value)}
+                      required
+                    />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="icon"
+                      onClick={() => setShowLoginPassword((v) => !v)}
+                    >
+                      {showLoginPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </Button>
+                  </div>
+                </div>
+                <Button type="submit" className="w-full">
+                  Login
+                </Button>
+                <div className="text-center">
                   <Button
                     type="button"
-                    variant="outline"
-                    size="icon"
-                    onClick={() => setShowLoginPassword((v) => !v)}
+                    variant="link"
+                    className="text-sm text-muted-foreground hover:text-primary"
+                    onClick={handleOpenForgotPassword}
                   >
-                    {showLoginPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    Forgot Password?
                   </Button>
                 </div>
+              </form>
+            ) : (
+              // Forgot Password Flow (2 steps: OTP verification → Password reset)
+              <div className="space-y-4">
+                {forgotPasswordStep === 'otp' && (
+                  <form onSubmit={handleForgotPasswordVerifyOTP} className="space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="forgotOTP">Verification Code</Label>
+                      <Input
+                        id="forgotOTP"
+                        type="text"
+                        placeholder="Enter 6-digit code"
+                        value={forgotOTP}
+                        onChange={(e) => setForgotOTP(e.target.value)}
+                        maxLength={6}
+                        required
+                      />
+                      <p className="text-xs text-muted-foreground">
+                        Please enter the OTP sent to your admin email
+                      </p>
+                    </div>
+                    <div className="flex gap-2">
+                      <Button type="submit" className="flex-1">
+                        Verify OTP
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={handleCancelForgotPassword}
+                      >
+                        Cancel
+                      </Button>
+                    </div>
+                    <div className="text-center">
+                      <Button
+                        type="button"
+                        variant="link"
+                        className="text-sm text-muted-foreground hover:text-primary"
+                        onClick={() => {
+                          setForgotOTP("");
+                          handleForgotPasswordSendOTP();
+                        }}
+                      >
+                        Resend OTP
+                      </Button>
+                    </div>
+                  </form>
+                )}
+
+                {forgotPasswordStep === 'reset' && (
+                  <form onSubmit={handleForgotPasswordReset} className="space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="forgotNewPassword">New Password</Label>
+                      <div className="flex items-center gap-2">
+                        <Input
+                          id="forgotNewPassword"
+                          type={showForgotNewPassword ? "text" : "password"}
+                          value={forgotNewPassword}
+                          onChange={(e) => setForgotNewPassword(e.target.value)}
+                          required
+                        />
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="icon"
+                          onClick={() => setShowForgotNewPassword((v) => !v)}
+                        >
+                          {showForgotNewPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                        </Button>
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="forgotConfirmPassword">Confirm New Password</Label>
+                      <div className="flex items-center gap-2">
+                        <Input
+                          id="forgotConfirmPassword"
+                          type={showForgotConfirmPassword ? "text" : "password"}
+                          value={forgotConfirmPassword}
+                          onChange={(e) => setForgotConfirmPassword(e.target.value)}
+                          required
+                        />
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="icon"
+                          onClick={() => setShowForgotConfirmPassword((v) => !v)}
+                        >
+                          {showForgotConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                        </Button>
+                      </div>
+                      <p className="text-xs text-muted-foreground">
+                        Password must be at least 6 characters long.
+                      </p>
+                    </div>
+                    <div className="flex gap-2">
+                      <Button type="submit" className="flex-1">
+                        Reset Password
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={handleCancelForgotPassword}
+                      >
+                        Cancel
+                      </Button>
+                    </div>
+                  </form>
+                )}
               </div>
-              <Button type="submit" className="w-full">
-                Login
-              </Button>
-            </form>
+            )}
           </CardContent>
         </Card>
       </div>
@@ -6006,8 +6271,8 @@ const Admin = () => {
               <p className="text-sm font-semibold text-sidebar-foreground">Admin Navigation</p>
             </div>
           </SidebarHeader>
-          <SidebarContent 
-            className="space-y-4 sidebar-content-hide-scrollbar" 
+          <SidebarContent
+            className="space-y-4 sidebar-content-hide-scrollbar"
             style={{
               scrollbarWidth: 'none',
               msOverflowStyle: 'none',
@@ -6024,7 +6289,7 @@ const Admin = () => {
                       isActive={section.id === selectedSection.id}
                       onClick={() => setActiveSection(section.id)}
                       className="flex items-center gap-2"
-                                        type="button"
+                      type="button"
                     >
                       <section.icon className="h-4 w-4" />
                       <span>{section.label}</span>
@@ -6042,7 +6307,7 @@ const Admin = () => {
                     <SidebarMenuButton
                       isActive={section.id === selectedSection.id}
                       onClick={() => setActiveSection(section.id)}
-                                        className="flex items-center gap-2"
+                      className="flex items-center gap-2"
                       type="button"
                     >
                       <section.icon className="h-4 w-4" />
@@ -6076,9 +6341,9 @@ const Admin = () => {
               <Button className="gradient-accent" onClick={handleSaveChanges}>Save Changes</Button>
               <Button variant="outline" onClick={handleEditAction} className="hidden md:inline-flex">
                 <ExternalLink className="h-4 w-4 mr-2" /> Open live page
-                </Button>
-              </div>
-              </div>
+              </Button>
+            </div>
+          </div>
           <div className="flex h-[calc(100vh-44px)] w-full max-w-full overflow-x-hidden">
             <SiteContentManager
               selectedSection={selectedSection}
@@ -6091,11 +6356,11 @@ const Admin = () => {
               selectedSectionId={selectedSection.id}
               activeSubSection={activeSubSection}
             />
-            </div>
+          </div>
         </SidebarInset>
-        </div>
+      </div>
     </SidebarProvider>
-    );
+  );
 };
 
 export default Admin;
